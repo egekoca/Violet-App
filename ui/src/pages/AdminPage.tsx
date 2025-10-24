@@ -161,7 +161,7 @@ export function AdminPage() {
           {profile && (
             <button 
               className="back-btn"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/my-profile')}
             >
               ← Profili Gör
             </button>

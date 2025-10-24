@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { getUserProfile, getUserProfiles } from '../lib/blockchain';
 import { UserProfile } from '../types';
@@ -7,7 +7,6 @@ import { WalletConnect } from '../components/WalletConnect';
 import './UserPage.css';
 
 export function UserPage() {
-  const { username } = useParams();
   const navigate = useNavigate();
   const account = useCurrentAccount();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -16,7 +15,7 @@ export function UserPage() {
 
   useEffect(() => {
     loadData();
-  }, [username, account]);
+  }, [account]);
 
   const loadData = async () => {
     try {
@@ -34,8 +33,8 @@ export function UserPage() {
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length === 0) {
-        setError('Henüz profil oluşturmadınız. Profil oluşturmak için admin paneline gidin.');
-        setProfile(null);
+        // Profil yoksa ProfileEdit sayfasına yönlendir
+        navigate('/profile');
       } else {
         // İlk profili göster (çoklu profil desteği ileride eklenebilir)
         setProfile(profiles[0]);
@@ -79,25 +78,6 @@ export function UserPage() {
       <div className="user-page error">
         <div className="container">
           <h2>⚠️ {error}</h2>
-          {error.includes('oluşturmadınız') && (
-            <button 
-              className="create-profile-btn"
-              onClick={() => navigate('/admin/new')}
-              style={{
-                marginTop: '24px',
-                padding: '16px 32px',
-                background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
-                color: 'white',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '18px',
-                fontWeight: '600',
-                cursor: 'pointer',
-              }}
-            >
-              Profil Oluştur
-            </button>
-          )}
         </div>
       </div>
     );
@@ -122,7 +102,7 @@ export function UserPage() {
         {/* Admin Button */}
         <button 
           className="admin-btn"
-          onClick={() => navigate(`/admin/${profile.username}`)}
+          onClick={() => navigate('/admin')}
           title="Admin Paneli"
         >
           ⚙️
@@ -156,6 +136,34 @@ export function UserPage() {
                 </button>
               ))
           )}
+        </div>
+
+        {/* Back to Home Button */}
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <button 
+            onClick={() => navigate('/')}
+            style={{
+              padding: '12px 24px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.borderColor = 'var(--secondary-color)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            }}
+          >
+            ← Ana Sayfaya Dön
+          </button>
         </div>
 
         {/* Footer */}
