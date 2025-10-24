@@ -1,0 +1,14 @@
+{
+  "name": "violent-app-frontend",
+  "version": "1.0.0",
+  "description": "Frontend API client with TypeScript",
+  "type": "module",
+  "main": "api.ts",
+  "scripts": {
+    "test": "echo \"Frontend API client ready\""
+  },
+  "keywords": ["typescript", "api", "client"],
+  "author": "",
+  "license": "MIT"
+}
+

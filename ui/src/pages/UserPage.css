@@ -1,0 +1,162 @@
+.user-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.user-page.loading,
+.user-page.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.admin-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.profile-section {
+  text-align: center;
+  margin-bottom: 48px;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
+  object-fit: cover;
+}
+
+.display-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.bio {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.links-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.link-card {
+  background: white;
+  padding: 20px 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.link-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.link-icon {
+  font-size: 24px;
+}
+
+.link-title {
+  flex: 1;
+  text-align: center;
+}
+
+.no-links {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  padding: 40px 20px;
+}
+
+.footer {
+  margin-top: 60px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+
+@media (max-width: 768px) {
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .display-name {
+    font-size: 28px;
+  }
+
+  .bio {
+    font-size: 16px;
+  }
+
+  .link-card {
+    padding: 18px 20px;
+    font-size: 16px;
+  }
+
+  .admin-btn {
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+}
+

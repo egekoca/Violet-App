@@ -1,0 +1,14 @@
+{
+  "name": "violent-app-backend",
+  "version": "1.0.0",
+  "description": "Mock backend for Linktree clone",
+  "type": "module",
+  "main": "mockData.ts",
+  "scripts": {
+    "test": "echo \"Backend mock data ready\""
+  },
+  "keywords": ["mock", "api"],
+  "author": "",
+  "license": "MIT"
+}
+
