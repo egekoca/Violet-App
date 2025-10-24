@@ -1,0 +1,47 @@
+.wallet-connect {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.wallet-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.wallet-address {
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* Connect button styling override */
+:global(button[data-dapp-kit-connect-button]) {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3) !important;
+}
+
+:global(button[data-dapp-kit-connect-button]:hover) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5), 0 0 20px rgba(0, 217, 255, 0.3) !important;
+}
+

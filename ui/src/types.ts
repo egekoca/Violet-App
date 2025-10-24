@@ -1,18 +1,28 @@
+/**
+ * Blockchain uyumlu type'lar
+ * Frontend SDK ile uyumlu
+ */
+
 export interface Link {
-  id: string;
   title: string;
   url: string;
-  icon?: string;
-  isActive: boolean;
-  order: number;
+  icon: string;
+  is_active: boolean;
 }
 
 export interface UserProfile {
-  id: string;
+  id: string;           // Object ID (blockchain)
+  owner: string;        // Wallet address
   username: string;
-  displayName: string;
+  display_name: string;
   bio: string;
-  avatar: string;
-  theme: 'light' | 'dark';
+  links: Link[];
+}
+
+// UI için ekstra tipler (geçici uyumluluk)
+export interface LinkWithId extends Link {
+  id?: string;
+  isActive?: boolean;
+  order?: number;
 }
 

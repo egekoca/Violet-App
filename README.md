@@ -1,6 +1,8 @@
-# 🔗 Linktree Clone
+# 🔗 VIOLET - Sui Blockchain LinkTree
 
-Modern ve güzel bir Linktree benzeri uygulama. Tüm linklerinizi tek bir sayfada toplayın!
+**Tamamen merkeziyetsiz LinkTree uygulaması!** 
+
+Tüm profilleriniz ve linkleriniz **Sui Blockchain** üzerinde saklanıyor. Web3 ile tanışın! 🚀
 
 ## 📁 Proje Yapısı
 

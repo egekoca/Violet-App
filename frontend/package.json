@@ -1,14 +1,21 @@
 {
-  "name": "violent-app-frontend",
+  "name": "violent-frontend-sdk",
   "version": "1.0.0",
-  "description": "Frontend API client with TypeScript",
+  "description": "Sui blockchain SDK for Violet LinkTree",
   "type": "module",
-  "main": "api.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Frontend API client ready\""
+    "build": "tsc",
+    "dev": "tsc --watch"
   },
-  "keywords": ["typescript", "api", "client"],
+  "keywords": ["sui", "blockchain", "sdk"],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@mysten/sui": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
 }
 
