@@ -402,7 +402,22 @@ export function AdminPage() {
 
         {profile && (
           <div className="sidebar-user">
-            <div className="user-avatar">
+            {profile.image_url ? (
+              <img 
+                src={profile.image_url} 
+                alt={profile.username}
+                className="user-avatar user-avatar-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (placeholder) placeholder.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className="user-avatar"
+              style={{ display: profile.image_url ? 'none' : 'flex' }}
+            >
               {profile.username.charAt(0).toUpperCase()}
             </div>
             <div className="user-info">
@@ -549,7 +564,22 @@ export function AdminPage() {
             {/* Top Profile Bar */}
             <div className="content-header">
               <div className="header-profile">
-                <div className="header-avatar">
+                {profile.image_url ? (
+                  <img 
+                    src={profile.image_url} 
+                    alt={profile.username}
+                    className="header-avatar header-avatar-image"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (placeholder) placeholder.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className="header-avatar"
+                  style={{ display: profile.image_url ? 'none' : 'flex' }}
+                >
                   {profile.username.charAt(0).toUpperCase()}
                 </div>
                 <div>
