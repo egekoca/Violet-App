@@ -272,13 +272,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when creating a profile: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil oluşturma hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when creating a profile: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -336,13 +336,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('❌ Transaction hatası:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when adding a link: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link ekleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when adding a link: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -404,13 +404,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction hatası:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when updating the profile: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil güncelleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when updating the profile: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -456,13 +456,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link update error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when updating the link: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link güncelleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when updating the link: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -493,13 +493,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link delete error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when deleting the link: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link silme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when deleting the link: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -529,13 +529,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link toggle error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Error when toggling the link: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link toggle hatası:', error);
-      alert('❌ Error: ' + error.message);
+      alert('❌ Error when toggling the link: ' + error.message);
     } finally {
       setProcessing(false);
     }
