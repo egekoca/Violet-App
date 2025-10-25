@@ -572,8 +572,67 @@
 
 .link-card-right {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+}
+
+.link-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.link-action-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.link-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-btn {
+  background: rgba(0, 217, 255, 0.1);
+  color: var(--secondary-color);
+}
+
+.edit-btn:hover:not(:disabled) {
+  background: rgba(0, 217, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+}
+
+.delete-btn {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: rgba(255, 68, 68, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+}
+
+.toggle-btn {
+  background: rgba(255, 193, 7, 0.1);
+  font-size: 16px;
+}
+
+.toggle-btn:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.toggle-btn.active {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
 }
 
 .status-badge {
@@ -761,6 +820,16 @@
   font-size: 28px;
   margin: 0 auto 12px;
   box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+}
+
+.preview-avatar-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 12px;
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+  border: 3px solid var(--secondary-color);
 }
 
 .preview-name {

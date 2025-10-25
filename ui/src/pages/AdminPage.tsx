@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
-import { getUserProfiles, createProfileTransaction, addLinkTransaction, updateProfileTransaction } from '../lib/blockchain';
+import { 
+  getUserProfiles, 
+  createProfileTransaction, 
+  addLinkTransaction, 
+  updateProfileTransaction, 
+  updateProfileImageTransaction,
+  updateLinkTransaction,
+  deleteLinkTransaction,
+  toggleLinkTransaction
+} from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import './AdminPage.css';
@@ -16,6 +25,8 @@ export function AdminPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddLinkForm, setShowAddLinkForm] = useState(false);
   const [showEditProfileForm, setShowEditProfileForm] = useState(false);
+  const [showEditLinkForm, setShowEditLinkForm] = useState(false);
+  const [editingLinkId, setEditingLinkId] = useState<number | null>(null);
   const [processing, setProcessing] = useState(false);
 
   // Form states
@@ -23,12 +34,14 @@ export function AdminPage() {
     username: '',
     display_name: '',
     bio: '',
+    image_url: '',
   });
 
   const [linkForm, setLinkForm] = useState({
     title: '',
     url: '',
     icon: '',
+    banner: '',
   });
 
   useEffect(() => {
@@ -50,9 +63,19 @@ export function AdminPage() {
       
       if (profiles.length > 0) {
         console.log('✅ Profil bulundu:', profiles[0]);
+        console.log('🆔 Profile ID:', profiles[0].id);
+        console.log('🔢 Link IDs:', profiles[0].link_ids);
+        console.log('🔢 Link Count:', profiles[0].link_count);
         console.log('🔗 Profile linkler:', profiles[0].links);
         console.log('🔗 Links array mi?', Array.isArray(profiles[0].links));
         console.log('🔗 Links length:', profiles[0].links?.length);
+        
+        // Her linkin detayını göster
+        if (profiles[0].links && profiles[0].links.length > 0) {
+          profiles[0].links.forEach((link, idx) => {
+            console.log(`  Link ${idx}:`, link);
+          });
+        }
         
         setProfile(profiles[0]);
         setShowCreateForm(false);
@@ -61,6 +84,7 @@ export function AdminPage() {
           username: profiles[0].username,
           display_name: profiles[0].display_name,
           bio: profiles[0].bio,
+          image_url: profiles[0].image_url || '',
         });
       } else {
         console.log('❌ Profil bulunamadı');
@@ -124,16 +148,20 @@ export function AdminPage() {
           transaction: tx as any,
         },
         {
-          onSuccess: async () => {
-            alert('✅ The link has been added! Getting it approved in the Blockchain...');
-            setTimeout(() => {
-              loadData();
-              setLinkForm({ title: '', url: '', icon: '' });
+          onSuccess: async (result) => {
+            console.log('✅ Link ekleme transaction başarılı:', result);
+            alert('✅ The link has been added! Waiting for blockchain confirmation...');
+            
+            // Blockchain'de işlenmesi için biraz daha uzun bekle
+            setTimeout(async () => {
+              console.log('🔄 Link eklendikten sonra veri yenileniyor...');
+              await loadData();
+              setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
-            }, 3000);
+            }, 5000); // 3 saniyeden 5 saniyeye çıkardık
           },
           onError: (error) => {
-            console.error('Transaction hatası:', error);
+            console.error('❌ Transaction hatası:', error);
             alert('❌ Error: ' + error.message);
           },
         }
@@ -152,6 +180,8 @@ export function AdminPage() {
 
     try {
       setProcessing(true);
+      
+      // İlk olarak display_name ve bio'yu güncelle
       const tx = updateProfileTransaction({
         profileId: profile.id,
         display_name: profileForm.display_name,
@@ -164,11 +194,39 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            alert('✅ The profile has been updated! Getting it approved in the Blockchain...');
-            setTimeout(() => {
-              loadData();
-              setShowEditProfileForm(false);
-            }, 3000);
+            // Eğer image_url değiştiyse, onu da güncelle
+            if (profileForm.image_url !== profile.image_url) {
+              const imageTx = updateProfileImageTransaction({
+                profileId: profile.id,
+                image_url: profileForm.image_url,
+              });
+              
+              signAndExecute(
+                { 
+                  transaction: imageTx as any,
+                },
+                {
+                  onSuccess: async () => {
+                    alert('✅ Profile updated (including image)! Confirming on Blockchain...');
+                    setTimeout(() => {
+                      loadData();
+                      setShowEditProfileForm(false);
+                    }, 3000);
+                  },
+                  onError: (error) => {
+                    console.error('Image update error:', error);
+                    alert('⚠️ Profile updated but image failed: ' + error.message);
+                    setTimeout(() => loadData(), 2000);
+                  },
+                }
+              );
+            } else {
+              alert('✅ The profile has been updated! Getting it approved in the Blockchain...');
+              setTimeout(() => {
+                loadData();
+                setShowEditProfileForm(false);
+              }, 3000);
+            }
           },
           onError: (error) => {
             console.error('Transaction hatası:', error);
@@ -178,6 +236,131 @@ export function AdminPage() {
       );
     } catch (error: any) {
       console.error('Profil güncelleme hatası:', error);
+      alert('❌ Error: ' + error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleEditLink = (link: any) => {
+    setEditingLinkId(link.id);
+    setLinkForm({
+      title: link.title,
+      url: link.url,
+      icon: link.icon,
+      banner: link.banner || '',
+    });
+    setShowEditLinkForm(true);
+    setShowAddLinkForm(false);
+  };
+
+  const handleUpdateLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!account || !profile || editingLinkId === null) return;
+
+    try {
+      setProcessing(true);
+      const tx = updateLinkTransaction({
+        profileId: profile.id,
+        link_id: editingLinkId,
+        ...linkForm,
+      });
+
+      signAndExecute(
+        { 
+          transaction: tx as any,
+        },
+        {
+          onSuccess: async () => {
+            alert('✅ Link updated! Confirming on Blockchain...');
+            setTimeout(() => {
+              loadData();
+              setLinkForm({ title: '', url: '', icon: '', banner: '' });
+              setShowEditLinkForm(false);
+              setEditingLinkId(null);
+            }, 3000);
+          },
+          onError: (error) => {
+            console.error('Link update error:', error);
+            alert('❌ Error: ' + error.message);
+          },
+        }
+      );
+    } catch (error: any) {
+      console.error('Link güncelleme hatası:', error);
+      alert('❌ Error: ' + error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDeleteLink = async (linkId: number) => {
+    if (!account || !profile) return;
+    
+    if (!confirm('Are you sure you want to delete this link?')) return;
+
+    try {
+      setProcessing(true);
+      const tx = deleteLinkTransaction({
+        profileId: profile.id,
+        link_id: linkId,
+      });
+
+      signAndExecute(
+        { 
+          transaction: tx as any,
+        },
+        {
+          onSuccess: async () => {
+            alert('✅ Link deleted! Confirming on Blockchain...');
+            setTimeout(() => {
+              loadData();
+            }, 3000);
+          },
+          onError: (error) => {
+            console.error('Link delete error:', error);
+            alert('❌ Error: ' + error.message);
+          },
+        }
+      );
+    } catch (error: any) {
+      console.error('Link silme hatası:', error);
+      alert('❌ Error: ' + error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleToggleLink = async (linkId: number, currentState: boolean) => {
+    if (!account || !profile) return;
+
+    try {
+      setProcessing(true);
+      const tx = toggleLinkTransaction({
+        profileId: profile.id,
+        link_id: linkId,
+        is_active: !currentState,
+      });
+
+      signAndExecute(
+        { 
+          transaction: tx as any,
+        },
+        {
+          onSuccess: async () => {
+            alert(`✅ Link ${!currentState ? 'activated' : 'deactivated'}!`);
+            setTimeout(() => {
+              loadData();
+            }, 2000);
+          },
+          onError: (error) => {
+            console.error('Link toggle error:', error);
+            alert('❌ Error: ' + error.message);
+          },
+        }
+      );
+    } catch (error: any) {
+      console.error('Link toggle hatası:', error);
       alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
@@ -334,6 +517,20 @@ export function AdminPage() {
                   />
                 </div>
 
+                <div className="form-group">
+                  <label>Profile Picture URL</label>
+                  <input
+                    type="url"
+                    value={profileForm.image_url}
+                    onChange={(e) => setProfileForm({ ...profileForm, image_url: e.target.value })}
+                    placeholder="https://example.com/your-avatar.png"
+                    maxLength={500}
+                  />
+                  <small style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                    Optional: URL to your profile picture
+                  </small>
+                </div>
+
                 <button 
                   type="submit" 
                   className="submit-btn-large"
@@ -408,6 +605,20 @@ export function AdminPage() {
                       />
                     </div>
 
+                    <div className="form-group">
+                      <label>Profile Picture URL</label>
+                      <input
+                        type="url"
+                        value={profileForm.image_url}
+                        onChange={(e) => setProfileForm({ ...profileForm, image_url: e.target.value })}
+                        placeholder="https://example.com/your-avatar.png"
+                        maxLength={500}
+                      />
+                      <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                        Optional: URL to your profile picture
+                      </small>
+                    </div>
+
                     <button 
                       type="submit" 
                       className="submit-btn"
@@ -471,6 +682,16 @@ export function AdminPage() {
               />
             </div>
 
+            <div className="form-group">
+              <label>Banner URL (Optional)</label>
+              <input
+                type="url"
+                      value={linkForm.banner}
+                      onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
+                      placeholder="https://example.com/banner.jpg"
+              />
+            </div>
+
             <div className="form-actions">
                     <button 
                       type="submit" 
@@ -484,7 +705,81 @@ export function AdminPage() {
                 className="cancel-btn"
                 onClick={() => {
                         setShowAddLinkForm(false);
-                        setLinkForm({ title: '', url: '', icon: '' });
+                        setLinkForm({ title: '', url: '', icon: '', banner: '' });
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+              </div>
+        )}
+
+            {/* Edit Link Form */}
+            {showEditLinkForm && (
+              <div className="link-form-card">
+                <h3>Edit Link</h3>
+                
+                <form onSubmit={handleUpdateLink}>
+            <div className="form-group">
+              <label>Label</label>
+              <input
+                type="text"
+                      value={linkForm.title}
+                      onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
+                      placeholder="Instagram"
+                required
+                      maxLength={50}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>URL</label>
+              <input
+                type="url"
+                      value={linkForm.url}
+                      onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+                      placeholder="https://instagram.com/..."
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Icon (Emoji)</label>
+              <input
+                type="text"
+                      value={linkForm.icon}
+                      onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
+                placeholder="📸"
+                maxLength={2}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Banner URL (Optional)</label>
+              <input
+                type="url"
+                      value={linkForm.banner}
+                      onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
+                      placeholder="https://example.com/banner.jpg"
+              />
+            </div>
+
+            <div className="form-actions">
+                    <button 
+                      type="submit" 
+                      className="submit-btn"
+                      disabled={processing}
+                    >
+                      {processing ? '⏳ Updating...' : 'Update Link'}
+              </button>
+              <button 
+                type="button" 
+                className="cancel-btn"
+                onClick={() => {
+                        setShowEditLinkForm(false);
+                        setLinkForm({ title: '', url: '', icon: '', banner: '' });
+                        setEditingLinkId(null);
                 }}
               >
                 Cancel
@@ -511,17 +806,44 @@ export function AdminPage() {
                         <div className="link-card-left">
                           {link.icon && <span className="link-card-icon">{link.icon}</span>}
                           <div className="link-card-content">
-                    <h4>{link.title}</h4>
-                    <p>{link.url}</p>
-                  </div>
-                </div>
+                            <h4>{link.title}</h4>
+                            <p>{link.url}</p>
+                          </div>
+                        </div>
                         <div className="link-card-right">
-                          <span className="status-badge">
-                            {link.is_active ? '✓' : '✕'}
-                          </span>
-                </div>
-              </div>
-            ))
+                          <button
+                            className="link-action-btn edit-btn"
+                            onClick={() => handleEditLink(link)}
+                            title="Edit Link"
+                            disabled={processing}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M18.5 2.5C18.8978 2.1022 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.1022 21.5 2.5C21.8978 2.8978 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.1022 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                          <button
+                            className={`link-action-btn toggle-btn ${link.is_active ? 'active' : ''}`}
+                            onClick={() => handleToggleLink(link.id, link.is_active)}
+                            title={link.is_active ? 'Deactivate' : 'Activate'}
+                            disabled={processing}
+                          >
+                            {link.is_active ? '👁️' : '👁️‍🗨️'}
+                          </button>
+                          <button
+                            className="link-action-btn delete-btn"
+                            onClick={() => handleDeleteLink(link.id)}
+                            title="Delete Link"
+                            disabled={processing}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    ))
           )}
                 </div>
               </>
@@ -568,7 +890,22 @@ export function AdminPage() {
             <div className="phone-screen">
               {profile || showCreateForm ? (
                 <>
-                  <div className="preview-avatar">
+                  {(showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url) ? (
+                    <img 
+                      src={showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url}
+                      alt="Profile"
+                      className="preview-avatar preview-avatar-image"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                        if (placeholder) placeholder.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="preview-avatar"
+                    style={{ display: (showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url) ? 'none' : 'flex' }}
+                  >
                     {(showEditProfileForm && profileForm.username 
                       ? profileForm.username 
                       : profile?.username || profileForm.username || 'V'

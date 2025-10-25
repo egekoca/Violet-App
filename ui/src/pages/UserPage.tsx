@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { getUserProfiles, getProfileByUsername } from '../lib/blockchain';
+import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import './UserPage.css';
@@ -13,6 +13,9 @@ export function UserPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [showNFTModal, setShowNFTModal] = useState(false);
+  const [nfts, setNfts] = useState<NFT[]>([]);
+  const [loadingNFTs, setLoadingNFTs] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -64,6 +67,23 @@ export function UserPage() {
 
   const handleLinkClick = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShowNFTs = async () => {
+    if (!profile) return;
+    
+    setShowNFTModal(true);
+    setLoadingNFTs(true);
+    
+    try {
+      const userNFTs = await getUserNFTs(profile.owner);
+      setNfts(userNFTs);
+    } catch (error) {
+      console.error('Error loading NFTs:', error);
+      alert('Failed to load NFTs');
+    } finally {
+      setLoadingNFTs(false);
+    }
   };
 
   if (loading) {
@@ -183,13 +203,97 @@ export function UserPage() {
 
         {/* Profile Section */}
         <div className="profile-section">
-          <div className="avatar-placeholder">
+          {profile.image_url ? (
+            <img 
+              src={profile.image_url} 
+              alt={profile.display_name}
+              className="avatar-image"
+              onError={(e) => {
+                // Resim yüklenemezse placeholder göster
+                e.currentTarget.style.display = 'none';
+                const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
+                if (placeholder) placeholder.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div 
+            className="avatar-placeholder"
+            style={{ display: profile.image_url ? 'none' : 'flex' }}
+          >
             {profile.username.charAt(0).toUpperCase()}
           </div>
           <h1 className="display-name">{profile.display_name}</h1>
           <p className="bio">{profile.bio}</p>
           <p className="username-label">@{profile.username}</p>
+          
+          {/* NFT Gallery Button */}
+          <button 
+            className="nft-gallery-btn"
+            onClick={handleShowNFTs}
+            title="View NFT Collection"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>NFT Collection</span>
+          </button>
         </div>
+
+        {/* NFT Gallery Modal */}
+        {showNFTModal && (
+          <div className="nft-modal-overlay" onClick={() => setShowNFTModal(false)}>
+            <div className="nft-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="nft-modal-header">
+                <h2>🖼️ NFT Collection</h2>
+                <button 
+                  className="nft-modal-close"
+                  onClick={() => setShowNFTModal(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="nft-modal-body">
+                {loadingNFTs ? (
+                  <div className="nft-loading">
+                    <div className="spinner"></div>
+                    <p>Loading NFTs...</p>
+                  </div>
+                ) : nfts.length === 0 ? (
+                  <div className="nft-empty">
+                    <p>No NFTs found in this wallet</p>
+                  </div>
+                ) : (
+                  <div className="nft-grid">
+                    {nfts.map((nft) => (
+                      <div key={nft.id} className="nft-card">
+                        <div className="nft-image-container">
+                          <img 
+                            src={nft.image_url} 
+                            alt={nft.name}
+                            onError={(e) => {
+                              e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23333" width="200" height="200"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="16" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+                            }}
+                          />
+                        </div>
+                        <div className="nft-info">
+                          <h4>{nft.name}</h4>
+                          {nft.collection && <p className="nft-collection">{nft.collection}</p>}
+                          {nft.description && (
+                            <p className="nft-description">{nft.description.slice(0, 100)}{nft.description.length > 100 ? '...' : ''}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Links Section */}
         <div className="links-section">

@@ -22,6 +22,7 @@ export function ProfileEditPage() {
     username: '',
     display_name: '',
     bio: '',
+    image_url: '',
   });
 
   useEffect(() => {

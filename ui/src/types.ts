@@ -4,10 +4,13 @@
  */
 
 export interface Link {
+  id: number;
   title: string;
   url: string;
   icon: string;
+  banner: string;
   is_active: boolean;
+  order: number;
 }
 
 export interface UserProfile {
@@ -16,13 +19,9 @@ export interface UserProfile {
   username: string;
   display_name: string;
   bio: string;
-  links: Link[];
-}
-
-// UI için ekstra tipler (geçici uyumluluk)
-export interface LinkWithId extends Link {
-  id?: string;
-  isActive?: boolean;
-  order?: number;
+  image_url: string;
+  link_ids: number[];
+  link_count: number;
+  links: Link[];        // Frontend'de dynamic fields'dan yüklenir
 }
 
