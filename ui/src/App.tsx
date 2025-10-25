@@ -29,7 +29,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/profile" element={<ProfileEditPage />} />
-              <Route path="/my-profile" element={<UserPage />} />
+              <Route path="/@:username" element={<UserPage />} />
               <Route path="/admin" element={<AdminPage />} />
             </Routes>
           </BrowserRouter>

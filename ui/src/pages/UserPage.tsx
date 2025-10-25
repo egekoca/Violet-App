@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { getUserProfiles } from '../lib/blockchain';
 import { UserProfile } from '../types';
@@ -8,6 +8,7 @@ import './UserPage.css';
 
 export function UserPage() {
   const navigate = useNavigate();
+  const { username } = useParams<{ username: string }>();
   const account = useCurrentAccount();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +16,7 @@ export function UserPage() {
 
   useEffect(() => {
     loadData();
-  }, [account]);
+  }, [account, username]);
 
   const loadData = async () => {
     try {
@@ -24,7 +25,7 @@ export function UserPage() {
 
       // Eğer cüzdan bağlı değilse
       if (!account) {
-        setError('Lütfen cüzdanınızı bağlayın');
+        setError('Please connect your wallet to view profiles');
         setProfile(null);
         return;
       }
@@ -34,15 +35,26 @@ export function UserPage() {
       
       if (profiles.length === 0) {
         // Profil yoksa hata mesajı göster (otomatik yönlendirme yok)
-        setError('Henüz profilin yok. Hemen oluştur!');
+        setError('No profile found. Create one now!');
         setProfile(null);
       } else {
-        // İlk profili göster (çoklu profil desteği ileride eklenebilir)
-        setProfile(profiles[0]);
+        // Eğer URL'de username varsa, o username'e sahip profili bul
+        if (username) {
+          const matchedProfile = profiles.find(p => p.username === username);
+          if (matchedProfile) {
+            setProfile(matchedProfile);
+          } else {
+            setError(`Profile @${username} not found or doesn't belong to you`);
+            setProfile(null);
+          }
+        } else {
+          // URL'de username yoksa, ilk profili göster
+          setProfile(profiles[0]);
+        }
       }
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error);
-      setError('Profil yüklenirken bir hata oluştu');
+      console.error('Error loading profile:', error);
+      setError('An error occurred while loading the profile');
     } finally {
       setLoading(false);
     }

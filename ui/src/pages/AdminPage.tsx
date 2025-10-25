@@ -244,10 +244,18 @@ export function AdminPage() {
             <span className="nav-icon">⚙️</span>
             <span>Settings</span>
           </button>
-          <a className="nav-item" href='/my-profile' rel='noopener noreferrer'>
+          <button 
+            className="nav-item" 
+            onClick={() => {
+              if (profile?.username) {
+                window.open(`/@${profile.username}`, '_blank');
+              }
+            }}
+            disabled={!profile?.username}
+          >
             <span className="nav-icon">👤</span>
-            <span>Profile</span>
-          </a>
+            <span>View Profile</span>
+          </button>
           <button className="nav-item" onClick={() => navigate('/')}>
             <span className="nav-icon">🏠</span>
             <span>Main Page</span>
@@ -506,6 +514,34 @@ export function AdminPage() {
 
       {/* Preview Panel */}
       <aside className="admin-preview">
+        {/* Public URL Display */}
+        {(profile || showCreateForm) && (
+          <div className="preview-url-section">
+            <label className="preview-url-label">Your Violet URL</label>
+            <div className="preview-url-box">
+              <a 
+                href={`https://violet-app.trwal.app/@${profile?.username || profileForm.username || 'username'}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="preview-url-link"
+              >
+                violet-app.trwal.app/@{profile?.username || profileForm.username || 'username'}
+              </a>
+              <button
+                className="copy-url-btn"
+                onClick={() => {
+                  const url = `https://violet-app.trwal.app/@${profile?.username || profileForm.username || 'username'}`;
+                  navigator.clipboard.writeText(url);
+                  alert('✅ Link copied to clipboard!');
+                }}
+                title="Copy link"
+              >
+                📋
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="preview-phone">
           <div className="phone-frame">
             <div className="phone-screen">
