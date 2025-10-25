@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { getUserProfiles } from '../lib/blockchain';
+import { getUserProfiles, getProfileByUsername } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import './UserPage.css';
@@ -23,9 +23,23 @@ export function UserPage() {
       setLoading(true);
       setError('');
 
-      // Eğer cüzdan bağlı değilse
+      // Eğer URL'de username varsa PUBLIC profil görüntüleme
+      if (username) {
+        console.log('🌐 Public profile mode - Aranan username:', username);
+        const publicProfile = await getProfileByUsername(username);
+        
+        if (publicProfile) {
+          setProfile(publicProfile);
+        } else {
+          setError(`Profile @${username} not found`);
+          setProfile(null);
+        }
+        return;
+      }
+
+      // Username yoksa PRIVATE profil görüntüleme (kendi profilim)
       if (!account) {
-        setError('Please connect your wallet to view profiles');
+        setError('Please connect your wallet to view your profile');
         setProfile(null);
         return;
       }
@@ -34,23 +48,11 @@ export function UserPage() {
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length === 0) {
-        // Profil yoksa hata mesajı göster (otomatik yönlendirme yok)
         setError('No profile found. Create one now!');
         setProfile(null);
       } else {
-        // Eğer URL'de username varsa, o username'e sahip profili bul
-        if (username) {
-          const matchedProfile = profiles.find(p => p.username === username);
-          if (matchedProfile) {
-            setProfile(matchedProfile);
-          } else {
-            setError(`Profile @${username} not found or doesn't belong to you`);
-            setProfile(null);
-          }
-        } else {
-          // URL'de username yoksa, ilk profili göster
-          setProfile(profiles[0]);
-        }
+        // İlk profili göster
+        setProfile(profiles[0]);
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -72,7 +74,8 @@ export function UserPage() {
     );
   }
 
-  if (!account) {
+  // Eğer username varsa (public profil), cüzdan gerekmez
+  if (!account && !username) {
     return (
       <div className="user-page error">
         <div className="container">
@@ -164,14 +167,19 @@ export function UserPage() {
           <WalletConnect />
         </div>
 
-        {/* Admin Button */}
-        <button 
-          className="admin-btn"
-          onClick={() => navigate('/admin')}
-          title="Admin Paneli"
-        >
-          ⚙️
-        </button>
+        {/* Admin Button - Sadece kendi profilinde göster */}
+        {!username && account && profile && profile.owner === account.address && (
+          <button 
+            className="admin-btn"
+            onClick={() => navigate('/admin')}
+            title="Admin Panel"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+              <path d="M12 3V5M12 19V21M3 12H5M19 12H21M6.34315 6.34315L7.75736 7.75736M16.2426 16.2426L17.6569 17.6569M6.34315 17.6569L7.75736 16.2426M16.2426 7.75736L17.6569 6.34315" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </button>
+        )}
 
         {/* Profile Section */}
         <div className="profile-section">

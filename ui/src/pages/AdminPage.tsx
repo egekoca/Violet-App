@@ -257,7 +257,7 @@ export function AdminPage() {
             className="nav-item" 
             onClick={() => {
               if (profile?.username) {
-                window.open(`/@${profile.username}`, '_blank');
+                window.open(`/${profile.username}`, '_blank');
               }
             }}
             disabled={!profile?.username}
@@ -538,17 +538,17 @@ export function AdminPage() {
             <label className="preview-url-label">Your Violet URL</label>
             <div className="preview-url-box">
               <a 
-                href={`https://violet-app.trwal.app/@${profile?.username || profileForm.username || 'username'}`}
+                href={`https://violet-app.trwal.app/${profile?.username || profileForm.username || 'username'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="preview-url-link"
               >
-                violet-app.trwal.app/@{profile?.username || profileForm.username || 'username'}
+                violet-app.trwal.app/{profile?.username || profileForm.username || 'username'}
               </a>
               <button
                 className="copy-url-btn"
                 onClick={() => {
-                  const url = `https://violet-app.trwal.app/@${profile?.username || profileForm.username || 'username'}`;
+                  const url = `https://violet-app.trwal.app/${profile?.username || profileForm.username || 'username'}`;
                   navigator.clipboard.writeText(url);
                   alert('✅ Link copied to clipboard!');
                 }}
@@ -593,10 +593,16 @@ export function AdminPage() {
                   <div className="preview-links">
                     {profile && profile.links.length > 0 ? (
                       profile.links.slice(0, 3).map((link, index) => (
-                        <div key={index} className="preview-link">
+                        <a 
+                          key={index} 
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="preview-link"
+                        >
                           {link.icon && <span>{link.icon}</span>}
                           <span>{link.title}</span>
-                        </div>
+                        </a>
                       ))
                     ) : (
                       <p className="preview-empty">No link has been added yet</p>

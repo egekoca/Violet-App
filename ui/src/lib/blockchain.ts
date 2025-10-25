@@ -229,3 +229,50 @@ export async function getUserProfiles(ownerAddress: string) {
   }
 }
 
+/**
+ * Username'e göre profil ara (EVENT-BASED ÇÖZÜM)
+ * NOT: ProfileCreated event'lerini kullanarak profil arıyor
+ * Production için Move contract'a Username Registry eklenmeli (Dynamic Fields ile)
+ */
+export async function getProfileByUsername(username: string) {
+  try {
+    console.log('🔍 Username arıyor:', username);
+    
+    // ProfileCreated event'lerini query et
+    const events = await suiClient.queryEvents({
+      query: {
+        MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ProfileCreated`,
+      },
+      limit: 50, // Son 50 profili kontrol et
+    });
+
+    console.log('📦 Bulunan ProfileCreated event sayısı:', events.data.length);
+
+    // Username eşleşmesi ara
+    for (const event of events.data) {
+      const eventData = event.parsedJson as any;
+      
+      if (eventData && eventData.username === username) {
+        console.log('✅ Event bulundu!', eventData);
+        
+        // Profile ID'yi event'ten al
+        const profileId = eventData.profile_id;
+        
+        // Profil detaylarını çek
+        const profile = await getUserProfile(profileId);
+        
+        if (profile) {
+          console.log('✅ Profil detayları getirildi:', profile);
+          return profile;
+        }
+      }
+    }
+
+    console.log('❌ Profil bulunamadı:', username);
+    return null;
+  } catch (error) {
+    console.error('❌ Error searching profile by username:', error);
+    return null;
+  }
+}
+
