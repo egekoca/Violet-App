@@ -43,9 +43,17 @@ export function AdminPage() {
 
     try {
       setLoading(true);
+      console.log('🔄 loadData başladı, account:', account.address);
+      
       const profiles = await getUserProfiles(account.address);
+      console.log('📥 getUserProfiles sonucu:', profiles);
       
       if (profiles.length > 0) {
+        console.log('✅ Profil bulundu:', profiles[0]);
+        console.log('🔗 Profile linkler:', profiles[0].links);
+        console.log('🔗 Links array mi?', Array.isArray(profiles[0].links));
+        console.log('🔗 Links length:', profiles[0].links?.length);
+        
         setProfile(profiles[0]);
         setShowCreateForm(false);
         // Profil formunu mevcut verilerle doldur
@@ -55,11 +63,12 @@ export function AdminPage() {
           bio: profiles[0].bio,
         });
       } else {
+        console.log('❌ Profil bulunamadı');
         setProfile(null);
         setShowCreateForm(true);
       }
     } catch (error) {
-      console.error('Veri yüklenirken hata:', error);
+      console.error('❌ Veri yüklenirken hata:', error);
     } finally {
       setLoading(false);
     }
@@ -402,64 +411,64 @@ export function AdminPage() {
                 <h3>Yeni Link Ekle</h3>
                 
                 <form onSubmit={handleAddLink}>
-                  <div className="form-group">
-                    <label>Başlık</label>
-                    <input
-                      type="text"
+            <div className="form-group">
+              <label>Başlık</label>
+              <input
+                type="text"
                       value={linkForm.title}
                       onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
                       placeholder="Instagram"
-                      required
+                required
                       maxLength={50}
-                    />
-                  </div>
+              />
+            </div>
 
-                  <div className="form-group">
-                    <label>URL</label>
-                    <input
-                      type="url"
+            <div className="form-group">
+              <label>URL</label>
+              <input
+                type="url"
                       value={linkForm.url}
                       onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
                       placeholder="https://instagram.com/..."
-                      required
-                    />
-                  </div>
+                required
+              />
+            </div>
 
-                  <div className="form-group">
-                    <label>İkon (Emoji)</label>
-                    <input
-                      type="text"
+            <div className="form-group">
+              <label>İkon (Emoji)</label>
+              <input
+                type="text"
                       value={linkForm.icon}
                       onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
-                      placeholder="📸"
-                      maxLength={2}
-                    />
-                  </div>
+                placeholder="📸"
+                maxLength={2}
+              />
+            </div>
 
-                  <div className="form-actions">
+            <div className="form-actions">
                     <button 
                       type="submit" 
                       className="submit-btn"
                       disabled={processing}
                     >
                       {processing ? '⏳ Ekleniyor...' : 'Ekle'}
-                    </button>
-                    <button 
-                      type="button" 
-                      className="cancel-btn"
-                      onClick={() => {
+              </button>
+              <button 
+                type="button" 
+                className="cancel-btn"
+                onClick={() => {
                         setShowAddLinkForm(false);
                         setLinkForm({ title: '', url: '', icon: '' });
-                      }}
-                    >
-                      İptal
-                    </button>
-                  </div>
-                </form>
+                }}
+              >
+                İptal
+              </button>
+            </div>
+          </form>
               </div>
-            )}
+        )}
 
-                {/* Links List */}
+        {/* Links List */}
                 <div className="links-section">
                   {profile.links.length === 0 ? (
                     <div className="empty-state">
@@ -476,18 +485,18 @@ export function AdminPage() {
                         <div className="link-card-left">
                           {link.icon && <span className="link-card-icon">{link.icon}</span>}
                           <div className="link-card-content">
-                            <h4>{link.title}</h4>
-                            <p>{link.url}</p>
-                          </div>
-                        </div>
+                    <h4>{link.title}</h4>
+                    <p>{link.url}</p>
+                  </div>
+                </div>
                         <div className="link-card-right">
                           <span className="status-badge">
                             {link.is_active ? '✓' : '✕'}
                           </span>
-                        </div>
-                      </div>
-                    ))
-                  )}
+                </div>
+              </div>
+            ))
+          )}
                 </div>
               </>
             )}
@@ -543,8 +552,8 @@ export function AdminPage() {
                 </div>
               )}
             </div>
-          </div>
         </div>
+      </div>
       </aside>
     </div>
   );

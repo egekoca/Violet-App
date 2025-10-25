@@ -13,8 +13,8 @@ export type { Transaction };
 export const NETWORK = 'testnet';
 export const RPC_URL = 'https://fullnode.testnet.sui.io:443';
 
-// Contract bilgileri
-export const PACKAGE_ID = '0x9969f9126a31085599b3f7f147b6361d82559a1de1b8709be00377fdea4f050c';
+// Contract bilgileri (contract-info.json'dan)
+export const PACKAGE_ID = '0xbb9923232a284133d157847d81dcc40c342d340682dba5d312e113a9bdda24a8';
 export const MODULE_NAME = 'linktree';
 
 // Sui Client
@@ -117,13 +117,28 @@ export async function getUserProfile(profileId: string) {
       ? object.data.owner.AddressOwner
       : '';
 
+    // Links'i düzelt: {type, fields} formatından {title, url, icon, is_active} formatına
+    const links = Array.isArray(fields.links) 
+      ? fields.links.map((link: any) => {
+          if (link.fields) {
+            return {
+              title: link.fields.title,
+              url: link.fields.url,
+              icon: link.fields.icon,
+              is_active: link.fields.is_active,
+            };
+          }
+          return link;
+        })
+      : [];
+
     return {
       id: profileId,
       owner,
       username: fields.username,
       display_name: fields.display_name,
       bio: fields.bio,
-      links: fields.links || [],
+      links: links,
     };
   } catch (error) {
     console.error('Error fetching profile:', error);
@@ -136,6 +151,12 @@ export async function getUserProfile(profileId: string) {
  */
 export async function getUserProfiles(ownerAddress: string) {
   try {
+    console.log('📡 getUserProfiles çağrıldı:', {
+      ownerAddress,
+      packageId: PACKAGE_ID,
+      structType: `${PACKAGE_ID}::${MODULE_NAME}::UserProfile`
+    });
+
     const objects = await suiClient.getOwnedObjects({
       owner: ownerAddress,
       filter: {
@@ -143,28 +164,67 @@ export async function getUserProfiles(ownerAddress: string) {
       },
       options: {
         showContent: true,
+        showOwner: true,
+        showType: true,
       },
+    });
+
+    console.log('📦 Bulunan objeler:', {
+      count: objects.data.length,
+      objects: objects.data
     });
 
     const profiles = [];
 
     for (const obj of objects.data) {
+      console.log('🔍 Obje inceleniyor:', {
+        objectId: obj.data?.objectId,
+        dataType: obj.data?.content?.dataType,
+        fields: obj.data?.content
+      });
+
       if (obj.data?.content?.dataType === 'moveObject') {
         const fields = obj.data.content.fields as any;
+        
+        console.log('📋 Profil fields:', fields);
+        console.log('🔗 Links (raw):', fields.links);
+        
+        // Links'i düzelt: {type, fields} formatından {title, url, icon, is_active} formatına
+        const links = Array.isArray(fields.links) 
+          ? fields.links.map((link: any) => {
+              // Eğer link.fields varsa (blockchain formatı), onları çıkar
+              if (link.fields) {
+                return {
+                  title: link.fields.title,
+                  url: link.fields.url,
+                  icon: link.fields.icon,
+                  is_active: link.fields.is_active,
+                };
+              }
+              // Eğer direkt obje ise (zaten doğru format), olduğu gibi döndür
+              return link;
+            })
+          : [];
+
+        console.log('🔗 Links (parsed):', links);
+        
         profiles.push({
           id: obj.data.objectId,
           owner: ownerAddress,
           username: fields.username,
           display_name: fields.display_name,
           bio: fields.bio,
-          links: fields.links || [],
+          links: links,
         });
       }
     }
 
+    console.log('✅ Toplam profil sayısı:', profiles.length);
+    console.log('📊 Profiller:', profiles);
+
     return profiles;
   } catch (error) {
-    console.error('Error fetching user profiles:', error);
+    console.error('❌ Error fetching user profiles:', error);
     return [];
   }
 }
