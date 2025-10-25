@@ -14,6 +14,7 @@ export function WalletConnect() {
 
   const copyToClipboard = async () => {
     try {
+      if (!account) return;
       await navigator.clipboard.writeText(account.address);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500); // reset after animation

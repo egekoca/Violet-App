@@ -1,0 +1,16 @@
+{
+    "network": "testnet",
+    "packageId": "0xbb9923232a284133d157847d81dcc40c342d340682dba5d312e113a9bdda24a8",
+    "moduleName": "violet",
+    "deployedAt": "2025-10-25",
+    "functions": {
+      "create_profile": "create_profile",
+      "add_link": "add_link",
+      "update_profile": "update_profile"
+    },
+    "structs": {
+      "UserProfile": "UserProfile",
+      "Link": "Link"
+    }
+  }
+

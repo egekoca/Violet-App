@@ -1,0 +1,113 @@
+.wallet-connect {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.wallet-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.wallet-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.wallet-address {
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.copy-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.copy-btn:hover {
+  border-color: #888;
+  transform: scale(1.05);
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.icon.success {
+  color: #22c55e;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.copy-btn.copied .icon.default {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.copy-btn.copied .icon.success {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Connect button styling override */
+:global(button[data-dapp-kit-connect-button]) {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4) !important;
+  width: 100% !important;
+}
+
+:global(button[data-dapp-kit-connect-button]:hover) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6), 0 0 20px rgba(0, 217, 255, 0.4) !important;
+}
+
+/* Wallet account button (when connected) */
+:global(.dapp-kit-button) {
+  width: 100% !important;
+}
+
+:global(.dapp-kit-button button) {
+  width: 100% !important;
+  background: rgba(0, 217, 255, 0.15) !important;
+  border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  color: white !important;
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+:global(.dapp-kit-button button:hover) {
+  background: rgba(0, 217, 255, 0.25) !important;
+  border-color: rgba(0, 217, 255, 0.5) !important;
+  box-shadow: 0 4px 15px rgba(0, 217, 255, 0.3) !important;
+}
+
