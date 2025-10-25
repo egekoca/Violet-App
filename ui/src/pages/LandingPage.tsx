@@ -17,7 +17,6 @@ export function LandingPage() {
       <header className="landing-header">
         <div className="header-content">
           <div className="logo">
-            <span className="logo-icon">🔗</span>
             <span className="logo-text">VIOLET</span>
           </div>
           
@@ -32,7 +31,7 @@ export function LandingPage() {
               className="signup-btn"
               onClick={() => navigate('/login')}
             >
-              Start For Free
+              Start for Free
             </button>
           </div>
         </div>
@@ -51,7 +50,7 @@ export function LandingPage() {
               <span className="gradient-text">for all your links</span>
             </h1>
             <p className="hero-subtitle">
-              Web3's first decentralized LinkTree. Your profile is secure on the Blockchain, no company can delete or modify it.
+              Web3's first decentralized LinkTree. Your profile is secure on the blockchain, no company can delete or modify it.
             </p>
             <div className="hero-buttons">
               <button 
@@ -120,7 +119,7 @@ export function LandingPage() {
           <div className="feature-card">
             <div className="feature-icon">💰</div>
             <h3>Low Cost</h3>
-            <p>Low prices. Super cheap!</p>
+            <p>Low, affordable prices. Super cheap!</p>
           </div>
 
           <div className="feature-card">

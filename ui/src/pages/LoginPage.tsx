@@ -27,7 +27,6 @@ export function LoginPage() {
         <div className="login-container">
           {/* Logo */}
           <div className="login-logo" onClick={() => navigate('/')}>
-            <span className="logo-icon">🔗</span>
             <span className="logo-text">VIOLET</span>
           </div>
 
@@ -48,7 +47,7 @@ export function LoginPage() {
               <div className="info-icon">🔐</div>
               <div className="info-content">
                 <h3>Secure Login</h3>
-                <p>Log in securely with Sui Wallet</p>
+                <p>Log in securely with your Sui Wallet</p>
               </div>
             </div>
 
@@ -56,7 +55,7 @@ export function LoginPage() {
               <div className="info-icon">⚡</div>
               <div className="info-content">
                 <h3>Fast Access</h3>
-                <p>Reach to your profile within a single click</p>
+                <p>Access to your profile with a single click</p>
               </div>
             </div>
           </div>
@@ -110,7 +109,7 @@ export function LoginPage() {
 
           {/* Main Message */}
           <div className="visual-content">
-            <h2>Safe With Blockchain</h2>
+            <h2>Safe & Secure with Blockchain</h2>
             <p>Your profile is forever yours</p>
             <div className="visual-badge">
               <span className="badge-icon">⚡</span>
