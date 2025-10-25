@@ -1,6 +1,6 @@
 /**
- * Blockchain uyumlu type'lar
- * Frontend SDK ile uyumlu
+ * Blockchain compatible types
+ * Compatible with the Frontend SDK
  */
 
 export interface Link {
@@ -19,7 +19,7 @@ export interface UserProfile {
   links: Link[];
 }
 
-// UI için ekstra tipler (geçici uyumluluk)
+// Extra types for UI (temporary compatibility)
 export interface LinkWithId extends Link {
   id?: string;
   isActive?: boolean;

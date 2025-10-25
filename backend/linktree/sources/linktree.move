@@ -8,29 +8,29 @@ module linktree::linktree {
 
     // ============ Events ============
 
-    /// Profil oluşturulduğunda emit edilir
+    /// Emitted when a profile has been created
     public struct ProfileCreated has copy, drop {
         profile_id: address,
         owner: address,
         username: String,
     }
 
-    /// Link eklendiğinde emit edilir
+    /// Emitted when a link has been added
     public struct LinkAdded has copy, drop {
         profile_id: address,
         title: String,
         url: String,
     }
 
-    /// Profil güncellendiğinde emit edilir
+    /// Emitted when a profile has been updated
     public struct ProfileUpdated has copy, drop {
         profile_id: address,
         display_name: String,
     }
 
-    // ============ Struct'lar ============
+    // ============ Structs ============
 
-    /// Tek bir link bilgisi
+    /// Singular link data
     public struct Link has store, copy, drop {
         title: String,      // "Instagram"
         url: String,        // "https://instagram.com/..."
@@ -38,7 +38,7 @@ module linktree::linktree {
         is_active: bool,    // true/false
     }
 
-    /// Kullanıcı profili - blockchain üzerinde bir nesne
+    /// User profile - an object stored on the blockchain
     public struct UserProfile has key, store {
         id: UID,
         owner: address,         // Profil sahibi
@@ -48,9 +48,9 @@ module linktree::linktree {
         links: vector<Link>,   // Link listesi
     }
 
-    // ============ Fonksiyonlar ============
+    // ============ Functions ============
 
-    /// Yeni bir profil oluştur
+    /// Create a new profile
     public entry fun create_profile(
         username: String,
         display_name: String,
@@ -70,18 +70,18 @@ module linktree::linktree {
             links: vector::empty<Link>(),
         };
 
-        // Event emit et
+        // Emit an event
         event::emit(ProfileCreated {
             profile_id: profile_addr,
             owner: sender,
             username: username,
         });
 
-        // Profili kullanıcıya transfer et (owned object)
+        // Transfer the ownership of the profile to the user (owned object)
         transfer::transfer(profile, sender);
     }
 
-    /// Profile yeni bir link ekle
+    /// Add a new link to a profile
     public entry fun add_link(
         profile: &mut UserProfile,
         title: String,
@@ -89,7 +89,7 @@ module linktree::linktree {
         icon: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner ekleyebilir
+        // Only an owner can add a link
         assert!(profile.owner == tx_context::sender(ctx), 0);
 
         let link = Link {
@@ -101,7 +101,7 @@ module linktree::linktree {
 
         vector::push_back(&mut profile.links, link);
 
-        // Event emit et
+        // Emit an event
         event::emit(LinkAdded {
             profile_id: object::uid_to_address(&profile.id),
             title: title,
@@ -109,39 +109,39 @@ module linktree::linktree {
         });
     }
 
-    /// Profil bilgilerini güncelle
+    /// Update profile data
     public entry fun update_profile(
         profile: &mut UserProfile,
         display_name: String,
         bio: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner güncelleyebilir
+        // Only owner
         assert!(profile.owner == tx_context::sender(ctx), 0);
 
         profile.display_name = display_name;
         profile.bio = bio;
 
-        // Event emit et
+        // Emit event
         event::emit(ProfileUpdated {
             profile_id: object::uid_to_address(&profile.id),
             display_name: display_name,
         });
     }
 
-    // ============ View Functions (Getter'lar) ============
+    // ============ View Functions (Getters) ============
 
-    /// Profilin linklerini döndür
+    /// Return profile links
     public fun get_links(profile: &UserProfile): &vector<Link> {
         &profile.links
     }
 
-    /// Profilin sahibini döndür
+    /// Return the owner of a profile
     public fun get_owner(profile: &UserProfile): address {
         profile.owner
     }
 
-    /// Link sayısını döndür
+    /// Return the link count
     public fun get_link_count(profile: &UserProfile): u64 {
         vector::length(&profile.links)
     }
