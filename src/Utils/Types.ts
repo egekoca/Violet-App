@@ -14,7 +14,7 @@ export interface Link {
     links: Link[];
   }
 
-  // UI için ekstra tipler (geçici uyumluluk)
+  // Extra types for UI (temporary compatibility)
   export interface LinkWithId extends Link {
     id?: string;
     isActive?: boolean;

@@ -1,5 +1,5 @@
 /**
- * Blockchain İşlemleri
+ * Blockchain Functions
  * Frontend SDK wrapper
  */
 
@@ -13,7 +13,7 @@ export type { Transaction };
 // Sui Client
 export const suiClient = new SuiClient({ url: RPC_URL });
 
-// Type'lar
+// Types
 export interface CreateProfileInput {
   username: string;
   display_name: string;
@@ -34,7 +34,7 @@ export interface UpdateProfileInput {
 }
 
 /**
- * Profil oluşturma transaction'ı
+ * Profile creation transaction
  */
 export function createProfileTransaction(input: CreateProfileInput): Transaction {
   const tx = new Transaction();
@@ -52,7 +52,7 @@ export function createProfileTransaction(input: CreateProfileInput): Transaction
 }
 
 /**
- * Link ekleme transaction'ı
+ * Add link transaction
  */
 export function addLinkTransaction(input: AddLinkInput): Transaction {
   const tx = new Transaction();
@@ -71,7 +71,7 @@ export function addLinkTransaction(input: AddLinkInput): Transaction {
 }
 
 /**
- * Profil güncelleme transaction'ı
+ * Update profile transaction
  */
 export function updateProfileTransaction(input: UpdateProfileInput): Transaction {
   const tx = new Transaction();
@@ -89,7 +89,7 @@ export function updateProfileTransaction(input: UpdateProfileInput): Transaction
 }
 
 /**
- * Profil bilgilerini getir
+ * Get user profile data
  */
 export async function getUserProfile(profileId: string) {
   try {
@@ -110,7 +110,7 @@ export async function getUserProfile(profileId: string) {
       ? object.data.owner.AddressOwner
       : '';
 
-    // Links'i düzelt: {type, fields} formatından {title, url, icon, is_active} formatına
+    // Fix Links: From the {type, fields} format to {title, url, icon, is_active} format
     const links = Array.isArray(fields.links)
       ? fields.links.map((link: any) => {
           if (link.fields) {
@@ -140,11 +140,11 @@ export async function getUserProfile(profileId: string) {
 }
 
 /**
- * Kullanıcının tüm profillerini getir
+ * Get all profiles belonging to an user
  */
 export async function getUserProfiles(ownerAddress: string) {
   try {
-    console.log('📡 getUserProfiles çağrıldı:', {
+    console.log('Called getUserProfiles:', {
       ownerAddress,
       packageId: TESTNET_PACKAGE_ID,
       structType: `${TESTNET_PACKAGE_ID}::${MODULE_NAME}::UserProfile`
@@ -162,7 +162,7 @@ export async function getUserProfiles(ownerAddress: string) {
       },
     });
 
-    console.log('📦 Bulunan objeler:', {
+    console.log('Found objects:', {
       count: objects.data.length,
       objects: objects.data
     });
@@ -170,7 +170,7 @@ export async function getUserProfiles(ownerAddress: string) {
     const profiles = [];
 
     for (const obj of objects.data) {
-      console.log('🔍 Obje inceleniyor:', {
+      console.log('Inspecting the object: ', {
         objectId: obj.data?.objectId,
         dataType: obj.data?.content?.dataType,
         fields: obj.data?.content
@@ -179,13 +179,13 @@ export async function getUserProfiles(ownerAddress: string) {
       if (obj.data?.content?.dataType === 'moveObject') {
         const fields = obj.data.content.fields as any;
 
-        console.log('📋 Profil fields:', fields);
-        console.log('🔗 Links (raw):', fields.links);
+        console.log('Profile fields:', fields);
+        console.log('Links (raw):', fields.links);
 
-        // Links'i düzelt: {type, fields} formatından {title, url, icon, is_active} formatına
+        // Fix Links: From the {type, fields} format to the {title, url, icon, is_active} format
         const links = Array.isArray(fields.links)
           ? fields.links.map((link: any) => {
-              // Eğer link.fields varsa (blockchain formatı), onları çıkar
+              // If link.fields exists (blockchain format), return according to that
               if (link.fields) {
                 return {
                   title: link.fields.title,
@@ -194,7 +194,7 @@ export async function getUserProfiles(ownerAddress: string) {
                   is_active: link.fields.is_active,
                 };
               }
-              // Eğer direkt obje ise (zaten doğru format), olduğu gibi döndür
+              // If it's an object (which is the correct format), return it as it is
               return link;
             })
           : [];
@@ -212,60 +212,59 @@ export async function getUserProfiles(ownerAddress: string) {
       }
     }
 
-    console.log('✅ Toplam profil sayısı:', profiles.length);
-    console.log('📊 Profiller:', profiles);
+    console.log('Total profile count:', profiles.length);
+    console.log('Profiles:', profiles);
 
     return profiles;
   } catch (error) {
-    console.error('❌ Error fetching user profiles:', error);
+    console.error('Error fetching user profiles:', error);
     return [];
   }
 }
 
 /**
- * Username'e göre profil ara (EVENT-BASED ÇÖZÜM)
- * NOT: ProfileCreated event'lerini kullanarak profil arıyor
- * Production için Move contract'a Username Registry eklenmeli (Dynamic Fields ile)
+ * Search profile according to the Username (EVENT-BASED SOLUTION)
+ * NOTE: It uses the ProfileCreated events to search a profile
+ * TODO: Add Username Registry to Move contract for production (with Dynamic Fields)
  */
 export async function getProfileByUsername(username: string) {
   try {
-    console.log('🔍 Username arıyor:', username);
+    console.log('Searching user:', username);
 
-    // ProfileCreated event'lerini query et
+    // Query the ProfileCreated events
     const events = await suiClient.queryEvents({
       query: {
         MoveEventType: `${TESTNET_PACKAGE_ID}::${MODULE_NAME}::ProfileCreated`,
       },
-      limit: 50, // Son 50 profili kontrol et
+      limit: 50, // Check the latest 50 profiles
     });
 
-    console.log('📦 Bulunan ProfileCreated event sayısı:', events.data.length);
+    console.log('The number of profiles found:', events.data.length);
 
-    // Username eşleşmesi ara
+    // Match usernames
     for (const event of events.data) {
       const eventData = event.parsedJson as any;
 
       if (eventData && eventData.username === username) {
-        console.log('✅ Event bulundu!', eventData);
-
-        // Profile ID'yi event'ten al
+        console.log('Found event: ', eventData);
+        
+        // Retrieve the profile ID from the event data
         const profileId = eventData.profile_id;
 
-        // Profil detaylarını çek
+        // Fetch the profile data
         const profile = await getUserProfile(profileId);
 
         if (profile) {
-          console.log('✅ Profil detayları getirildi:', profile);
+          console.log('Fetched the profile data:', profile);
           return profile;
         }
       }
     }
 
-    console.log('❌ Profil bulunamadı:', username);
+    console.log('Couldn\'t find the user: ', username);
     return null;
   } catch (error) {
-    console.error('❌ Error searching profile by username:', error);
+    console.error('Error searching profile by username:', error);
     return null;
   }
 }
-

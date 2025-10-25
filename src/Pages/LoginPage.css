@@ -7,7 +7,7 @@
   background: #0f0f23;
 }
 
-/* Sol Taraf - Form */
+/* Left side - Form */
 .login-left {
   display: flex;
   align-items: center;
@@ -168,7 +168,7 @@
   opacity: 0.8;
 }
 
-/* Sağ Taraf - Görsel */
+/* Right side - Examples */
 .login-right {
   position: relative;
   background: linear-gradient(135deg, #1a1a2e 0%, #0f0f23 100%);
@@ -398,4 +398,3 @@
     font-size: 28px;
   }
 }
-

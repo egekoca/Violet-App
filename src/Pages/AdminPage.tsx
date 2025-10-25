@@ -43,32 +43,32 @@ export function AdminPage() {
 
     try {
       setLoading(true);
-      console.log('🔄 loadData başladı, account:', account.address);
+      console.log('Started loadData, account:', account.address);
 
       const profiles = await getUserProfiles(account.address);
-      console.log('📥 getUserProfiles sonucu:', profiles);
+      console.log('getUserProfiles result:', profiles);
 
       if (profiles.length > 0) {
-        console.log('✅ Profil bulundu:', profiles[0]);
-        console.log('🔗 Profile linkler:', profiles[0].links);
-        console.log('🔗 Links array mi?', Array.isArray(profiles[0].links));
-        console.log('🔗 Links length:', profiles[0].links?.length);
+        console.log('Found the user profile:', profiles[0]);
+        console.log('Profile links:', profiles[0].links);
+        console.log('Are links type array: ', Array.isArray(profiles[0].links));
+        console.log('Links length:', profiles[0].links?.length);
 
         setProfile(profiles[0]);
         setShowCreateForm(false);
-        // Profil formunu mevcut verilerle doldur
+        // Fill the profile form with current data
         setProfileForm({
           username: profiles[0].username,
           display_name: profiles[0].display_name,
           bio: profiles[0].bio,
         });
       } else {
-        console.log('❌ Profil bulunamadı');
+        console.log('User not found');
         setProfile(null);
         setShowCreateForm(true);
       }
     } catch (error) {
-      console.error('❌ Veri yüklenirken hata:', error);
+      console.error('Encountered an error while retrieving user data:', error);
     } finally {
       setLoading(false);
     }
@@ -88,21 +88,21 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            alert('✅ Your profile has been created! You can begin adding your links!');
-            // 3 saniye bekle ve reload
+            alert('Your profile has been created! You can start adding your links!');
+            // Wait for 3 seconds and reload
             setTimeout(() => {
               loadData();
             }, 3000);
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Profil oluşturma hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Profile create error:', error);
+      alert('Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -133,13 +133,13 @@ export function AdminPage() {
             }, 3000);
           },
           onError: (error) => {
-            console.error('Transaction hatası:', error);
+            console.error('Transaction error: ', error);
             alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Link ekleme hatası:', error);
+      console.error('Link adding error: ', error);
       alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
@@ -177,7 +177,7 @@ export function AdminPage() {
         }
       );
     } catch (error: any) {
-      console.error('Profil güncelleme hatası:', error);
+      console.error('Profile update error:', error);
       alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
@@ -291,7 +291,7 @@ export function AdminPage() {
         {showCreateForm && (
           <div className="main-content-centered">
             <div className="create-profile-card">
-              <h2>🎉 Create A New Profile</h2>
+              <h2>Create A New Profile</h2>
               <p style={{ marginBottom: '30px', color: 'var(--text-secondary)' }}>
                 Create your profile on the Blockchain
               </p>
@@ -362,7 +362,7 @@ export function AdminPage() {
               </div>
             </div>
 
-            {/* SETTINGS VIEW - Profil Düzenleme */}
+            {/* SETTINGS VIEW - Edit Profile */}
             {showEditProfileForm ? (
               <div className="settings-content">
                 <h2 className="section-title">⚙️ Profile Settings</h2>
@@ -420,7 +420,7 @@ export function AdminPage() {
               </div>
             ) : (
               <>
-                {/* LINKS VIEW - Link Yönetimi */}
+                {/* LINKS VIEW - Link Management */}
                 {/* Add Button */}
                 {!showAddLinkForm && (
                   <button
@@ -455,7 +455,7 @@ export function AdminPage() {
                 type="url"
                       value={linkForm.url}
                       onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
-                      placeholder="https://instagram.com/..."
+                      placeholder="https://instagram.com/"
                 required
               />
             </div>
