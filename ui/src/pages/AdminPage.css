@@ -147,9 +147,26 @@
 }
 
 .nav-icon {
-  font-size: 18px;
   width: 24px;
-  text-align: center;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(168, 85, 247, 0.7);
+  transition: all 0.2s ease;
+}
+
+.nav-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nav-item:hover .nav-icon {
+  color: rgba(168, 85, 247, 1);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--primary-color);
 }
 
 .sidebar-footer {
@@ -597,37 +614,41 @@
   width: 100%;
   max-width: 320px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.06), rgba(0, 217, 255, 0.04));
   border-radius: 12px;
   margin: 0;
   margin-top: 20px;
   margin-bottom: 10px;
+  border: 1px solid rgba(168, 85, 247, 0.15);
 }
 
 .preview-url-label {
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(168, 85, 247, 0.9);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
 }
 
 .preview-url-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(168, 85, 247, 0.08);
+  border: 2px solid rgba(168, 85, 247, 0.25);
   border-radius: 8px;
   padding: 12px 14px;
   transition: all 0.2s ease;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.1);
 }
 
 .preview-url-box:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--primary-color);
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
 }
 
 .preview-url-link {
@@ -648,24 +669,30 @@
 }
 
 .copy-url-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
   border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 16px;
+  padding: 8px 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: white;
+  color: rgba(168, 85, 247, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 38px;
 }
 
+.copy-url-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 .copy-url-btn:hover {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.6);
+  color: var(--primary-color);
   transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
 }
 
 .copy-url-btn:active {

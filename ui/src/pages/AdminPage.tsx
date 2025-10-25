@@ -234,14 +234,23 @@ export function AdminPage() {
             className={`nav-item ${!showEditProfileForm ? 'active' : ''}`}
             onClick={() => setShowEditProfileForm(false)}
           >
-            <span className="nav-icon">🔗</span>
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M10 13C13.866 13 17 16.134 17 20M10 13C6.13401 13 3 16.134 3 20M10 13V3M10 3L6 7M10 3L14 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
             <span>Links</span>
           </button>
           <button 
             className={`nav-item ${showEditProfileForm ? 'active' : ''}`}
             onClick={() => setShowEditProfileForm(true)}
           >
-            <span className="nav-icon">⚙️</span>
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 3V5M12 19V21M3 12H5M19 12H21M6.34315 6.34315L7.75736 7.75736M16.2426 16.2426L17.6569 17.6569M6.34315 17.6569L7.75736 16.2426M16.2426 7.75736L17.6569 6.34315" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
             <span>Settings</span>
           </button>
           <button 
@@ -253,11 +262,20 @@ export function AdminPage() {
             }}
             disabled={!profile?.username}
           >
-            <span className="nav-icon">👤</span>
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2"/>
+                <path d="M6 21C6 17.134 8.68629 14 12 14C15.3137 14 18 17.134 18 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
             <span>View Profile</span>
           </button>
           <button className="nav-item" onClick={() => navigate('/')}>
-            <span className="nav-icon">🏠</span>
+            <span className="nav-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
             <span>Main Page</span>
           </button>
         </nav>
@@ -536,7 +554,10 @@ export function AdminPage() {
                 }}
                 title="Copy link"
               >
-                📋
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="8" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M16 8V6C16 4.89543 15.1046 4 14 4H6C4.89543 4 4 4.89543 4 6V14C4 15.1046 4.89543 16 6 16H8" stroke="currentColor" strokeWidth="2"/>
+                </svg>
               </button>
             </div>
           </div>
