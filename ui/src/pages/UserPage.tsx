@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
-import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT } from '../lib/blockchain';
+import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT, sponsoredBlockchain } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import { Transaction } from '@mysten/sui/transactions';
@@ -14,6 +14,7 @@ export function UserPage() {
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userXp, setUserXp] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [showNFTModal, setShowNFTModal] = useState(false);
@@ -25,6 +26,35 @@ export function UserPage() {
   const [selectedToken, setSelectedToken] = useState<'SUI' | 'WAL'>('SUI');
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedLinkForQR, setSelectedLinkForQR] = useState<{ title: string; url: string } | null>(null);
+
+  // XP fonksiyonları
+  const getXpForLinkType = (linkType: number): number => {
+    switch (linkType) {
+      case 1: return 5;  // Social
+      case 2: return 3;  // Media
+      case 3: return 2;  // Contact
+      default: return 1; // Custom
+    }
+  };
+
+  const updateUserXp = (profileId: string, xpEarned: number) => {
+    const xpKey = `user_xp_${profileId}`;
+    const currentXp = parseInt(localStorage.getItem(xpKey) || '0');
+    const newXp = currentXp + xpEarned;
+    localStorage.setItem(xpKey, newXp.toString());
+    
+    console.log('🎯 XP güncellendi:', {
+      profileId,
+      xpEarned,
+      currentXp,
+      newXp
+    });
+  };
+
+  const getUserXp = (profileId: string): number => {
+    const xpKey = `user_xp_${profileId}`;
+    return parseInt(localStorage.getItem(xpKey) || '0');
+  };
 
   useEffect(() => {
     loadData();
@@ -42,6 +72,9 @@ export function UserPage() {
         
         if (publicProfile) {
           setProfile(publicProfile);
+          // XP'yi localStorage'dan yükle
+          const xp = getUserXp(publicProfile.id);
+          setUserXp(xp);
         } else {
           setError(`Profile @${username} not found`);
           setProfile(null);
@@ -74,8 +107,76 @@ export function UserPage() {
     }
   };
 
-  const handleLinkClick = (url: string) => {
+  const handleLinkClick = async (url: string, link: any) => {
+    // Link'i yeni sekmede aç
     window.open(url, '_blank', 'noopener,noreferrer');
+    
+    // Analytics tracking (cüzdan onayı yok, sadece frontend)
+    if (username && profile) {
+      try {
+        // Link türünü belirle (basit URL analizi)
+        let linkType = 4; // Default: custom
+        
+        if (url.includes('instagram.com') || url.includes('x.com') || url.includes('twitter.com') || 
+            url.includes('tiktok.com') || url.includes('facebook.com') || url.includes('linkedin.com')) {
+          linkType = 1; // Social
+        } else if (url.includes('youtube.com') || url.includes('spotify.com') || url.includes('twitch.tv')) {
+          linkType = 2; // Media
+        } else if (url.includes('wa.me') || url.includes('t.me') || url.includes('discord.gg')) {
+          linkType = 3; // Contact
+        }
+        
+        console.log('🎯 Link tıklandı, analytics kaydı yapılıyor...', {
+          linkType,
+          linkId: link.id,
+          profileId: profile.id,
+          url
+        });
+        
+        // Analytics kaydı (localStorage'da)
+        const analyticsKey = `link_clicks_${profile.id}`;
+        const existingData = JSON.parse(localStorage.getItem(analyticsKey) || '{}');
+        
+        const clickData = {
+          linkId: link.id,
+          linkType,
+          url,
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          referrer: document.referrer
+        };
+        
+        if (!existingData.clicks) {
+          existingData.clicks = [];
+        }
+        
+        existingData.clicks.push(clickData);
+        existingData.totalClicks = (existingData.totalClicks || 0) + 1;
+        existingData.lastClick = Date.now();
+        
+        localStorage.setItem(analyticsKey, JSON.stringify(existingData));
+        
+        // XP hesapla ve güncelle
+        const xpEarned = getXpForLinkType(linkType);
+        updateUserXp(profile.id, xpEarned);
+        
+        // UI'da XP'yi güncelle
+        setUserXp(prev => prev + xpEarned);
+        
+        console.log('✅ Analytics kaydı başarılı:', {
+          totalClicks: existingData.totalClicks,
+          linkType,
+          xpEarned,
+          timestamp: new Date().toISOString()
+        });
+        
+        // TODO: İleride backend'e analytics gönderebiliriz
+        // await sendAnalyticsToBackend(clickData);
+        
+      } catch (error) {
+        console.error('❌ Analytics tracking hatası:', error);
+      }
+    }
   };
 
   const handleShowNFTs = async () => {
@@ -321,6 +422,16 @@ export function UserPage() {
           <h1 className="display-name">{profile.display_name}</h1>
           <p className="bio">{profile.bio}</p>
           <p className="username-label">@{profile.username}</p>
+          
+          {/* XP Puanı */}
+          <div className="xp-badge">
+            <div className="xp-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span className="xp-text">{userXp} XP</span>
+          </div>
           
           {/* Action Buttons */}
           <div className="profile-actions">
@@ -599,7 +710,7 @@ export function UserPage() {
                 <div key={index} className="user-link-wrapper">
                   <button
                     className="user-link-card-modern"
-                    onClick={() => handleLinkClick(link.url)}
+                    onClick={() => handleLinkClick(link.url, link)}
                   >
                     {link.banner ? (
                       <div className="user-link-banner">

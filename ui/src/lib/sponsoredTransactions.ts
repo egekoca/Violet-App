@@ -8,7 +8,7 @@ import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { toBase64 } from '@mysten/sui/utils';
 
 // Contract bilgileri
-export const PACKAGE_ID = '0x3ff3a568887c819e06f8f4521052853c40c1f311b41450b38f5c68f9cd4b3aa0';
+export const PACKAGE_ID = '0xec23f89363e1115b5b45b18b5be6b43b30bedacf85391772dde29d1ed6e7eaae';
 export const MODULE_NAME = 'linktree';
 
 // Backend API URL

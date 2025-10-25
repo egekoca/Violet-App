@@ -26,7 +26,7 @@ export const NETWORK = 'testnet';
 export const RPC_URL = 'https://fullnode.testnet.sui.io:443';
 
 // Contract bilgileri (contract-info.json'dan)
-export const PACKAGE_ID = '0x3ff3a568887c819e06f8f4521052853c40c1f311b41450b38f5c68f9cd4b3aa0';
+export const PACKAGE_ID = '0xec23f89363e1115b5b45b18b5be6b43b30bedacf85391772dde29d1ed6e7eaae';
 export const MODULE_NAME = 'linktree';
 
 // Sui Client
@@ -52,6 +52,7 @@ export interface UserProfile {
   image_url: string;
   link_ids: number[];
   link_count: number;
+  total_xp: number; // Toplam XP puanı
   links: Link[]; // Frontend'de dinamik olarak doldurulacak
 }
 
@@ -299,6 +300,7 @@ export async function getUserProfile(profileId: string): Promise<UserProfile | n
       image_url: fields.image_url || '',
       link_ids: link_ids,
       link_count: Number(fields.link_count || 0),
+      total_xp: Number(fields.total_xp || 0),
       links: links,
     };
   } catch (error) {
@@ -463,6 +465,7 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
           image_url: fields.image_url || '',
           link_ids: link_ids,
           link_count: Number(fields.link_count || 0),
+          total_xp: Number(fields.total_xp || 0),
           links: links,
         });
       }
@@ -694,6 +697,121 @@ export const sponsoredBlockchain = {
    */
   canUseSponsoredTransaction(userAddress: string): boolean {
     return canUseSponsoredTransaction(userAddress);
+  },
+
+  /**
+   * Link tıklama kaydı (XP sistemi)
+   */
+  async recordLinkClick(
+    profileId: string,
+    linkId: number,
+    linkType: number, // 1=social, 2=media, 3=contact, 4=custom
+    userAddress: string
+  ): Promise<any> {
+    const tx = new Transaction();
+    
+    tx.moveCall({
+      target: `${PACKAGE_ID}::${MODULE_NAME}::record_link_click`,
+      arguments: [
+        tx.object(profileId),
+        tx.pure.u64(linkId),
+        tx.pure.u8(linkType),
+      ],
+    });
+
+    return tx;
+  },
+
+  /**
+   * Sponsored transaction execute
+   */
+  async executeSponsoredTransaction(transaction: Transaction, userAddress: string): Promise<any> {
+    return await executeSponsoredTransaction(transaction, userAddress);
+  },
+
+  /**
+   * Leaderboard - Tüm kullanıcıları XP'ye göre sırala
+   */
+  async getLeaderboard(page: number = 1, limit: number = 10): Promise<{
+    users: UserProfile[];
+    totalPages: number;
+    currentPage: number;
+  }> {
+    try {
+      console.log('🏆 Leaderboard yükleniyor...', { page, limit });
+      
+      // ProfileCreated event'lerini kullanarak tüm profilleri bul
+      const events = await suiClient.queryEvents({
+        query: {
+          MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ProfileCreated`,
+        },
+        limit: 100, // Son 100 profili al
+      });
+
+      console.log('📦 Bulunan profil event sayısı:', events.data.length);
+
+      const allUsers: UserProfile[] = [];
+
+      // Her event'ten profil detaylarını çek
+      for (const event of events.data) {
+        const eventData = event.parsedJson as any;
+        
+        if (eventData && eventData.profile_id) {
+          const profileId = eventData.profile_id;
+          
+          console.log('🔍 Profil ID bulundu:', profileId);
+          
+          try {
+            // Profil detaylarını çek
+            const profile = await getUserProfile(profileId);
+            
+            if (profile) {
+              console.log('✅ Profil yüklendi:', profile.username, 'XP:', profile.total_xp);
+              allUsers.push(profile);
+            } else {
+              console.warn('⚠️ Profil null döndü:', profileId);
+            }
+          } catch (error) {
+            console.warn('⚠️ Profil yüklenemedi:', profileId, error);
+          }
+        }
+      }
+
+      // XP'ye göre sırala (yüksekten düşüğe)
+      allUsers.sort((a, b) => b.total_xp - a.total_xp);
+
+      // Rank ekle
+      allUsers.forEach((user, index) => {
+        (user as any).rank = index + 1;
+      });
+
+      // Pagination
+      const totalPages = Math.ceil(allUsers.length / limit);
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedUsers = allUsers.slice(startIndex, endIndex);
+
+      console.log('✅ Leaderboard hazır:', {
+        totalUsers: allUsers.length,
+        currentPage: page,
+        totalPages,
+        usersOnPage: paginatedUsers.length
+      });
+
+      return {
+        users: paginatedUsers,
+        totalPages,
+        currentPage: page
+      };
+
+    } catch (error) {
+      console.error('❌ Leaderboard yüklenirken hata:', error);
+      return {
+        users: [],
+        totalPages: 0,
+        currentPage: 1
+      };
+    }
   }
 };
 

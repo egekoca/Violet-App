@@ -8,6 +8,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ProfileEditPage } from './pages/ProfileEditPage';
 import { UserPage } from './pages/UserPage';
 import { AdminPage } from './pages/AdminPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
 import '@mysten/dapp-kit/dist/index.css';
 import './App.css';
 
@@ -30,8 +31,9 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/profile" element={<ProfileEditPage />} />
+              <Route path="/profile" element={<ProfileEditPage />} />             
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/leaderboard" element={<LeaderboardPage />} />
               <Route path="/:username" element={<UserPage />} />
             </Routes>
           </BrowserRouter>

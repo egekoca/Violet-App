@@ -39,6 +39,12 @@ export function LandingPage() {
             <a href="#features">Features</a>
             <a href="#how-it-works">How It Works</a>
             <a href="#pricing">Pricing</a>
+            <button 
+              className="nav-link-btn"
+              onClick={() => navigate('/leaderboard')}
+            >
+              Leaderboard
+            </button>
           </nav>
 
           <div className="header-buttons">

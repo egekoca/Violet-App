@@ -48,6 +48,14 @@ module linktree::linktree {
         display_name: String,
     }
 
+    /// Link tıklandığında emit edilir (XP sistemi için)
+    public struct LinkClicked has copy, drop {
+        profile_id: address,
+        link_id: u64,
+        clicker: address,
+        xp_earned: u64,
+    }
+
     /// Profil resmi güncellendiğinde emit edilir
     public struct ProfileImageUpdated has copy, drop {
         profile_id: address,
@@ -83,6 +91,7 @@ module linktree::linktree {
         link_ids: vector<u64>,   // Dynamic field olarak saklanan link ID'leri
         next_link_id: u64,       // Otomatik increment için
         link_count: u64,         // Toplam link sayısı
+        total_xp: u64,           // Toplam XP puanı
     }
 
     // ============ Profil Fonksiyonları ============
@@ -109,6 +118,7 @@ module linktree::linktree {
             link_ids: vector::empty<u64>(),
             next_link_id: 0,
             link_count: 0,
+            total_xp: 0,
         };
 
         // Event emit et
@@ -347,5 +357,45 @@ module linktree::linktree {
     /// Bio'yu döndür
     public fun get_bio(profile: &UserProfile): &String {
         &profile.bio
+    }
+
+    // ============ XP Sistemi ============
+
+    /// Link tıklandığında XP ver (farklı link türleri için farklı XP)
+    entry fun record_link_click(
+        profile: &mut UserProfile,
+        link_id: u64,
+        link_type: u8, // 1=social, 2=media, 3=contact, 4=custom
+        ctx: &mut TxContext
+    ) {
+        let clicker = tx_context::sender(ctx);
+        let profile_addr = object::uid_to_address(&profile.id);
+        
+        // Link türüne göre XP hesapla
+        let xp_earned = if (link_type == 1) {
+            5 // Sosyal medya linkleri için 5 XP
+        } else if (link_type == 2) {
+            3 // Medya linkleri için 3 XP
+        } else if (link_type == 3) {
+            2 // İletişim linkleri için 2 XP
+        } else {
+            1 // Custom linkler için 1 XP
+        };
+
+        // XP'yi profile ekle
+        profile.total_xp = profile.total_xp + xp_earned;
+
+        // Event emit et
+        event::emit(LinkClicked {
+            profile_id: profile_addr,
+            link_id,
+            clicker,
+            xp_earned,
+        });
+    }
+
+    /// Toplam XP'yi döndür
+    public fun get_total_xp(profile: &UserProfile): u64 {
+        profile.total_xp
     }
 }

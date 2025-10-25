@@ -1450,3 +1450,61 @@
   }
 }
 
+/* XP Badge Styles */
+.xp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #1a1a2e;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  animation: xpGlow 2s ease-in-out infinite alternate;
+}
+
+.xp-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.xp-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a2e;
+}
+
+.xp-text {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+@keyframes xpGlow {
+  0% {
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* Responsive XP Badge */
+@media (max-width: 768px) {
+  .xp-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+    margin-top: 6px;
+  }
+  
+  .xp-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+

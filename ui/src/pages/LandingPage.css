@@ -74,6 +74,21 @@
   color: white;
 }
 
+.nav-link-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.nav-link-btn:hover {
+  color: white;
+}
+
 .header-buttons {
   display: flex;
   gap: 12px;

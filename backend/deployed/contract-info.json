@@ -1,6 +1,6 @@
 {
   "network": "testnet",
-  "packageId": "0x3ff3a568887c819e06f8f4521052853c40c1f311b41450b38f5c68f9cd4b3aa0",
+  "packageId": "0xec23f89363e1115b5b45b18b5be6b43b30bedacf85391772dde29d1ed6e7eaae",
   "moduleName": "linktree",
   "deployedAt": "2025-10-25",
   "functions": {
@@ -11,7 +11,8 @@
     "update_link": "update_link",
     "delete_link": "delete_link",
     "toggle_link": "toggle_link",
-    "reorder_link": "reorder_link"
+    "reorder_link": "reorder_link",
+    "record_link_click": "record_link_click"
   },
   "structs": {
     "UserProfile": "UserProfile",
