@@ -44,16 +44,15 @@ export function AdminPage() {
     try {
       setLoading(true);
       console.log('Started loadData, account:', account.address);
-
+      
       const profiles = await getUserProfiles(account.address);
       console.log('getUserProfiles result:', profiles);
-
+      
       if (profiles.length > 0) {
         console.log('Found the user profile:', profiles[0]);
         console.log('Profile links:', profiles[0].links);
         console.log('Are links type array: ', Array.isArray(profiles[0].links));
         console.log('Links length:', profiles[0].links?.length);
-
         setProfile(profiles[0]);
         setShowCreateForm(false);
         // Fill the profile form with current data

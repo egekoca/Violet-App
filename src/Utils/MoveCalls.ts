@@ -178,12 +178,12 @@ export async function getUserProfiles(ownerAddress: string) {
 
       if (obj.data?.content?.dataType === 'moveObject') {
         const fields = obj.data.content.fields as any;
-
+        
         console.log('Profile fields:', fields);
         console.log('Links (raw):', fields.links);
-
+        
         // Fix Links: From the {type, fields} format to the {title, url, icon, is_active} format
-        const links = Array.isArray(fields.links)
+        const links = Array.isArray(fields.links) 
           ? fields.links.map((link: any) => {
               // If link.fields exists (blockchain format), return according to that
               if (link.fields) {
@@ -230,7 +230,6 @@ export async function getUserProfiles(ownerAddress: string) {
 export async function getProfileByUsername(username: string) {
   try {
     console.log('Searching user:', username);
-
     // Query the ProfileCreated events
     const events = await suiClient.queryEvents({
       query: {
@@ -250,7 +249,7 @@ export async function getProfileByUsername(username: string) {
         
         // Retrieve the profile ID from the event data
         const profileId = eventData.profile_id;
-
+        
         // Fetch the profile data
         const profile = await getUserProfile(profileId);
 

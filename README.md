@@ -1,6 +1,4 @@
-I translated and simplified your README into English, removed all emotes, and renamed the app to **Violet**. This rewrite is based on your original README.
-
-# Violet — Linktr.ee on the blockchain
+# VIOLET - Sui Blockchain LinkTree
 
 Violet is a decentralized Linktree-style app built on the Sui blockchain. User profiles and links are stored on-chain.
 
