@@ -1,8 +1,8 @@
-# 🔗 VIOLET - Sui Blockchain LinkTree
+# VIOLET - Sui Blockchain LinkTree
 
 **Tamamen merkeziyetsiz LinkTree uygulaması!** 
 
-Tüm profilleriniz ve linkleriniz **Sui Blockchain** üzerinde saklanıyor. Web3 ile tanışın! 🚀
+Tüm profilleriniz ve linkleriniz **Sui Blockchain** üzerinde saklanıyor. Web3 ile tanışın!
 
 ## 📁 Proje Yapısı
 
