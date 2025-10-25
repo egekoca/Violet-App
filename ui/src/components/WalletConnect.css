@@ -26,6 +26,48 @@
   font-family: 'Courier New', monospace;
 }
 
+.copy-btn {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.copy-btn:hover {
+  border-color: #888;
+  transform: scale(1.05);
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.icon.success {
+  color: #22c55e;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.copy-btn.copied .icon.default {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.copy-btn.copied .icon.success {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 /* Connect button styling override */
 :global(button[data-dapp-kit-connect-button]) {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
