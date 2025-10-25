@@ -352,7 +352,7 @@ export function UserPage() {
           <div className="nft-modal-overlay" onClick={() => setShowNFTModal(false)}>
             <div className="nft-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="nft-modal-header">
-                <h2>🖼️ NFT Collection</h2>
+                <h2>NFT Collection</h2>
                 <button 
                   className="nft-modal-close"
                   onClick={() => setShowNFTModal(false)}

@@ -28,6 +28,8 @@ export function AdminPage() {
   const [showEditLinkForm, setShowEditLinkForm] = useState(false);
   const [editingLinkId, setEditingLinkId] = useState<number | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('suggested');
 
   // Form states
   const [profileForm, setProfileForm] = useState({
@@ -42,6 +44,156 @@ export function AdminPage() {
     url: '',
     icon: '',
     banner: '',
+  });
+
+  // Platform presets
+  const platformPresets = [
+    {
+      id: 'instagram',
+      name: 'Instagram',
+      description: 'Display your posts and reels',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png',
+      baseUrl: 'https://instagram.com/',
+      category: 'social',
+      color: '#E4405F'
+    },
+    {
+      id: 'tiktok',
+      name: 'TikTok',
+      description: 'Share your TikToks on your Violet',
+      icon: 'https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg',
+      baseUrl: 'https://tiktok.com/@',
+      category: 'social',
+      color: '#000000'
+    },
+    {
+      id: 'youtube',
+      name: 'YouTube',
+      description: 'Share YouTube videos on your Violet',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg',
+      baseUrl: 'https://youtube.com/',
+      category: 'media',
+      color: '#FF0000'
+    },
+    {
+      id: 'spotify',
+      name: 'Spotify',
+      description: 'Share your latest or favorite music',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg',
+      baseUrl: 'https://open.spotify.com/',
+      category: 'media',
+      color: '#1DB954'
+    },
+    {
+      id: 'x',
+      name: 'X (Twitter)',
+      description: 'Share your X profile',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png',
+      baseUrl: 'https://x.com/',
+      category: 'social',
+      color: '#000000'
+    },
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      description: 'Share your professional profile',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png',
+      baseUrl: 'https://linkedin.com/in/',
+      category: 'social',
+      color: '#0A66C2'
+    },
+    {
+      id: 'github',
+      name: 'GitHub',
+      description: 'Share your code and projects',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg',
+      baseUrl: 'https://github.com/',
+      category: 'contact',
+      color: '#181717'
+    },
+    {
+      id: 'facebook',
+      name: 'Facebook',
+      description: 'Share your Facebook profile',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg',
+      baseUrl: 'https://facebook.com/',
+      category: 'social',
+      color: '#1877F2'
+    },
+    {
+      id: 'twitch',
+      name: 'Twitch',
+      description: 'Share your live streams',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Twitch_Glitch_Logo_Purple.svg',
+      baseUrl: 'https://twitch.tv/',
+      category: 'media',
+      color: '#9146FF'
+    },
+    {
+      id: 'discord',
+      name: 'Discord',
+      description: 'Share your Discord server',
+      icon: 'https://upload.wikimedia.org/wikipedia/en/9/98/Discord_logo.svg',
+      baseUrl: 'https://discord.gg/',
+      category: 'contact',
+      color: '#5865F2'
+    },
+    {
+      id: 'whatsapp',
+      name: 'WhatsApp',
+      description: 'Share your WhatsApp contact',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg',
+      baseUrl: 'https://wa.me/',
+      category: 'contact',
+      color: '#25D366'
+    },
+    {
+      id: 'telegram',
+      name: 'Telegram',
+      description: 'Share your Telegram',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg',
+      baseUrl: 'https://t.me/',
+      category: 'contact',
+      color: '#26A5E4'
+    },
+  ];
+
+  const categories = [
+    { id: 'suggested', name: 'Suggested', icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    )},
+    { id: 'social', name: 'Social', icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M17 2H7C4.23858 2 2 4.23858 2 7V17C2 19.7614 4.23858 22 7 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M16 11.37C16.1234 12.2022 15.9813 13.0522 15.5938 13.799C15.2063 14.5458 14.5931 15.1514 13.8416 15.5297C13.0901 15.9079 12.2384 16.0396 11.4077 15.9059C10.5771 15.7723 9.80976 15.3801 9.21484 14.7852C8.61992 14.1902 8.22773 13.4229 8.09407 12.5923C7.9604 11.7616 8.09207 10.9099 8.47033 10.1584C8.84859 9.40685 9.45419 8.79374 10.201 8.40624C10.9478 8.01874 11.7978 7.87658 12.63 8C13.4789 8.12588 14.2649 8.52146 14.8717 9.1283C15.4785 9.73515 15.8741 10.5211 16 11.37Z" stroke="currentColor" strokeWidth="2"/>
+        <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'media', name: 'Media', icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <polygon points="5 3 19 12 5 21 5 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    )},
+    { id: 'contact', name: 'Contact', icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M22 16.92V19.92C22 20.4728 21.5523 20.9206 21 20.9206H3C2.44772 20.9206 2 20.4728 2 19.92V16.92C2 16.3673 2.44772 15.9195 3 15.9195H21C21.5523 15.9195 22 16.3673 22 16.92Z" stroke="currentColor" strokeWidth="2"/>
+        <path d="M22 4.92047V7.92047C22 8.47276 21.5523 8.92047 21 8.92047H3C2.44772 8.92047 2 8.47276 2 7.92047V4.92047C2 4.36819 2.44772 3.92047 3 3.92047H21C21.5523 3.92047 22 4.36819 22 4.92047Z" stroke="currentColor" strokeWidth="2"/>
+        <circle cx="12" cy="12.4205" r="1.5" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'text', name: 'Custom', icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M10 13C13.866 13 17 16.134 17 20M10 13C6.13401 13 3 16.134 3 20M10 13V3M10 3L6 7M10 3L14 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    )},
+  ];
+
+  const filteredPlatforms = platformPresets.filter(platform => {
+    const matchesCategory = selectedCategory === 'suggested' || platform.category === selectedCategory;
+    const matchesSearch = platform.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
   });
 
   useEffect(() => {
@@ -132,6 +284,26 @@ export function AdminPage() {
     }
   };
 
+  const handleSelectPlatform = (platform: any) => {
+    setLinkForm({
+      title: platform.name,
+      url: platform.baseUrl,
+      icon: '',
+      banner: platform.icon,
+    });
+    setSelectedCategory('text'); // Form görünümüne geç
+  };
+
+  const handleCustomLink = () => {
+    setLinkForm({
+      title: '',
+      url: '',
+      icon: '',
+      banner: '',
+    });
+    setSelectedCategory('text'); // Form görünümüne geç
+  };
+
   const handleAddLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !profile) return;
@@ -158,7 +330,9 @@ export function AdminPage() {
               await loadData();
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
-            }, 5000); // 3 saniyeden 5 saniyeye çıkardık
+              setSearchQuery('');
+              setSelectedCategory('suggested');
+            }, 5000);
           },
           onError: (error) => {
             console.error('❌ Transaction hatası:', error);
@@ -672,76 +846,182 @@ export function AdminPage() {
                   </button>
                 )}
 
-            {/* Add Link Form */}
+            {/* Add Link Modal */}
             {showAddLinkForm && (
-              <div className="link-form-card">
-                <h3>Add New Link</h3>
-                
-                <form onSubmit={handleAddLink}>
-            <div className="form-group">
-              <label>Label</label>
-              <input
-                type="text"
-                      value={linkForm.title}
-                      onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
-                      placeholder="Instagram"
-                required
-                      maxLength={50}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>URL</label>
-              <input
-                type="url"
-                      value={linkForm.url}
-                      onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
-                      placeholder="https://instagram.com/..."
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Icon (Emoji)</label>
-              <input
-                type="text"
-                      value={linkForm.icon}
-                      onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
-                placeholder="📸"
-                maxLength={2}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Banner URL (Optional)</label>
-              <input
-                type="url"
-                      value={linkForm.banner}
-                      onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
-                      placeholder="https://example.com/banner.jpg"
-              />
-            </div>
-
-            <div className="form-actions">
+              <div className="add-link-modal-overlay" onClick={() => {
+                setShowAddLinkForm(false);
+                setSearchQuery('');
+                setSelectedCategory('suggested');
+                setLinkForm({ title: '', url: '', icon: '', banner: '' });
+              }}>
+                <div className="add-link-modal" onClick={(e) => e.stopPropagation()}>
+                  {/* Modal Header */}
+                  <div className="modal-header-new">
+                    <h2>Add</h2>
                     <button 
-                      type="submit" 
-                      className="submit-btn"
-                      disabled={processing}
-                    >
-                      {processing ? '⏳ Adding...' : 'Add Link'}
-              </button>
-              <button 
-                type="button" 
-                className="cancel-btn"
-                onClick={() => {
+                      className="modal-close-btn"
+                      onClick={() => {
                         setShowAddLinkForm(false);
+                        setSearchQuery('');
+                        setSelectedCategory('suggested');
                         setLinkForm({ title: '', url: '', icon: '', banner: '' });
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+                      }}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="modal-search-bar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Paste or search a link"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Modal Body */}
+                  <div className="modal-body-new">
+                    {/* Left Sidebar - Categories */}
+                    <div className="modal-sidebar">
+                      {categories.map(cat => (
+                        <button
+                          key={cat.id}
+                          className={`category-item ${selectedCategory === cat.id ? 'active' : ''}`}
+                          onClick={() => setSelectedCategory(cat.id)}
+                        >
+                          <span className="category-icon">{cat.icon}</span>
+                          <span className="category-name">{cat.name}</span>
+                        </button>
+                      ))}
+                      <button
+                        className="category-item"
+                        onClick={handleCustomLink}
+                      >
+                        <span className="category-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M10 13C10 13 9 14 9 15C9 16 10 17 11 17H13C14 17 15 16 15 15C15 14 14 13 14 13M13.828 10.172C14.39 9.61 14.39 8.707 13.828 8.146L11.854 6.172C11.292 5.61 10.389 5.61 9.828 6.172L6 10C5.438 10.562 5.438 11.465 6 12.026L7.974 14C8.536 14.562 9.439 14.562 10 14M18 13.828C18.562 14.39 18.562 15.293 18 15.854L16.026 17.828C15.464 18.39 14.561 18.39 14 17.828L10.172 14C9.61 13.438 9.61 12.535 10.172 11.974L12.146 10C12.708 9.438 13.611 9.438 14.172 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </span>
+                        <span className="category-name">Custom Link</span>
+                      </button>
+                    </div>
+
+                    {/* Right Content */}
+                    <div className="modal-content-area">
+                      {selectedCategory === 'text' ? (
+                        /* Custom Link Form */
+                        <form onSubmit={handleAddLink} className="custom-link-form">
+                          <h3>Custom Link</h3>
+                          
+                          <div className="form-group">
+                            <label>Title</label>
+                            <input
+                              type="text"
+                              value={linkForm.title}
+                              onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
+                              placeholder="My Awesome Link"
+                              required
+                              maxLength={50}
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>URL</label>
+                            <input
+                              type="url"
+                              value={linkForm.url}
+                              onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+                              placeholder="https://example.com"
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Icon (Emoji)</label>
+                            <input
+                              type="text"
+                              value={linkForm.icon}
+                              onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
+                              placeholder="🔗"
+                              maxLength={2}
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label>Banner URL (Optional)</label>
+                            <input
+                              type="url"
+                              value={linkForm.banner}
+                              onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
+                              placeholder="https://example.com/banner.jpg"
+                            />
+                          </div>
+
+                          <div className="form-actions">
+                            <button 
+                              type="submit" 
+                              className="submit-btn-modal"
+                              disabled={processing}
+                            >
+                              {processing ? '⏳ Adding...' : '✅ Add Link'}
+                            </button>
+                            <button 
+                              type="button" 
+                              className="cancel-btn-modal"
+                              onClick={() => setSelectedCategory('suggested')}
+                            >
+                              ← Back
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        /* Platform Grid */
+                        <div className="platform-grid">
+                          {filteredPlatforms.length === 0 ? (
+                            <div className="no-results">
+                              <p>No platforms found</p>
+                            </div>
+                          ) : (
+                            filteredPlatforms.map(platform => (
+                              <button
+                                key={platform.id}
+                                className="platform-item"
+                                onClick={() => handleSelectPlatform(platform)}
+                              >
+                                <div className="platform-icon-wrapper">
+                                  <img 
+                                    src={platform.icon} 
+                                    alt={platform.name}
+                                    className="platform-icon"
+                                    style={{ backgroundColor: platform.color }}
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = 'none';
+                                    }}
+                                  />
+                                </div>
+                                <div className="platform-info">
+                                  <h4>{platform.name}</h4>
+                                  <p>{platform.description}</p>
+                                </div>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="platform-arrow">
+                                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
         )}
 
