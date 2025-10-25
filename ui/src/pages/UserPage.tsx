@@ -64,9 +64,9 @@ export function UserPage() {
     return (
       <div className="user-page error">
         <div className="container">
-          <h2>🔐 Cüzdan Bağlantısı Gerekli</h2>
+          <h2>🔐 Wallet Connection Is Required</h2>
           <p style={{ marginBottom: '24px', color: 'rgba(255,255,255,0.8)' }}>
-            Profilinizi görüntülemek için lütfen cüzdanınızı bağlayın
+            Connect to your wallet to be able to see your profile.
           </p>
           <WalletConnect />
         </div>
@@ -94,7 +94,7 @@ export function UserPage() {
                   cursor: 'pointer',
                 }}
               >
-                🎨 Profil Oluştur
+                🎨 Create A Profile
               </button>
               <button
                 onClick={() => navigate('/')}
@@ -109,7 +109,7 @@ export function UserPage() {
                   cursor: 'pointer',
                 }}
               >
-                Ana Sayfaya Dön
+                Back To Homepage
               </button>
             </div>
           )}
@@ -122,7 +122,7 @@ export function UserPage() {
     return (
       <div className="user-page error">
         <div className="container">
-          <h2>Profil bulunamadı</h2>
+          <h2>No Profile</h2>
           <button
             onClick={() => navigate('/')}
             style={{
@@ -137,7 +137,7 @@ export function UserPage() {
               cursor: 'pointer',
             }}
           >
-            Ana Sayfaya Dön
+            Back To Homepage
           </button>
         </div>
       </div>
@@ -148,7 +148,7 @@ export function UserPage() {
     <div className="user-page">
       <div className="container">
         {/* Wallet Connection */}
-        <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: '20px', left: '20px', zIndex: 1000 }}>
           <WalletConnect />
         </div>
 
@@ -174,7 +174,7 @@ export function UserPage() {
         {/* Links Section */}
         <div className="links-section">
           {profile.links.length === 0 ? (
-            <p className="no-links">Henüz link eklenmemiş</p>
+            <p className="no-links">No links have been added yet</p>
           ) : (
             profile.links
               .filter(link => link.is_active)
@@ -215,13 +215,13 @@ export function UserPage() {
               e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
             }}
           >
-            ← Ana Sayfaya Dön
+            ← Back To Homepage
           </button>
         </div>
 
         {/* Footer */}
         <footer className="footer">
-          <p>Powered by Sui Blockchain ⚡</p>
+          <p>Powered by <a href="https://sui.io/  " target='_blank' rel='noopener noreferrer' className="blue-link">Sui Blockchain</a></p>
         </footer>
       </div>
     </div>

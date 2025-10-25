@@ -4,6 +4,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
+// import { useEffect } from 'react';
 import './LandingPage.css';
 
 export function LandingPage() {
@@ -11,6 +12,18 @@ export function LandingPage() {
 
   // NOT: Otomatik redirect kaldırıldı.
   // Kullanıcı manuel olarak "Giriş Yap" butonuna tıklayarak login sayfasına gitmeli.
+
+  // useEffect(() => {
+  //   // Example: check for a cookie called "authToken"
+  //   const isLoggedIn = document.cookie
+  //     .split("; ")
+  //     .some((cookie) => cookie.startsWith("authToken="));
+
+  //   if (isLoggedIn) {
+  //     // Redirect logged-in user to dashboard or another page
+  //     navigate("/dashboard"); // change this to your desired route
+  //   }
+  // }, [navigate]);
 
   return (
     <div className="landing-page">
@@ -29,12 +42,6 @@ export function LandingPage() {
           </nav>
 
           <div className="header-buttons">
-            <button 
-              className="login-btn-text"
-              onClick={() => navigate('/login')}
-            >
-              Login
-            </button>
             <button 
               className="signup-btn"
               onClick={() => navigate('/login')}

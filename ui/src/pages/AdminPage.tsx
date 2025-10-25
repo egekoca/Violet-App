@@ -451,7 +451,7 @@ export function AdminPage() {
                       className="submit-btn"
                       disabled={processing}
                     >
-                      {processing ? '⏳ Adding the link...' : 'New link added successfully'}
+                      {processing ? '⏳ Adding...' : 'Add Link'}
               </button>
               <button 
                 type="button" 
@@ -461,7 +461,7 @@ export function AdminPage() {
                         setLinkForm({ title: '', url: '', icon: '' });
                 }}
               >
-                İptal
+                Cancel
               </button>
             </div>
           </form>
