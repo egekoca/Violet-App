@@ -272,6 +272,11 @@ export function UserPage() {
 
   return (
     <div className="user-page">
+      {/* Dekoratif Logo Elementleri */}
+      <div className="sui-logo-decoration"></div>
+      <div className="walrus-logo-decoration-2"></div>
+      <div className="sui-logo-decoration-2"></div>
+      
       <div className="container">
         {/* Wallet Connection */}
         <div style={{ position: 'fixed', top: '20px', left: '20px', zIndex: 1000 }}>
