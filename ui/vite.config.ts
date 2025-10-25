@@ -6,7 +6,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src'
-    }
+    },
+    dedupe: ['react', 'react-dom']
   },
   build: {
     rollupOptions: {

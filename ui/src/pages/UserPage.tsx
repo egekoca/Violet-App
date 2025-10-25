@@ -5,6 +5,7 @@ import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT } from '../lib/
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import { Transaction } from '@mysten/sui/transactions';
+import { QRCodeSVG } from 'qrcode.react';
 import './UserPage.css';
 
 export function UserPage() {
@@ -22,6 +23,8 @@ export function UserPage() {
   const [tipAmount, setTipAmount] = useState('');
   const [sendingTip, setSendingTip] = useState(false);
   const [selectedToken, setSelectedToken] = useState<'SUI' | 'WAL'>('SUI');
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedLinkForQR, setSelectedLinkForQR] = useState<{ title: string; url: string } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -92,6 +95,22 @@ export function UserPage() {
     }
   };
 
+  const handleShowQR = (link: { title: string; url: string }) => {
+    setSelectedLinkForQR(link);
+    setShowQRModal(true);
+  };
+
+  const handleDownloadQR = () => {
+    const canvas = document.querySelector('.qr-modal-content canvas') as HTMLCanvasElement;
+    if (canvas) {
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `QR-${selectedLinkForQR?.title || 'link'}.png`;
+      link.href = url;
+      link.click();
+    }
+  };
+
   const handleSendTip = async () => {
     if (!account || !profile) {
       alert('Lütfen önce cüzdanınızı bağlayın!');
@@ -144,7 +163,7 @@ export function UserPage() {
             setTipAmount('');
             setSelectedToken('SUI');
           },
-          onError: (error) => {
+          onError: (error: any) => {
             console.error('Bahşiş gönderme hatası:', error);
             alert('❌ Hata: ' + error.message);
           },
@@ -511,6 +530,59 @@ export function UserPage() {
           </div>
         )}
 
+        {/* QR Code Modal */}
+        {showQRModal && selectedLinkForQR && (
+          <div className="qr-modal-overlay" onClick={() => setShowQRModal(false)}>
+            <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="qr-modal-header">
+                <h2>QR Kod</h2>
+                <button 
+                  className="qr-modal-close"
+                  onClick={() => setShowQRModal(false)}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="qr-modal-body">
+                <div className="qr-link-info">
+                  <h3>{selectedLinkForQR.title}</h3>
+                  <p>{selectedLinkForQR.url}</p>
+                </div>
+
+                <div className="qr-code-container">
+                  <QRCodeSVG 
+                    value={selectedLinkForQR.url}
+                    size={280}
+                    level="H"
+                    includeMargin={true}
+                    bgColor="#ffffff"
+                    fgColor="#000000"
+                  />
+                </div>
+
+                <div className="qr-actions">
+                  <button 
+                    className="qr-download-btn"
+                    onClick={handleDownloadQR}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    QR Kodu İndir
+                  </button>
+                </div>
+
+                <p className="qr-info">
+                  Bu QR kodu taratarak linke direkt erişebilirsiniz
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Links Section */}
         <div className="links-section">
           {profile.links.filter(link => link.is_active).length === 0 ? (
@@ -519,36 +591,52 @@ export function UserPage() {
             profile.links
               .filter(link => link.is_active)
               .map((link, index) => (
-                <button
-                  key={index}
-                  className="user-link-card-modern"
-                  onClick={() => handleLinkClick(link.url)}
-                >
-                  {link.banner ? (
-                    <div className="user-link-banner">
-                      <img 
-                        src={link.banner} 
-                        alt={link.title}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
+                <div key={index} className="user-link-wrapper">
+                  <button
+                    className="user-link-card-modern"
+                    onClick={() => handleLinkClick(link.url)}
+                  >
+                    {link.banner ? (
+                      <div className="user-link-banner">
+                        <img 
+                          src={link.banner} 
+                          alt={link.title}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="user-link-icon-box">
+                        {link.icon || '🔗'}
+                      </div>
+                    )}
+                    <div className="user-link-content">
+                      <span className="user-link-title">{link.title}</span>
+                      {link.icon && <span className="user-link-icon-small">{link.icon}</span>}
                     </div>
-                  ) : (
-                    <div className="user-link-icon-box">
-                      {link.icon || '🔗'}
+                    <div className="user-link-arrow">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </div>
-                  )}
-                  <div className="user-link-content">
-                    <span className="user-link-title">{link.title}</span>
-                    {link.icon && <span className="user-link-icon-small">{link.icon}</span>}
-                  </div>
-                  <div className="user-link-arrow">
+                  </button>
+                  <button
+                    className="qr-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShowQR({ title: link.title, url: link.url });
+                    }}
+                    title="QR Kod Göster"
+                  >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1"/>
+                      <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1"/>
+                      <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" rx="1"/>
+                      <path d="M14 14h2M14 17h2M14 20h2M17 14h2M17 17h2M17 20h2M20 14h2M20 17h2M20 20h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
-                  </div>
-                </button>
+                  </button>
+                </div>
               ))
           )}
         </div>
