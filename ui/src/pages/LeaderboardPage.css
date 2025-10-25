@@ -154,7 +154,18 @@
 }
 
 .podium-user:hover {
-  transform: translateY(-5px);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.podium-user:hover .avatar-image {
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
 }
 
 .podium-user.first {
@@ -299,7 +310,22 @@
 }
 
 .user-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user-item:hover .avatar-image {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  transition: all 0.3s ease;
+}
+
+.user-item:hover .xp-amount {
+  color: #00d9ff;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+  transition: all 0.3s ease;
 }
 
 .user-item:last-child {

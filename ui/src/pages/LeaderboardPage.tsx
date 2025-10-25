@@ -151,7 +151,13 @@ export function LeaderboardPage() {
       <div className="podium-section">
         <div className="podium-container">
           {getTopThreeUsers().map((user, index) => (
-            <div key={user.id} className={`podium-user ${index === 0 ? 'first' : index === 1 ? 'second' : 'third'}`}>
+            <div 
+              key={user.id} 
+              className={`podium-user ${index === 0 ? 'first' : index === 1 ? 'second' : 'third'}`}
+              onClick={() => navigate(`/${user.username}`)}
+              style={{ cursor: 'pointer' }}
+              title={`${user.display_name} profilini görüntüle`}
+            >
               <div className="podium-rank">
                 <span className="rank-number">{user.rank}</span>
                 <div className="rank-crown">
@@ -184,7 +190,13 @@ export function LeaderboardPage() {
       <div className="users-list-section">
         <div className="users-list">
           {getOtherUsers().map((user) => (
-            <div key={user.id} className={`user-item ${isCurrentUser(user) ? 'current-user' : ''}`}>
+            <div 
+              key={user.id} 
+              className={`user-item ${isCurrentUser(user) ? 'current-user' : ''}`}
+              onClick={() => navigate(`/${user.username}`)}
+              style={{ cursor: 'pointer' }}
+              title={`${user.display_name} profilini görüntüle`}
+            >
               <div className="user-rank">
                 <span className="rank-number">{user.rank}</span>
               </div>

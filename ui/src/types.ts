@@ -22,7 +22,6 @@ export interface UserProfile {
   image_url: string;
   link_ids: number[];
   link_count: number;
-  total_xp: number;     // Toplam XP puanı
   links: Link[];        // Frontend'de dynamic fields'dan yüklenir
 }
 

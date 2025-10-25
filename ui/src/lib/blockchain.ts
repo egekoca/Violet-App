@@ -26,7 +26,7 @@ export const NETWORK = 'testnet';
 export const RPC_URL = 'https://fullnode.testnet.sui.io:443';
 
 // Contract bilgileri (contract-info.json'dan)
-export const PACKAGE_ID = '0xec23f89363e1115b5b45b18b5be6b43b30bedacf85391772dde29d1ed6e7eaae';
+export const PACKAGE_ID = '0xd8c1211eeed118807668d72a683bd6c17b7913380f62597fb0ef8c950bcac849';
 export const MODULE_NAME = 'linktree';
 
 // Sui Client
@@ -52,7 +52,6 @@ export interface UserProfile {
   image_url: string;
   link_ids: number[];
   link_count: number;
-  total_xp: number; // Toplam XP puanı
   links: Link[]; // Frontend'de dinamik olarak doldurulacak
 }
 
@@ -300,7 +299,6 @@ export async function getUserProfile(profileId: string): Promise<UserProfile | n
       image_url: fields.image_url || '',
       link_ids: link_ids,
       link_count: Number(fields.link_count || 0),
-      total_xp: Number(fields.total_xp || 0),
       links: links,
     };
   } catch (error) {
@@ -465,7 +463,6 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
           image_url: fields.image_url || '',
           link_ids: link_ids,
           link_count: Number(fields.link_count || 0),
-          total_xp: Number(fields.total_xp || 0),
           links: links,
         });
       }
@@ -699,28 +696,6 @@ export const sponsoredBlockchain = {
     return canUseSponsoredTransaction(userAddress);
   },
 
-  /**
-   * Link tıklama kaydı (XP sistemi)
-   */
-  async recordLinkClick(
-    profileId: string,
-    linkId: number,
-    linkType: number, // 1=social, 2=media, 3=contact, 4=custom
-    userAddress: string
-  ): Promise<any> {
-    const tx = new Transaction();
-    
-    tx.moveCall({
-      target: `${PACKAGE_ID}::${MODULE_NAME}::record_link_click`,
-      arguments: [
-        tx.object(profileId),
-        tx.pure.u64(linkId),
-        tx.pure.u8(linkType),
-      ],
-    });
-
-    return tx;
-  },
 
   /**
    * Sponsored transaction execute
@@ -766,7 +741,7 @@ export const sponsoredBlockchain = {
             const profile = await getUserProfile(profileId);
             
             if (profile) {
-              console.log('✅ Profil yüklendi:', profile.username, 'XP:', profile.total_xp);
+              console.log('✅ Profil yüklendi:', profile.username);
               allUsers.push(profile);
             } else {
               console.warn('⚠️ Profil null döndü:', profileId);
@@ -777,8 +752,8 @@ export const sponsoredBlockchain = {
         }
       }
 
-      // XP'ye göre sırala (yüksekten düşüğe)
-      allUsers.sort((a, b) => b.total_xp - a.total_xp);
+      // Kullanıcıları alfabetik sırala
+      allUsers.sort((a, b) => a.username.localeCompare(b.username));
 
       // Rank ekle
       allUsers.forEach((user, index) => {

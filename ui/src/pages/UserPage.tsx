@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
-import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT, sponsoredBlockchain } from '../lib/blockchain';
+import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import { Transaction } from '@mysten/sui/transactions';
