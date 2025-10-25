@@ -61,7 +61,7 @@ export function AdminPage() {
       id: 'tiktok',
       name: 'TikTok',
       description: 'Share your TikToks on your Violet',
-      icon: 'https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg',
+      icon: 'https://seeklogo.com/images/T/tiktok-icon-logo-1CB398A1BD-seeklogo.com.png',
       baseUrl: 'https://tiktok.com/@',
       category: 'social',
       color: '#000000'
