@@ -801,46 +801,76 @@ export function AdminPage() {
                     profile.links.map((link, index) => (
                       <div 
                         key={index} 
-                        className={`link-card ${!link.is_active ? 'inactive' : ''}`}
+                        className={`link-card-modern ${!link.is_active ? 'inactive' : ''}`}
                       >
-                        <div className="link-card-left">
-                          {link.icon && <span className="link-card-icon">{link.icon}</span>}
-                          <div className="link-card-content">
-                            <h4>{link.title}</h4>
-                            <p>{link.url}</p>
+                        {/* Banner Thumbnail */}
+                        {link.banner ? (
+                          <div className="link-banner-thumb">
+                            <img 
+                              src={link.banner} 
+                              alt={link.title}
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
                           </div>
-                        </div>
-                        <div className="link-card-right">
-                          <button
-                            className="link-action-btn edit-btn"
-                            onClick={() => handleEditLink(link)}
-                            title="Edit Link"
-                            disabled={processing}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M18.5 2.5C18.8978 2.1022 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.1022 21.5 2.5C21.8978 2.8978 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.1022 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
-                          <button
-                            className={`link-action-btn toggle-btn ${link.is_active ? 'active' : ''}`}
-                            onClick={() => handleToggleLink(link.id, link.is_active)}
-                            title={link.is_active ? 'Deactivate' : 'Activate'}
-                            disabled={processing}
-                          >
-                            {link.is_active ? '👁️' : '👁️‍🗨️'}
-                          </button>
-                          <button
-                            className="link-action-btn delete-btn"
-                            onClick={() => handleDeleteLink(link.id)}
-                            title="Delete Link"
-                            disabled={processing}
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </button>
+                        ) : (
+                          <div className="link-banner-placeholder">
+                            {link.icon || '🔗'}
+                          </div>
+                        )}
+
+                        {/* Content */}
+                        <div className="link-card-body">
+                          <div className="link-card-info">
+                            <div className="link-title-row">
+                              {link.icon && <span className="link-icon-small">{link.icon}</span>}
+                              <h4 className="link-title">{link.title || 'Untitled Link'}</h4>
+                              <span className={`link-status-dot ${link.is_active ? 'active' : 'inactive'}`}></span>
+                            </div>
+                            <p className="link-url">{link.url || 'No URL'}</p>
+                          </div>
+                          
+                          {/* Actions */}
+                          <div className="link-card-actions">
+                            <button
+                              className="link-action-btn-new edit-btn-new"
+                              onClick={() => handleEditLink(link)}
+                              title="Edit"
+                              disabled={processing}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M18.5 2.5C18.8978 2.1022 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.1022 21.5 2.5C21.8978 2.8978 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.1022 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                            <button
+                              className={`link-action-btn-new toggle-btn-new ${link.is_active ? 'active' : ''}`}
+                              onClick={() => handleToggleLink(link.id, link.is_active)}
+                              title={link.is_active ? 'Deactivate' : 'Activate'}
+                              disabled={processing}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                {link.is_active ? (
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                ) : (
+                                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                )}
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                              </svg>
+                            </button>
+                            <button
+                              className="link-action-btn-new delete-btn-new"
+                              onClick={() => handleDeleteLink(link.id)}
+                              title="Delete"
+                              disabled={processing}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))
@@ -928,17 +958,28 @@ export function AdminPage() {
                   </p>
                   
                   <div className="preview-links">
-                    {profile && profile.links.length > 0 ? (
-                      profile.links.slice(0, 3).map((link, index) => (
+                    {profile && profile.links.filter(link => link.is_active).length > 0 ? (
+                      profile.links.filter(link => link.is_active).slice(0, 3).map((link, index) => (
                         <a 
                           key={index} 
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="preview-link"
+                          className="preview-link-modern"
                         >
-                          {link.icon && <span>{link.icon}</span>}
-                          <span>{link.title}</span>
+                          {link.banner ? (
+                            <div className="preview-link-banner">
+                              <img src={link.banner} alt={link.title} onError={(e) => e.currentTarget.style.display = 'none'} />
+                            </div>
+                          ) : (
+                            <div className="preview-link-icon-box">
+                              {link.icon || '🔗'}
+                            </div>
+                          )}
+                          <div className="preview-link-text">
+                            <span className="preview-link-title">{link.title}</span>
+                            {link.icon && <span className="preview-link-icon-small">{link.icon}</span>}
+                          </div>
                         </a>
                       ))
                     ) : (

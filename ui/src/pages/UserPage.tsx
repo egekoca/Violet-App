@@ -297,7 +297,7 @@ export function UserPage() {
 
         {/* Links Section */}
         <div className="links-section">
-          {profile.links.length === 0 ? (
+          {profile.links.filter(link => link.is_active).length === 0 ? (
             <p className="no-links">No links have been added yet</p>
           ) : (
             profile.links
@@ -305,11 +305,33 @@ export function UserPage() {
               .map((link, index) => (
                 <button
                   key={index}
-                  className="link-card"
+                  className="user-link-card-modern"
                   onClick={() => handleLinkClick(link.url)}
                 >
-                  {link.icon && <span className="link-icon">{link.icon}</span>}
-                  <span className="link-title">{link.title}</span>
+                  {link.banner ? (
+                    <div className="user-link-banner">
+                      <img 
+                        src={link.banner} 
+                        alt={link.title}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="user-link-icon-box">
+                      {link.icon || '🔗'}
+                    </div>
+                  )}
+                  <div className="user-link-content">
+                    <span className="user-link-title">{link.title}</span>
+                    {link.icon && <span className="user-link-icon-small">{link.icon}</span>}
+                  </div>
+                  <div className="user-link-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 </button>
               ))
           )}
