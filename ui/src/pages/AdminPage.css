@@ -49,8 +49,10 @@
   transform: scale(1.05);
 }
 
-.logo-icon {
-  font-size: 24px;
+.logo-image {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .logo-text {

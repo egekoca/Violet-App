@@ -318,11 +318,11 @@ export function AdminPage() {
         // Enoki wallet ile doğrudan transaction yap
         console.log('🚀 Enoki wallet ile link ekleniyor...');
         
-        const tx = addLinkTransaction({
-          profileId: profile.id,
-          ...linkForm,
-        });
-        
+      const tx = addLinkTransaction({
+        profileId: profile.id,
+        ...linkForm,
+      });
+
         // Enoki wallet otomatik olarak sponsored transaction yapar
         signAndExecute(
           { transaction: tx as any },
@@ -381,31 +381,31 @@ export function AdminPage() {
           ...linkForm,
         });
 
-        signAndExecute(
-          { 
-            transaction: tx as any,
-          },
-          {
-            onSuccess: async (result) => {
-              console.log('✅ Link ekleme transaction başarılı:', result);
-              alert('✅ The link has been added! Waiting for blockchain confirmation...');
-              
-              // Blockchain'de işlenmesi için biraz daha uzun bekle
-              setTimeout(async () => {
-                console.log('🔄 Link eklendikten sonra veri yenileniyor...');
-                await loadData();
-                setLinkForm({ title: '', url: '', icon: '', banner: '' });
-                setShowAddLinkForm(false);
+      signAndExecute(
+        { 
+          transaction: tx as any,
+        },
+        {
+          onSuccess: async (result) => {
+            console.log('✅ Link ekleme transaction başarılı:', result);
+            alert('✅ The link has been added! Waiting for blockchain confirmation...');
+            
+            // Blockchain'de işlenmesi için biraz daha uzun bekle
+            setTimeout(async () => {
+              console.log('🔄 Link eklendikten sonra veri yenileniyor...');
+              await loadData();
+              setLinkForm({ title: '', url: '', icon: '', banner: '' });
+              setShowAddLinkForm(false);
                 setSearchQuery('');
                 setSelectedCategory('suggested');
               }, 5000);
-            },
-            onError: (error) => {
-              console.error('❌ Transaction hatası:', error);
-              alert('❌ Error: ' + error.message);
-            },
-          }
-        );
+          },
+          onError: (error) => {
+            console.error('❌ Transaction hatası:', error);
+            alert('❌ Error: ' + error.message);
+          },
+        }
+      );
       }
     } catch (error: any) {
       console.error('Link ekleme hatası:', error);
@@ -636,7 +636,7 @@ export function AdminPage() {
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <div className="logo" onClick={() => navigate('/')}>
-            <span className="logo-icon">🔗</span>
+            <img src="/violet2.png" alt="Violet" className="logo-image" />
             <span className="logo-text">VIOLET</span>
           </div>
         </div>
@@ -988,67 +988,67 @@ export function AdminPage() {
                         <form onSubmit={handleAddLink} className="custom-link-form">
                           <h3>Custom Link</h3>
                           
-                          <div className="form-group">
+            <div className="form-group">
                             <label>Title</label>
-                            <input
-                              type="text"
-                              value={linkForm.title}
-                              onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
+              <input
+                type="text"
+                      value={linkForm.title}
+                      onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
                               placeholder="My Awesome Link"
-                              required
-                              maxLength={50}
-                            />
-                          </div>
+                required
+                      maxLength={50}
+              />
+            </div>
 
-                          <div className="form-group">
-                            <label>URL</label>
-                            <input
-                              type="url"
-                              value={linkForm.url}
-                              onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
+            <div className="form-group">
+              <label>URL</label>
+              <input
+                type="url"
+                      value={linkForm.url}
+                      onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
                               placeholder="https://example.com"
-                              required
-                            />
-                          </div>
+                required
+              />
+            </div>
 
-                          <div className="form-group">
-                            <label>Icon (Emoji)</label>
-                            <input
-                              type="text"
-                              value={linkForm.icon}
-                              onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
+            <div className="form-group">
+              <label>Icon (Emoji)</label>
+              <input
+                type="text"
+                      value={linkForm.icon}
+                      onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
                               placeholder="🔗"
-                              maxLength={2}
-                            />
-                          </div>
+                maxLength={2}
+              />
+            </div>
 
-                          <div className="form-group">
-                            <label>Banner URL (Optional)</label>
-                            <input
-                              type="url"
-                              value={linkForm.banner}
-                              onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
-                              placeholder="https://example.com/banner.jpg"
-                            />
-                          </div>
+            <div className="form-group">
+              <label>Banner URL (Optional)</label>
+              <input
+                type="url"
+                      value={linkForm.banner}
+                      onChange={(e) => setLinkForm({ ...linkForm, banner: e.target.value })}
+                      placeholder="https://example.com/banner.jpg"
+              />
+            </div>
 
-                          <div className="form-actions">
-                            <button 
-                              type="submit" 
+            <div className="form-actions">
+                    <button 
+                      type="submit" 
                               className="submit-btn-modal"
-                              disabled={processing}
-                            >
+                      disabled={processing}
+                    >
                               {processing ? '⏳ Adding...' : '✅ Add Link'}
-                            </button>
-                            <button 
-                              type="button" 
+              </button>
+              <button 
+                type="button" 
                               className="cancel-btn-modal"
                               onClick={() => setSelectedCategory('suggested')}
                             >
                               ← Back
-                            </button>
-                          </div>
-                        </form>
+              </button>
+            </div>
+          </form>
                       ) : (
                         /* Platform Grid */
                         <div className="platform-grid">

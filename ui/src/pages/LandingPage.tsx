@@ -31,7 +31,7 @@ export function LandingPage() {
       <header className="landing-header">
         <div className="header-content">
           <div className="logo">
-            <span className="logo-icon">🔗</span>
+            <img src="/violet2.png" alt="Violet" className="logo-image" />
             <span className="logo-text">VIOLET</span>
           </div>
           
