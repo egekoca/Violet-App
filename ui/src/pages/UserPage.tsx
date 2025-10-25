@@ -23,28 +23,28 @@ export function UserPage() {
       setLoading(true);
       setError('');
 
-      // Eğer URL'de username varsa PUBLIC profil görüntüleme
+      // If the URL has an username, display the PUBLIC profile
       if (username) {
-        console.log('🌐 Public profile mode - Aranan username:', username);
+        console.log('🌐 Public profile mode - Target username:', username);
         const publicProfile = await getProfileByUsername(username);
         
         if (publicProfile) {
           setProfile(publicProfile);
         } else {
-          setError(`Profile @${username} not found`);
+          setError(`User @${username} not found`);
           setProfile(null);
         }
         return;
       }
 
-      // Username yoksa PRIVATE profil görüntüleme (kendi profilim)
+      // If there is no username in the URL, show the logged in user's profile
       if (!account) {
         setError('Please connect your wallet to view your profile');
         setProfile(null);
         return;
       }
 
-      // Kullanıcının tüm profillerini çek
+      // Fetch all the profile data
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length === 0) {
@@ -74,12 +74,12 @@ export function UserPage() {
     );
   }
 
-  // Eğer username varsa (public profil), cüzdan gerekmez
+  // If the username is provided (public profile), no wallet connection required
   if (!account && !username) {
     return (
       <div className="user-page error">
         <div className="container">
-          <h2>🔐 Wallet Connection Is Required</h2>
+          <h2>Wallet Connection Is Required</h2>
           <p style={{ marginBottom: '24px', color: 'rgba(255,255,255,0.8)' }}>
             Connect to your wallet to be able to see your profile.
           </p>
@@ -93,8 +93,8 @@ export function UserPage() {
     return (
       <div className="user-page error">
         <div className="container">
-          <h2>⚠️ {error}</h2>
-          {error.includes('profilin yok') && (
+          <h2>{error}</h2>
+          {error.includes('No profile') && (
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => navigate('/profile')}
@@ -167,12 +167,12 @@ export function UserPage() {
           <WalletConnect />
         </div>
 
-        {/* Admin Button - Sadece kendi profilinde göster */}
+        {/* Admin Button - Show it only in your profile */}
         {!username && account && profile && profile.owner === account.address && (
           <button 
             className="admin-btn"
             onClick={() => navigate('/admin')}
-            title="Admin Panel"
+            title="Admin Page"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
@@ -241,7 +241,7 @@ export function UserPage() {
 
         {/* Footer */}
         <footer className="footer">
-          <p>Powered by <a href="https://sui.io/  " target='_blank' rel='noopener noreferrer' className="blue-link">Sui Blockchain</a></p>
+          <p>Powered by <a href="https://sui.io/" target='_blank' rel='noopener noreferrer' className="blue-link">Sui Blockchain</a></p>
         </footer>
       </div>
     </div>

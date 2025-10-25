@@ -1,29 +1,15 @@
 /**
- * Landing Page - Proje Tanıtım Sayfası
- * İlk açılışta gösterilen ana sayfa
+ * Landing Page - Project Demonstration Page
  */
 
 import { useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
 import './LandingPage.css';
 
 export function LandingPage() {
   const navigate = useNavigate();
 
-  // NOT: Otomatik redirect kaldırıldı.
-  // Kullanıcı manuel olarak "Giriş Yap" butonuna tıklayarak login sayfasına gitmeli.
-
-  // useEffect(() => {
-  //   // Example: check for a cookie called "authToken"
-  //   const isLoggedIn = document.cookie
-  //     .split("; ")
-  //     .some((cookie) => cookie.startsWith("authToken="));
-
-  //   if (isLoggedIn) {
-  //     // Redirect logged-in user to dashboard or another page
-  //     navigate("/dashboard"); // change this to your desired route
-  //   }
-  // }, [navigate]);
+  // NOTE: Automatic redirection has been removed.
+  // The user must click the "Login" button manually and log in that way.
 
   return (
     <div className="landing-page">
