@@ -15,7 +15,7 @@ export function WalletConnect() {
       
       {account && (
         <div className="wallet-info">
-          <span className="wallet-label">Bağlı:</span>
+          <span className="wallet-label">Connected:</span>
           <span className="wallet-address">
             {account.address.slice(0, 6)}...{account.address.slice(-4)}
           </span>

@@ -33,8 +33,8 @@ export function LoginPage() {
 
           {/* Başlık */}
           <div className="login-header">
-            <h1>Hoş Geldin</h1>
-            <p>Blockchain'deki profiline giriş yap</p>
+            <h1>Welcome</h1>
+            <p>Log in to your Blockchain account</p>
           </div>
 
           {/* Connect Wallet */}
@@ -47,40 +47,34 @@ export function LoginPage() {
             <div className="info-card">
               <div className="info-icon">🔐</div>
               <div className="info-content">
-                <h3>Güvenli Giriş</h3>
-                <p>Sui Wallet ile güvenli bir şekilde giriş yapın</p>
+                <h3>Secure Login</h3>
+                <p>Log in securely with Sui Wallet</p>
               </div>
             </div>
 
             <div className="info-card">
               <div className="info-icon">⚡</div>
               <div className="info-content">
-                <h3>Hızlı Erişim</h3>
-                <p>Bir tıkla profilinize ulaşın</p>
+                <h3>Fast Access</h3>
+                <p>Reach to your profile within a single click</p>
               </div>
             </div>
           </div>
 
           {/* Alt Bilgi */}
           <div className="login-footer">
-            <p>
-              Henüz hesabın yok mu?{' '}
+            {/* <p>
+              Don't have an account yet?{' '}
               <button 
                 className="signup-link"
                 onClick={() => navigate('/')}
               >
-                Ücretsiz Başla
+                Start For Free
               </button>
-            </p>
+            </p> */}
             <div className="wallet-download">
-              Cüzdanın yok mu?{' '}
-              <a 
-                href="https://chrome.google.com/webstore/detail/sui-wallet" 
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                Sui Wallet İndir →
-              </a>
+              <p>Don't have a wallet yet? <a 
+                href="https://chromewebstore.google.com/detail/slush-%E2%80%94-a-sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil" target="_blank" rel="noopener noreferrer"> Download Sui Wallet → </a></p> 
             </div>
           </div>
         </div>
@@ -125,8 +119,8 @@ export function LoginPage() {
 
           {/* Main Message */}
           <div className="visual-content">
-            <h2>Blockchain'de Güvenle</h2>
-            <p>Profiliniz sonsuza dek sizin</p>
+            <h2>Safe With Blockchain</h2>
+            <p>Your profile is forever yours</p>
             <div className="visual-badge">
               <span className="badge-icon">⚡</span>
               <span>Powered by Sui</span>

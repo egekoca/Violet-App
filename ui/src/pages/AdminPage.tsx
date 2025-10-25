@@ -313,7 +313,7 @@ export function AdminPage() {
                   className="submit-btn-large"
                   disabled={processing}
                 >
-                  {processing ? '⏳ Processing...' : '✅ Profile Created Successfully'}
+                  {processing ? '⏳ Creating...' : '✅ Sign In'}
                 </button>
               </form>
             </div>
@@ -339,7 +339,7 @@ export function AdminPage() {
             {/* SETTINGS VIEW - Profil Düzenleme */}
             {showEditProfileForm ? (
               <div className="settings-content">
-                <h2 className="section-title">⚙️ Profil Ayarları</h2>
+                <h2 className="section-title">⚙️ Profile Settings</h2>
                 
                 <div className="link-form-card">
                   <h3>Edit Your Profile</h3>
@@ -387,7 +387,7 @@ export function AdminPage() {
                       className="submit-btn"
                       disabled={processing}
                     >
-                      {processing ? '⏳ Saving...' : '💾 Saved Successfully'}
+                      {processing ? '⏳ Saving...' : '💾 Save'}
                     </button>
                   </form>
                 </div>
