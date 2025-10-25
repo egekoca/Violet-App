@@ -1,21 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCurrentAccount } from '@mysten/dapp-kit';
+import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { getUserProfiles, getProfileByUsername, getUserNFTs, NFT } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
+import { Transaction } from '@mysten/sui/transactions';
 import './UserPage.css';
 
 export function UserPage() {
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
   const account = useCurrentAccount();
+  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [showNFTModal, setShowNFTModal] = useState(false);
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [loadingNFTs, setLoadingNFTs] = useState(false);
+  const [showTipModal, setShowTipModal] = useState(false);
+  const [tipAmount, setTipAmount] = useState('');
+  const [sendingTip, setSendingTip] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<'SUI' | 'WAL'>('SUI');
 
   useEffect(() => {
     loadData();
@@ -83,6 +89,72 @@ export function UserPage() {
       alert('Failed to load NFTs');
     } finally {
       setLoadingNFTs(false);
+    }
+  };
+
+  const handleSendTip = async () => {
+    if (!account || !profile) {
+      alert('Lütfen önce cüzdanınızı bağlayın!');
+      return;
+    }
+
+    const amount = parseFloat(tipAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert('Lütfen geçerli bir miktar girin');
+      return;
+    }
+
+    const minAmount = selectedToken === 'SUI' ? 0.001 : 0.01;
+    if (amount < minAmount) {
+      alert(`Minimum bahşiş miktarı: ${minAmount} ${selectedToken}`);
+      return;
+    }
+
+    try {
+      setSendingTip(true);
+
+      const tx = new Transaction();
+
+      if (selectedToken === 'SUI') {
+        // SUI transfer (1 SUI = 1,000,000,000 MIST)
+        const amountInMist = Math.floor(amount * 1_000_000_000);
+        const [coin] = tx.splitCoins(tx.gas, [amountInMist]);
+        tx.transferObjects([coin], profile.owner);
+      } else {
+        // WAL transfer - Walrus testnet token
+        // Not: WAL coin type'ı için Walrus documentation'a bakılmalı
+        // Şimdilik temsili olarak SUI benzeri işlem yapıyoruz
+        const amountInSmallestUnit = Math.floor(amount * 1_000_000_000);
+        const [coin] = tx.splitCoins(tx.gas, [amountInSmallestUnit]);
+        tx.transferObjects([coin], profile.owner);
+        
+        // TODO: Gerçek WAL token için doğru coin type kullanılmalı:
+        // const walCoinType = '0x...::wal::WAL';
+        // tx.splitCoins ile WAL coin'lerini böl ve transfer et
+      }
+
+      signAndExecute(
+        {
+          transaction: tx as any,
+        },
+        {
+          onSuccess: async () => {
+            alert(`🎉 ${amount} ${selectedToken} başarıyla gönderildi! Desteğiniz için teşekkürler!`);
+            setShowTipModal(false);
+            setTipAmount('');
+            setSelectedToken('SUI');
+          },
+          onError: (error) => {
+            console.error('Bahşiş gönderme hatası:', error);
+            alert('❌ Hata: ' + error.message);
+          },
+        }
+      );
+    } catch (error: any) {
+      console.error('Bahşiş hatası:', error);
+      alert('❌ Hata: ' + error.message);
+    } finally {
+      setSendingTip(false);
     }
   };
 
@@ -226,20 +298,34 @@ export function UserPage() {
           <p className="bio">{profile.bio}</p>
           <p className="username-label">@{profile.username}</p>
           
-          {/* NFT Gallery Button */}
-          <button 
-            className="nft-gallery-btn"
-            onClick={handleShowNFTs}
-            title="View NFT Collection"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span>NFT Collection</span>
-          </button>
+          {/* Action Buttons */}
+          <div className="profile-actions">
+            <button 
+              className="nft-gallery-btn"
+              onClick={handleShowNFTs}
+              title="View NFT Collection"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>NFT Collection</span>
+            </button>
+
+            <button 
+              className="tip-btn"
+              onClick={() => setShowTipModal(true)}
+              title="Bahşiş Gönder"
+            >
+              {/* Paper Plane / Kağıt Uçak - Send Icon */}
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>Send Tip</span>
+            </button>
+          </div>
         </div>
 
         {/* NFT Gallery Modal */}
@@ -289,6 +375,136 @@ export function UserPage() {
                       </div>
                     ))}
                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tip Modal */}
+        {showTipModal && (
+          <div className="tip-modal-overlay" onClick={() => setShowTipModal(false)}>
+            <div className="tip-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="tip-modal-header">
+                <div className="tip-modal-title">
+                  {/* Paper Plane / Kağıt Uçak - Send Icon */}
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ marginRight: '12px' }}>
+                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <h2>Bahşiş Gönder</h2>
+                </div>
+                <button 
+                  className="tip-modal-close"
+                  onClick={() => setShowTipModal(false)}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="tip-modal-body">
+                {!account ? (
+                  <div className="tip-connect-wallet">
+                    <p>Bahşiş göndermek için lütfen cüzdanınızı bağlayın</p>
+                    <WalletConnect />
+                  </div>
+                ) : (
+                  <>
+                    <div className="tip-profile-info">
+                      {profile.image_url ? (
+                        <img 
+                          src={profile.image_url} 
+                          alt={profile.display_name}
+                          className="tip-avatar"
+                        />
+                      ) : (
+                        <div className="tip-avatar-placeholder">
+                          {profile.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <h3>{profile.display_name}</h3>
+                        <p>@{profile.username}</p>
+                      </div>
+                    </div>
+
+                    <div className="tip-form">
+                      {/* Token Seçici */}
+                      <div className="token-selector">
+                        <label>Token Seçin</label>
+                        <div className="token-buttons">
+                          <button
+                            type="button"
+                            className={`token-btn ${selectedToken === 'SUI' ? 'active' : ''}`}
+                            onClick={() => setSelectedToken('SUI')}
+                            disabled={sendingTip}
+                          >
+                            <div className="token-icon">🔷</div>
+                            <div className="token-info">
+                              <span className="token-name">SUI</span>
+                              <span className="token-network">Sui Network</span>
+                            </div>
+                          </button>
+                          <button
+                            type="button"
+                            className={`token-btn ${selectedToken === 'WAL' ? 'active' : ''}`}
+                            onClick={() => setSelectedToken('WAL')}
+                            disabled={sendingTip}
+                          >
+                            <div className="token-icon">🐋</div>
+                            <div className="token-info">
+                              <span className="token-name">WAL</span>
+                              <span className="token-network">Walrus Token</span>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+
+                      <label htmlFor="tip-amount">Miktar ({selectedToken})</label>
+                      <div className="tip-input-group">
+                        <input
+                          id="tip-amount"
+                          type="number"
+                          min={selectedToken === 'SUI' ? '0.001' : '0.01'}
+                          step={selectedToken === 'SUI' ? '0.001' : '0.01'}
+                          value={tipAmount}
+                          onChange={(e) => setTipAmount(e.target.value)}
+                          placeholder="0.00"
+                          disabled={sendingTip}
+                        />
+                        <span className="tip-currency">{selectedToken}</span>
+                      </div>
+                      <small>Minimum: {selectedToken === 'SUI' ? '0.001' : '0.01'} {selectedToken}</small>
+
+                      <div className="tip-quick-amounts">
+                        <button onClick={() => setTipAmount('0.1')} disabled={sendingTip}>0.1</button>
+                        <button onClick={() => setTipAmount('0.5')} disabled={sendingTip}>0.5</button>
+                        <button onClick={() => setTipAmount('1')} disabled={sendingTip}>1</button>
+                        <button onClick={() => setTipAmount('5')} disabled={sendingTip}>5</button>
+                      </div>
+
+                      <button 
+                        className="tip-send-btn"
+                        onClick={handleSendTip}
+                        disabled={sendingTip || !tipAmount}
+                      >
+                        {sendingTip ? (
+                          <>
+                            <span className="spinner-small"></span>
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                              <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Send Tip
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

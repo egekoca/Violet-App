@@ -274,13 +274,12 @@
 
 /* ===== NFT Gallery ===== */
 .nft-gallery-btn {
-  margin-top: 20px;
-  padding: 12px 24px;
+  padding: 14px 28px;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  border: none;
-  border-radius: 12px;
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  border-radius: 16px;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -289,6 +288,23 @@
   justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.nft-gallery-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.nft-gallery-btn:hover::before {
+  left: 100%;
 }
 
 .nft-gallery-btn:hover {
@@ -618,6 +634,464 @@
 
   .user-link-title {
     font-size: 15px;
+  }
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+/* Tip Button */
+.tip-btn {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+  border: 2px solid rgba(255, 193, 7, 0.4);
+  border-radius: 16px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.tip-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.tip-btn:hover::before {
+  left: 100%;
+}
+
+.tip-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 152, 0, 0.3));
+  border-color: rgb(255, 193, 7);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 193, 7, 0.4);
+}
+
+.tip-btn:active {
+  transform: translateY(0);
+}
+
+.tip-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Tip Modal */
+.tip-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+  padding: 20px;
+}
+
+.tip-modal-content {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(15, 15, 35, 0.98));
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(255, 193, 7, 0.3), 0 0 100px rgba(168, 85, 247, 0.2);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tip-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(255, 193, 7, 0.2);
+}
+
+.tip-modal-title {
+  display: flex;
+  align-items: center;
+  color: rgb(255, 193, 7);
+}
+
+.tip-modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.tip-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tip-modal-close:hover {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.5);
+  transform: rotate(90deg);
+}
+
+.tip-modal-body {
+  color: white;
+}
+
+.tip-connect-wallet {
+  text-align: center;
+  padding: 32px 0;
+}
+
+.tip-connect-wallet p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tip-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.2);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.tip-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 193, 7, 0.5);
+  object-fit: cover;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+}
+
+.tip-avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 193, 7, 0.5);
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 152, 0, 0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 4px 20px rgba(255, 193, 7, 0.3);
+}
+
+.tip-profile-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.tip-profile-info p {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tip-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: -8px;
+}
+
+/* Token Selector */
+.token-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.token-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.token-btn {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 193, 7, 0.2);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.token-btn:hover:not(:disabled) {
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+}
+
+.token-btn.active {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+  border-color: rgb(255, 193, 7);
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+}
+
+.token-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.token-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.token-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.token-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.token-network {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tip-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tip-input-group input {
+  width: 100%;
+  padding: 16px 70px 16px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tip-input-group input:focus {
+  outline: none;
+  border-color: rgb(255, 193, 7);
+  box-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.tip-currency {
+  position: absolute;
+  right: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgb(255, 193, 7);
+}
+
+.tip-form small {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: -8px;
+}
+
+.tip-quick-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.tip-quick-amounts button {
+  padding: 12px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 10px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tip-quick-amounts button:hover {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: rgb(255, 193, 7);
+  transform: translateY(-2px);
+}
+
+.tip-quick-amounts button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tip-send-btn {
+  padding: 16px 32px;
+  background: linear-gradient(135deg, rgb(255, 193, 7), rgb(255, 152, 0));
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(255, 193, 7, 0.4);
+  margin-top: 8px;
+}
+
+.tip-send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 193, 7, 0.5);
+}
+
+.tip-send-btn:active {
+  transform: translateY(0);
+}
+
+.tip-send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.tip-send-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tip-btn,
+  .nft-gallery-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tip-modal-content {
+    padding: 24px;
+  }
+
+  .tip-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .tip-quick-amounts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .token-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .token-btn {
+    padding: 14px;
+  }
+
+  .token-icon {
+    font-size: 28px;
+    width: 36px;
+    height: 36px;
   }
 }
 
