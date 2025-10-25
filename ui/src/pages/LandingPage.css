@@ -1,5 +1,9 @@
 /* Landing Page - Linktree Style Dark Theme */
 
+* {
+  scroll-behavior: smooth;
+}
+
 .landing-page {
   min-height: 100vh;
   background: #0f0f23;
