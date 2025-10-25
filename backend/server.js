@@ -1,5 +1,6 @@
 /**
  * Backend API for Sponsored Transactions
+ * Gas fee-free transactions with the real Enoki API
  * Gerçek Enoki API ile gas fee'siz işlemler
  */
 
@@ -23,7 +24,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Contract bilgileri
+// Contract information
 const PACKAGE_ID = '0x3ff3a568887c819e06f8f4521052853c40c1f311b41450b38f5c68f9cd4b3aa0';
 const MODULE_NAME = 'linktree';
 
@@ -84,12 +85,13 @@ app.post('/api/sponsor-transaction', async (req, res) => {
       });
     }
 
-    console.log('🚀 Sponsored transaction başlatılıyor...', {
+    console.log('Starting a sponsored transaction...', {
       userAddress,
       txBytesLength: transactionBlockKindBytes.length
     });
 
     // Enoki API ile sponsored transaction oluştur
+    // Start a sponsored transaction with Enoki API
     const enokiApiUrl = 'https://api.enoki.mystenlabs.com/v1/transaction-blocks/sponsor';
     
     const sponsorResponse = await fetch(enokiApiUrl, {
@@ -97,7 +99,7 @@ app.post('/api/sponsor-transaction', async (req, res) => {
       headers: {
         'Authorization': `Bearer ${process.env.ENOKI_PRIVATE_KEY}`,
         'Content-Type': 'application/json',
-        ...(jwt && { 'zklogin-jwt': jwt }), // JWT token ekle
+        ...(jwt && { 'zklogin-jwt': jwt }), // Add JWT
       },
       body: JSON.stringify({
         network: 'testnet',
@@ -118,8 +120,8 @@ app.post('/api/sponsor-transaction', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Sponsored transaction hatası:', error);
-    console.error('❌ Error details:', {
+    console.error('Sponsored transaction error:', error);
+    console.error('Error details:', {
       message: error.message,
       stack: error.stack,
       name: error.name
@@ -139,13 +141,13 @@ app.post('/api/execute-transaction', async (req, res) => {
   try {
     const { digest, signature, jwt } = req.body;
 
-    console.log('🚀 Sponsored transaction execute ediliyor...', {
+    console.log('Executing the sponsored transaction...', {
       digest: `${digest.slice(0, 8)}...${digest.slice(-4)}`,
       hasSignature: !!signature,
       hasJwt: !!jwt
     });
 
-    // Enoki execute API endpoint'ini kullan
+    // Use the Enoki execute API endpoint
     const executeApiUrl = `https://api.enoki.mystenlabs.com/v1/transaction-blocks/sponsor/${digest}`;
     
     const executeResponse = await fetch(executeApiUrl, {
@@ -153,7 +155,7 @@ app.post('/api/execute-transaction', async (req, res) => {
       headers: {
         'Authorization': `Bearer ${process.env.ENOKI_PRIVATE_KEY}`,
         'Content-Type': 'application/json',
-        ...(jwt && { 'zklogin-jwt': jwt }), // JWT token ekle
+        ...(jwt && { 'zklogin-jwt': jwt }), // Add JWT
       },
       body: JSON.stringify({
         signature: signature || 'zkLogin_signature',
@@ -168,19 +170,19 @@ app.post('/api/execute-transaction', async (req, res) => {
     const result = await executeResponse.json();
     res.json({ result });
   } catch (error) {
-    console.error('❌ Execute transaction hatası:', error);
+    console.error('Execute transaction error:', error);
     res.status(500).json({ error: 'Failed to execute transaction' });
   }
 });
 
-// Rate limiting (basit in-memory)
+// Rate limiting (basic in-memory)
 const rateLimit = new Map();
 
 app.use('/api/sponsor-transaction', (req, res, next) => {
   const userAddress = req.body.userAddress;
   const now = Date.now();
-  const windowMs = 24 * 60 * 60 * 1000; // 24 saat
-  const maxRequests = 10; // Kullanıcı başına günlük limit
+  const windowMs = 24 * 60 * 60 * 1000; // 24 hours
+  const maxRequests = 10; // Daily limit per user
 
   if (userAddress) {
     const userLimit = rateLimit.get(userAddress) || { count: 0, resetTime: now + windowMs };
@@ -206,11 +208,11 @@ app.use('/api/sponsor-transaction', (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Backend API running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🔗 Contract info: http://localhost:${PORT}/api/contract-info`);
-  console.log(`💳 Sponsored transactions: http://localhost:${PORT}/api/sponsor-transaction`);
-  console.log(`🔑 Enoki configured: ${!!process.env.ENOKI_PRIVATE_KEY}`);
+  console.log(`Backend API running on port ${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/api/health`);
+  console.log(`Contract info: http://localhost:${PORT}/api/contract-info`);
+  console.log(`Sponsored transactions: http://localhost:${PORT}/api/sponsor-transaction`);
+  console.log(`Enoki configured: ${!!process.env.ENOKI_PRIVATE_KEY}`);
 });
 
 module.exports = app;
