@@ -4,14 +4,14 @@ import { Box, Container, Flex, Heading } from "@radix-ui/themes";
 import { useState } from "react";
 import { Counter } from "./Counter";
 import { CreateCounter } from "./CreateCounter";
-
+import LandingPage from "./Pages/LandingPage";
 function App() {
   const currentAccount = useCurrentAccount();
   const [counterId, setCounter] = useState(() => {
     const hash = window.location.hash.slice(1);
     return isValidSuiObjectId(hash) ? hash : null;
   });
-
+ /*
   return (
     <>
       <Flex
@@ -56,6 +56,8 @@ function App() {
       </Container>
     </>
   );
+  */
+ return <LandingPage />;
 }
-
 export default App;
+
