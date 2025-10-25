@@ -14,14 +14,14 @@ module linktree::linktree {
 
     // ============ Events ============
 
-    /// Profil oluşturulduğunda emit edilir
+    /// Emits when the profile is created
     public struct ProfileCreated has copy, drop {
         profile_id: address,
         owner: address,
         username: String,
     }
 
-    /// Link eklendiğinde emit edilir
+    /// Emits when a link is added
     public struct LinkAdded has copy, drop {
         profile_id: address,
         link_id: u64,
@@ -29,27 +29,27 @@ module linktree::linktree {
         url: String,
     }
 
-    /// Link güncellendiğinde emit edilir
+    /// Emits when a link is updated
     public struct LinkUpdated has copy, drop {
         profile_id: address,
         link_id: u64,
         title: String,
     }
 
-    /// Link silindiğinde emit edilir
+    /// Emits when a link is deleted
     public struct LinkDeleted has copy, drop {
         profile_id: address,
         link_id: u64,
     }
 
-    /// Profil güncellendiğinde emit edilir
+    /// Emits when the profile is updated
     public struct ProfileUpdated has copy, drop {
         profile_id: address,
         display_name: String,
     }
 
 
-    /// Profil resmi güncellendiğinde emit edilir
+    /// Emits when the profile image is updated
     public struct ProfileImageUpdated has copy, drop {
         profile_id: address,
         image_url: String,
@@ -57,7 +57,7 @@ module linktree::linktree {
 
     // ============ Struct'lar ============
 
-    /// Tek bir link bilgisi - Dynamic Field olarak saklanır
+    /// Single link field - Stored as Dynamic Field
     public struct Link has store, copy, drop {
         id: u64,
         title: String,        // "Instagram"
@@ -68,12 +68,12 @@ module linktree::linktree {
         order: u64,           // Sıralama için
     }
 
-    /// Link ID için wrapper - Dynamic Field key olarak kullanılır
+    /// Wrapper for Link ID, used as Dynamic Field key
     public struct LinkKey has copy, drop, store {
         id: u64
     }
 
-    /// Kullanıcı profili - blockchain üzerinde bir nesne
+    /// User profile, a blockchain object
     public struct UserProfile has key, store {
         id: UID,
         owner: address,           // Profil sahibi
@@ -86,9 +86,9 @@ module linktree::linktree {
         link_count: u64,         // Toplam link sayısı
     }
 
-    // ============ Profil Fonksiyonları ============
+    // ============ Profile Functions ============
 
-    /// Yeni bir profil oluştur
+    /// Create a new profile
     entry fun create_profile(
         username: String,
         display_name: String,
@@ -119,51 +119,51 @@ module linktree::linktree {
             username,
         });
 
-        // Profili kullanıcıya transfer et (owned object)
+        // Transfer the ownership of the profile to the user (owned object)
         transfer::transfer(profile, sender);
     }
 
-    /// Profil bilgilerini güncelle
+    /// Update profile info
     entry fun update_profile(
         profile: &mut UserProfile,
         display_name: String,
         bio: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner güncelleyebilir
+        // Only owner can update the profile
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         profile.display_name = display_name;
         profile.bio = bio;
 
-        // Event emit et
+        // Emit the event
         event::emit(ProfileUpdated {
             profile_id: object::uid_to_address(&profile.id),
             display_name,
         });
     }
 
-    /// Profil resmini güncelle
+    /// Update profile picture
     entry fun update_profile_image(
         profile: &mut UserProfile,
         image_url: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner güncelleyebilir
+        // Only the owner can update the profile picture
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         profile.image_url = image_url;
 
-        // Event emit et
+        // Emit the event
         event::emit(ProfileImageUpdated {
             profile_id: object::uid_to_address(&profile.id),
             image_url,
         });
     }
 
-    // ============ Link CRUD Fonksiyonları ============
+    // ============ Link CRUD Functions ============
 
-    /// Yeni bir link ekle (Dynamic Field olarak)
+    /// Create a new link (as Dynamic Field)
     entry fun add_link(
         profile: &mut UserProfile,
         title: String,
@@ -172,7 +172,7 @@ module linktree::linktree {
         banner: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner ekleyebilir
+        // Only the owner can create a link
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         let link_id = profile.next_link_id;
@@ -187,17 +187,17 @@ module linktree::linktree {
             order: profile.link_count,
         };
 
-        // Dynamic field olarak ekle
+        // Use as Dynamic Field
         df::add(&mut profile.id, LinkKey { id: link_id }, link);
         
-        // Link ID'yi vector'e ekle
+        // Add the Link ID to the vector
         vector::push_back(&mut profile.link_ids, link_id);
         
-        // Counters'ı güncelle
+        // Update counters
         profile.next_link_id = profile.next_link_id + 1;
         profile.link_count = profile.link_count + 1;
 
-        // Event emit et
+        // Emit the event
         event::emit(LinkAdded {
             profile_id: object::uid_to_address(&profile.id),
             link_id,
@@ -206,7 +206,7 @@ module linktree::linktree {
         });
     }
 
-    /// Link bilgilerini güncelle
+    /// Update a link
     entry fun update_link(
         profile: &mut UserProfile,
         link_id: u64,
@@ -216,22 +216,22 @@ module linktree::linktree {
         banner: String,
         ctx: &mut TxContext
     ) {
-        // Sadece owner güncelleyebilir
+        // Only the owner can update the link
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
-        // Link'i dynamic field'dan al
+        // Retrieve the link from the dynamic field
         let link_key = LinkKey { id: link_id };
         assert!(df::exists_(&profile.id, link_key), ELinkNotFound);
 
         let link = df::borrow_mut<LinkKey, Link>(&mut profile.id, link_key);
         
-        // Güncelle
+        // Update
         link.title = title;
         link.url = url;
         link.icon = icon;
         link.banner = banner;
 
-        // Event emit et
+        // Emit the event
         event::emit(LinkUpdated {
             profile_id: object::uid_to_address(&profile.id),
             link_id,
@@ -239,43 +239,43 @@ module linktree::linktree {
         });
     }
 
-    /// Link'i sil
+    /// Delete a link
     entry fun delete_link(
         profile: &mut UserProfile,
         link_id: u64,
         ctx: &mut TxContext
     ) {
-        // Sadece owner silebilir
+        // Only the owner can delete the link
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         let link_key = LinkKey { id: link_id };
         assert!(df::exists_(&profile.id, link_key), ELinkNotFound);
 
-        // Dynamic field'dan sil
+        // Delete it from the dynamic field
         let _link = df::remove<LinkKey, Link>(&mut profile.id, link_key);
 
-        // Vector'den link_id'yi çıkar
+        // Remove the link_id from the vector
         let (exists, index) = vector::index_of(&profile.link_ids, &link_id);
         if (exists) {
             vector::remove(&mut profile.link_ids, index);
             profile.link_count = profile.link_count - 1;
         };
 
-        // Event emit et
+        // Emit the event
         event::emit(LinkDeleted {
             profile_id: object::uid_to_address(&profile.id),
             link_id,
         });
     }
 
-    /// Link'i aktif/pasif yap
+    /// Toggle a link on/off
     entry fun toggle_link(
         profile: &mut UserProfile,
         link_id: u64,
         is_active: bool,
         ctx: &mut TxContext
     ) {
-        // Sadece owner değiştirebilir
+        // Only the owner can toggle a link
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         let link_key = LinkKey { id: link_id };
@@ -285,14 +285,14 @@ module linktree::linktree {
         link.is_active = is_active;
     }
 
-    /// Link sıralamasını değiştir
+    /// Reorder the link
     entry fun reorder_link(
         profile: &mut UserProfile,
         link_id: u64,
         new_order: u64,
         ctx: &mut TxContext
     ) {
-        // Sadece owner değiştirebilir
+        // Only the owner can reorder the link
         assert!(profile.owner == tx_context::sender(ctx), ENotOwner);
 
         let link_key = LinkKey { id: link_id };
@@ -302,50 +302,50 @@ module linktree::linktree {
         link.order = new_order;
     }
 
-    // ============ View Functions (Getter'lar) ============
+    // ============ View Functions (Getters) ============
 
-    /// Profilin sahibini döndür
+    /// Get the profile owner
     public fun get_owner(profile: &UserProfile): address {
         profile.owner
     }
 
-    /// Link ID listesini döndür
+    /// Get the Link ID list
     public fun get_link_ids(profile: &UserProfile): &vector<u64> {
         &profile.link_ids
     }
 
-    /// Link sayısını döndür
+    /// Get link count
     public fun get_link_count(profile: &UserProfile): u64 {
         profile.link_count
     }
 
-    /// Tek bir link'i döndür (sadece okuma)
+    /// Get a single link (readonly)
     public fun get_link(profile: &UserProfile, link_id: u64): &Link {
         let link_key = LinkKey { id: link_id };
         df::borrow<LinkKey, Link>(&profile.id, link_key)
     }
 
-    /// Link var mı kontrol et
+    /// Check if a link exists
     public fun link_exists(profile: &UserProfile, link_id: u64): bool {
         df::exists_(&profile.id, LinkKey { id: link_id })
     }
 
-    /// Profil image URL'ini döndür
+    /// Get image url
     public fun get_image_url(profile: &UserProfile): &String {
         &profile.image_url
     }
 
-    /// Username'i döndür
+    /// Get the username
     public fun get_username(profile: &UserProfile): &String {
         &profile.username
     }
 
-    /// Display name'i döndür
+    /// Get the display name
     public fun get_display_name(profile: &UserProfile): &String {
         &profile.display_name
     }
 
-    /// Bio'yu döndür
+    /// Get the biography
     public fun get_bio(profile: &UserProfile): &String {
         &profile.bio
     }
