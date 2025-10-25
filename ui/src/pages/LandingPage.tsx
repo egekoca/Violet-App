@@ -4,6 +4,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
+// import { useEffect } from 'react';
 import './LandingPage.css';
 
 export function LandingPage() {
@@ -11,6 +12,18 @@ export function LandingPage() {
 
   // NOT: Otomatik redirect kaldırıldı.
   // Kullanıcı manuel olarak "Giriş Yap" butonuna tıklayarak login sayfasına gitmeli.
+
+  // useEffect(() => {
+  //   // Example: check for a cookie called "authToken"
+  //   const isLoggedIn = document.cookie
+  //     .split("; ")
+  //     .some((cookie) => cookie.startsWith("authToken="));
+
+  //   if (isLoggedIn) {
+  //     // Redirect logged-in user to dashboard or another page
+  //     navigate("/dashboard"); // change this to your desired route
+  //   }
+  // }, [navigate]);
 
   return (
     <div className="landing-page">
@@ -23,23 +36,17 @@ export function LandingPage() {
           </div>
           
           <nav className="nav-menu">
-            <a href="#features">Özellikler</a>
-            <a href="#how-it-works">Nasıl Çalışır</a>
-            <a href="#pricing">Fiyatlandırma</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#pricing">Pricing</a>
           </nav>
 
           <div className="header-buttons">
             <button 
-              className="login-btn-text"
-              onClick={() => navigate('/login')}
-            >
-              Giriş Yap
-            </button>
-            <button 
               className="signup-btn"
               onClick={() => navigate('/login')}
             >
-              Ücretsiz Başla
+              Start For Free
             </button>
           </div>
         </div>
@@ -50,27 +57,26 @@ export function LandingPage() {
         <div className="hero-wrapper">
           <div className="hero-content">
             <div className="hero-badge">
-              ⚡ Blockchain üzerinde güvenli
+              ⚡ Secure on the Blockchain
             </div>
             <h1 className="hero-title">
-              Tüm linkleriniz için
+              A single page
               <br />
-              <span className="gradient-text">tek bir link</span>
+              <span className="gradient-text">for all your links</span>
             </h1>
             <p className="hero-subtitle">
-              Web3'ün ilk merkeziyetsiz LinkTree'si. Profiliniz blockchain'de güvende, 
-              hiçbir şirket silemez veya değiştiremez.
+              Web3's first decentralized LinkTree. Your profile is secure on the Blockchain, no company can delete or modify it.
             </p>
             <div className="hero-buttons">
               <button 
                 className="cta-button primary large"
                 onClick={() => navigate('/login')}
               >
-                Ücretsiz Başla
+                Start for Free
               </button>
               <div className="trust-badge">
                 <span className="trust-icon">✓</span>
-                <span className="trust-text">Sui Blockchain ile güvende</span>
+                <span className="trust-text">Safe with Sui Blockchain</span>
               </div>
             </div>
           </div>
@@ -78,10 +84,10 @@ export function LandingPage() {
           <div className="hero-image">
             <div className="phone-mockup">
               <div className="phone-header">
-                <div className="profile-avatar">V</div>
+                <div className="profile-avatar">J</div>
                 <div className="profile-info">
-                  <div className="profile-name">Ahmet Yılmaz</div>
-                  <div className="profile-username">@ahmet123</div>
+                  <div className="profile-name">John Doe</div>
+                  <div className="profile-username">@johndoe123</div>
                 </div>
               </div>
               <div className="phone-links">
@@ -106,47 +112,47 @@ export function LandingPage() {
       {/* Features Section */}
       <section id="features" className="features-section">
         <div className="section-header">
-          <h2 className="section-title">Neden Violet?</h2>
+          <h2 className="section-title">Why Violet?</h2>
           <p className="section-subtitle">
-            Klasik LinkTree'den daha güvenli, daha özgür
+            Safer and more free than the classic LinkTree.
           </p>
         </div>
         
         <div className="features-grid">
           <div className="feature-card">
             <div className="feature-icon">🔒</div>
-            <h3>Tamamen Güvenli</h3>
-            <p>Profiliniz blockchain'de. Hiçbir şirket silemez.</p>
+            <h3>Completely Safe and Secure</h3>
+            <p>Your profile is on the blockchain. No company can delete it.</p>
           </div>
 
           <div className="feature-card">
             <div className="feature-icon">🌐</div>
-            <h3>Merkeziyetsiz</h3>
-            <p>Verilerinize sadece siz sahipsiniz.</p>
+            <h3>Decentralized</h3>
+            <p>Only you have access to your data.</p>
           </div>
 
           <div className="feature-card">
             <div className="feature-icon">💰</div>
-            <h3>Düşük Maliyet</h3>
-            <p>Minimal ücretler. Çok ucuz!</p>
+            <h3>Low Cost</h3>
+            <p>Low prices. Super cheap!</p>
           </div>
 
           <div className="feature-card">
             <div className="feature-icon">⚡</div>
-            <h3>Süper Hızlı</h3>
-            <p>Anında profil oluşturun.</p>
+            <h3>Super Fast</h3>
+            <p>Set up your profile in an instant.</p>
           </div>
 
           <div className="feature-card">
             <div className="feature-icon">🔗</div>
-            <h3>Sınırsız Link</h3>
-            <p>İstediğiniz kadar link ekleyin.</p>
+            <h3>Unlimited Links</h3>
+            <p>Add as many links as you want.</p>
           </div>
 
           <div className="feature-card">
             <div className="feature-icon">🎨</div>
-            <h3>Modern Tasarım</h3>
-            <p>Neon efektleriyle öne çıkın.</p>
+            <h3>Modern Design</h3>
+            <p>Stand out with shiny neon effects.</p>
           </div>
         </div>
       </section>
@@ -154,27 +160,27 @@ export function LandingPage() {
       {/* How It Works */}
       <section id="how-it-works" className="how-section">
         <div className="section-header">
-          <h2 className="section-title">Nasıl Çalışır?</h2>
-          <p className="section-subtitle">3 basit adımda başlayın</p>
+          <h2 className="section-title">How Does It Work?</h2>
+          <p className="section-subtitle">Start with 3 simple steps:</p>
         </div>
         
         <div className="steps-grid">
           <div className="step-card">
             <div className="step-number">1</div>
-            <h3>Cüzdanı Bağla</h3>
-            <p>Sui Wallet ile giriş yap</p>
+            <h3>Connect Your Wallet</h3>
+            <p>Log in with Sui Wallet</p>
           </div>
 
           <div className="step-card">
             <div className="step-number">2</div>
-            <h3>Profil Oluştur</h3>
-            <p>Bilgilerini doldur</p>
+            <h3>Set Up Your Profile</h3>
+            <p>Fill in your details</p>
           </div>
 
           <div className="step-card">
             <div className="step-number">3</div>
-            <h3>Link Ekle</h3>
-            <p>Linklerini paylaş!</p>
+            <h3>Add Links</h3>
+            <p>Share your links with the world!</p>
           </div>
         </div>
       </section>
@@ -182,20 +188,20 @@ export function LandingPage() {
       {/* CTA Section */}
       <section id="pricing" className="cta-section">
         <div className="cta-box">
-          <h2>Blockchain'deki yerinizi alın</h2>
-          <p>Ücretsiz başlayın, sadece minimal gas fee ödeyin</p>
+          <h2>Take Your Place on the Blockchain</h2>
+          <p>Start for free, and only pay the minimal gas fee</p>
           <button 
             className="cta-button primary large"
             onClick={() => navigate('/login')}
           >
-            Hemen Başla
+            Start Now
           </button>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="landing-footer">
-        <p>Powered by Sui Blockchain ⚡</p>
+        <p>Powered by Sui Blockchain</p>
         <div className="footer-links">
           <a href="https://sui.io" target="_blank" rel="noopener noreferrer">Sui</a>
           <span>•</span>

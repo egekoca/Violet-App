@@ -219,6 +219,13 @@
   z-index: 1;
 }
 
+.blue-link {
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .avatar {
     width: 100px;

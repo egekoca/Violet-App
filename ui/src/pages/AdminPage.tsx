@@ -88,21 +88,21 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            alert('✅ Profil oluşturuldu! Link eklemeye başlayabilirsin!');
+            alert('✅ Your profile has been created! You can begin adding your links!');
             // 3 saniye bekle ve reload
             setTimeout(() => {
               loadData();
             }, 3000);
           },
           onError: (error) => {
-            console.error('Transaction hatası:', error);
-            alert('❌ Hata: ' + error.message);
+            console.error('Transaction error:', error);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil oluşturma hatası:', error);
-      alert('Hata: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -125,7 +125,7 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            alert('✅ Link eklendi! Blockchain\'de onaylanıyor...');
+            alert('✅ The link has been added! Getting it approved in the Blockchain...');
             setTimeout(() => {
               loadData();
               setLinkForm({ title: '', url: '', icon: '' });
@@ -134,13 +134,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction hatası:', error);
-            alert('❌ Hata: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link ekleme hatası:', error);
-      alert('Hata: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -164,7 +164,7 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            alert('✅ Profil güncellendi! Blockchain\'de onaylanıyor...');
+            alert('✅ The profile has been updated! Getting it approved in the Blockchain...');
             setTimeout(() => {
               loadData();
               setShowEditProfileForm(false);
@@ -172,13 +172,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction hatası:', error);
-            alert('❌ Hata: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil güncelleme hatası:', error);
-      alert('Hata: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -196,9 +196,9 @@ export function AdminPage() {
     return (
       <div className="admin-page">
         <div className="container">
-          <h1>🔐 Cüzdan Bağlantısı Gerekli</h1>
+          <h1>🔐 Wallet Connection Is Required</h1>
           <p style={{ marginBottom: '24px' }}>
-            Admin paneline erişmek için cüzdanınızı bağlayın
+            Please connect with your wallet to access to the admin panel
           </p>
           <WalletConnect />
         </div>
@@ -229,7 +229,7 @@ export function AdminPage() {
         )}
 
         <nav className="sidebar-nav">
-          <h4 className="nav-section-title">My Linktree</h4>
+          <h4 className="nav-section-title">My Violet</h4>
           <button 
             className={`nav-item ${!showEditProfileForm ? 'active' : ''}`}
             onClick={() => setShowEditProfileForm(false)}
@@ -244,13 +244,13 @@ export function AdminPage() {
             <span className="nav-icon">⚙️</span>
             <span>Settings</span>
           </button>
-          <button className="nav-item" onClick={() => navigate('/my-profile')}>
+          <a className="nav-item" href='/my-profile' rel='noopener noreferrer'>
             <span className="nav-icon">👤</span>
-            <span>Profili Gör</span>
-          </button>
+            <span>Profile</span>
+          </a>
           <button className="nav-item" onClick={() => navigate('/')}>
             <span className="nav-icon">🏠</span>
-            <span>Ana Sayfa</span>
+            <span>Main Page</span>
           </button>
         </nav>
 
@@ -265,19 +265,19 @@ export function AdminPage() {
         {showCreateForm && (
           <div className="main-content-centered">
             <div className="create-profile-card">
-              <h2>🎉 Yeni Profil Oluştur</h2>
+              <h2>🎉 Create A New Profile</h2>
               <p style={{ marginBottom: '30px', color: 'var(--text-secondary)' }}>
-                Blockchain üzerinde profilinizi oluşturun
+                Create your profile on the Blockchain
               </p>
               
               <form onSubmit={handleCreateProfile}>
                 <div className="form-group">
-                  <label>Kullanıcı Adı</label>
+                  <label>Username</label>
                   <input
                     type="text"
                     value={profileForm.username}
                     onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                    placeholder="ahmet123"
+                    placeholder="john_doe_123"
                     required
                     minLength={3}
                     maxLength={20}
@@ -285,12 +285,12 @@ export function AdminPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Görünen İsim</label>
+                  <label>Display Name</label>
                   <input
                     type="text"
                     value={profileForm.display_name}
                     onChange={(e) => setProfileForm({ ...profileForm, display_name: e.target.value })}
-                    placeholder="Ahmet Yılmaz"
+                    placeholder="John Doe"
                     required
                     maxLength={50}
                   />
@@ -302,7 +302,7 @@ export function AdminPage() {
                     type="text"
                     value={profileForm.bio}
                     onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
-                    placeholder="Tüm linklerim burada 🚀"
+                    placeholder="All my links are here!"
                     required
                     maxLength={200}
                   />
@@ -313,7 +313,7 @@ export function AdminPage() {
                   className="submit-btn-large"
                   disabled={processing}
                 >
-                  {processing ? '⏳ İşleniyor...' : '✅ Profil Oluştur'}
+                  {processing ? '⏳ Creating...' : '✅ Sign In'}
                 </button>
               </form>
             </div>
@@ -339,14 +339,14 @@ export function AdminPage() {
             {/* SETTINGS VIEW - Profil Düzenleme */}
             {showEditProfileForm ? (
               <div className="settings-content">
-                <h2 className="section-title">⚙️ Profil Ayarları</h2>
+                <h2 className="section-title">⚙️ Profile Settings</h2>
                 
                 <div className="link-form-card">
-                  <h3>Profil Bilgilerini Düzenle</h3>
+                  <h3>Edit Your Profile</h3>
                   
                   <form onSubmit={handleUpdateProfile}>
                     <div className="form-group">
-                      <label>Kullanıcı Adı</label>
+                      <label>Username</label>
                       <input
                         type="text"
                         value={profileForm.username}
@@ -354,28 +354,28 @@ export function AdminPage() {
                         style={{ opacity: 0.6, cursor: 'not-allowed' }}
                       />
                       <small style={{ color: '#666', fontSize: '12px' }}>
-                        Kullanıcı adı değiştirilemez
+                        Username cannot be changed
                       </small>
                     </div>
 
                     <div className="form-group">
-                      <label>Görünen İsim</label>
+                      <label>Display Name</label>
                       <input
                         type="text"
                         value={profileForm.display_name}
                         onChange={(e) => setProfileForm({ ...profileForm, display_name: e.target.value })}
-                        placeholder="Ahmet Yılmaz"
+                        placeholder="John Doe"
                         required
                         maxLength={50}
                       />
                     </div>
 
                     <div className="form-group">
-                      <label>Biyografi</label>
+                      <label>Bio</label>
                       <textarea
                         value={profileForm.bio}
                         onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
-                        placeholder="Tüm linklerim burada 🚀"
+                        placeholder="All my links are here!"
                         required
                         maxLength={200}
                         rows={4}
@@ -387,7 +387,7 @@ export function AdminPage() {
                       className="submit-btn"
                       disabled={processing}
                     >
-                      {processing ? '⏳ Güncelleniyor...' : '💾 Kaydet'}
+                      {processing ? '⏳ Saving...' : '💾 Save'}
                     </button>
                   </form>
                 </div>
@@ -408,11 +408,11 @@ export function AdminPage() {
             {/* Add Link Form */}
             {showAddLinkForm && (
               <div className="link-form-card">
-                <h3>Yeni Link Ekle</h3>
+                <h3>Add New Link</h3>
                 
                 <form onSubmit={handleAddLink}>
             <div className="form-group">
-              <label>Başlık</label>
+              <label>Label</label>
               <input
                 type="text"
                       value={linkForm.title}
@@ -435,7 +435,7 @@ export function AdminPage() {
             </div>
 
             <div className="form-group">
-              <label>İkon (Emoji)</label>
+              <label>Icon (Emoji)</label>
               <input
                 type="text"
                       value={linkForm.icon}
@@ -451,7 +451,7 @@ export function AdminPage() {
                       className="submit-btn"
                       disabled={processing}
                     >
-                      {processing ? '⏳ Ekleniyor...' : 'Ekle'}
+                      {processing ? '⏳ Adding...' : 'Add Link'}
               </button>
               <button 
                 type="button" 
@@ -461,7 +461,7 @@ export function AdminPage() {
                         setLinkForm({ title: '', url: '', icon: '' });
                 }}
               >
-                İptal
+                Cancel
               </button>
             </div>
           </form>
@@ -519,8 +519,8 @@ export function AdminPage() {
                   </div>
                   <h3 className="preview-name">
                     {showEditProfileForm 
-                      ? profileForm.display_name || 'Görünen İsim' 
-                      : profile?.display_name || profileForm.display_name || 'Görünen İsim'}
+                      ? profileForm.display_name || 'Display Name' 
+                      : profile?.display_name || profileForm.display_name || 'Display Name'}
                   </h3>
                   <p className="preview-username">
                     @{showEditProfileForm 
@@ -529,8 +529,8 @@ export function AdminPage() {
                   </p>
                   <p className="preview-bio">
                     {showEditProfileForm 
-                      ? profileForm.bio || 'Kısa biyografiniz burada görünür...'
-                      : profile?.bio || profileForm.bio || 'Kısa biyografiniz...'}
+                      ? profileForm.bio || 'A short biography is displayed here...'
+                      : profile?.bio || profileForm.bio || 'A short biography...'}
                   </p>
                   
                   <div className="preview-links">
@@ -542,13 +542,13 @@ export function AdminPage() {
                         </div>
                       ))
                     ) : (
-                      <p className="preview-empty">Henüz link eklenmemiş</p>
+                      <p className="preview-empty">No link has been added yet</p>
                     )}
                   </div>
                 </>
               ) : (
                 <div className="preview-placeholder">
-                  <p>Profil önizlemesi</p>
+                  <p>Profil Preview</p>
                 </div>
               )}
             </div>
