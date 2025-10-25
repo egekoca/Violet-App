@@ -1,118 +1,94 @@
-# 🔗 VIOLET - Sui Blockchain LinkTree
+I translated and simplified your README into English, removed all emotes, and renamed the app to **Violet**. This rewrite is based on your original README.
 
-**Tamamen merkeziyetsiz LinkTree uygulaması!**
+# Violet — Linktr.ee on the blockchain
 
-Tüm profilleriniz ve linkleriniz **Sui Blockchain** üzerinde saklanıyor. Web3 ile tanışın! 🚀
+Violet is a decentralized Linktree-style app built on the Sui blockchain. User profiles and links are stored on-chain.
 
-## 📁 Proje Yapısı
+## Project structure
 
 ```
-Violent-App/
-├── backend/          # Mock data ve API
-│   ├── mockData.ts   # Mock veriler ve API fonksiyonları
+Violet-App/
+├── backend/          # Mock data and API
+│   ├── mockData.ts
 │   └── package.json
-├── frontend/         # TypeScript tipleri ve API client
-│   ├── types.ts      # TypeScript interface'leri
-│   ├── api.ts        # API client
+├── frontend/         # Types and API client
+│   ├── types.ts
+│   ├── api.ts
 │   └── package.json
-└── ui/              # React + Vite uygulaması
+└── ui/               # React + Vite app
     ├── src/
-    │   ├── pages/        # Sayfa bileşenleri
-    │   │   ├── UserPage.tsx    # Kullanıcı profil sayfası
+    │   ├── pages/
+    │   │   ├── UserPage.tsx
     │   │   ├── UserPage.css
-    │   │   ├── AdminPage.tsx   # Admin yönetim paneli
+    │   │   ├── AdminPage.tsx
     │   │   └── AdminPage.css
-    │   ├── types.ts      # TypeScript tipleri
-    │   ├── api.ts        # API fonksiyonları
-    │   ├── App.tsx       # Ana uygulama
+    │   ├── types.ts
+    │   ├── api.ts
+    │   ├── App.tsx
     │   ├── App.css
-    │   ├── main.tsx      # Giriş noktası
-    │   └── index.css     # Global stiller
+    │   ├── main.tsx
+    │   └── index.css
     ├── index.html
     ├── package.json
     ├── tsconfig.json
-    ├── tsconfig.node.json
     └── vite.config.ts
 ```
 
-## 🚀 Özellikler
+## Features
 
-### Kullanıcı Sayfası
-- ✨ Modern ve şık tasarım
-- 📱 Tam responsive (mobil uyumlu)
-- 🎨 Gradient arka plan
-- 👤 Profil bilgileri (avatar, isim, bio)
-- 🔗 Tıklanabilir link kartları
-- 🎭 Hover animasyonları
-- ⚙️ Admin paneline hızlı erişim
+* Decentralized profiles and links stored on Sui
+* Responsive, mobile-first user page
+* Clickable link cards
+* Admin panel to add, edit, delete, and toggle links
+* Simple forms for managing links
 
-### Admin Paneli
-- ➕ Yeni link ekleme
-- ✏️ Link düzenleme
-- 🗑️ Link silme
-- 👁️ Link aktif/pasif durumu değiştirme
-- 📋 Tüm linkleri görüntüleme
-- 🎯 Kullanıcı dostu form arayüzü
+## Tech stack
 
-## 🛠️ Teknolojiler
+* React 18
+* Vite
+* TypeScript
+* React Router v6
+* Plain CSS (variables and animations)
+* Backend: mock data (easy to replace with a real API)
 
-- **UI Framework:** React 18
-- **Build Tool:** Vite
-- **Language:** TypeScript
-- **Routing:** React Router v6
-- **Styling:** Pure CSS (CSS Variables + Animations)
-- **Backend:** Mock Data (Gerçek API'ye kolayca entegre edilebilir)
+## Setup
 
-## 📦 Kurulum
-
-### 1. Bağımlılıkları Yükleyin
+Install dependencies and run the UI:
 
 ```bash
 cd ui
 npm install
-```
-
-### 2. Geliştirme Sunucusunu Başlatın
-
-```bash
 npm run dev
 ```
 
-Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışacaktır.
+The app runs at `http://localhost:5173` by default.
 
-### 3. Production Build
+To build for production:
 
 ```bash
 npm run build
 ```
 
-Build dosyaları `ui/dist` klasöründe oluşturulacaktır.
+Build output is in `ui/dist`.
 
-## 🎯 Kullanım
+## Usage
 
-### Kullanıcı Sayfası
-- Ana sayfa: `http://localhost:5173/benimhesabim`
-- Herhangi bir kullanıcı: `http://localhost:5173/:username`
+* User page example: `http://localhost:5173/:username`
+* Admin page example: `http://localhost:5173/admin/:username`
 
-### Admin Paneli
-- Admin sayfası: `http://localhost:5173/admin/benimhesabim`
-- Sağ üst köşedeki ⚙️ ikonuna tıklayarak da erişebilirsiniz
+## Customization
 
-## 🎨 Özelleştirme
-
-### Renkleri Değiştirme
-`ui/src/index.css` dosyasındaki CSS değişkenlerini düzenleyin:
+Change colors in `ui/src/index.css` by editing CSS variables:
 
 ```css
 :root {
   --primary-color: #8b5cf6;
   --primary-hover: #7c3aed;
-  /* ... diğer renkler */
+  /* other colors */
 }
 ```
 
-### Gradient Arka Plan
-`ui/src/pages/UserPage.css` dosyasında:
+Change the gradient background in `ui/src/pages/UserPage.css`:
 
 ```css
 .user-page {
@@ -120,9 +96,9 @@ Build dosyaları `ui/dist` klasöründe oluşturulacaktır.
 }
 ```
 
-## 🔌 Gerçek API'ye Bağlama
+## Connecting a real API
 
-`ui/src/api.ts` dosyasındaki mock fonksiyonları gerçek API çağrıları ile değiştirin:
+Replace the mock functions in `ui/src/api.ts` with real API calls. Example:
 
 ```typescript
 export const api = {
@@ -130,38 +106,33 @@ export const api = {
     const response = await fetch('/api/profile');
     return response.json();
   },
-  // ... diğer fonksiyonlar
+  // ...
 };
 ```
 
-## 📱 Responsive Tasarım
+## Responsive design
 
-Uygulama tüm ekran boyutlarında mükemmel çalışır:
-- 📱 Mobil (< 768px)
-- 💻 Tablet (768px - 1024px)
-- 🖥️ Desktop (> 1024px)
+The app targets:
 
-## 🎭 Animasyonlar
+* Mobile (< 768px)
+* Tablet (768–1024px)
+* Desktop (> 1024px)
 
-- Fade in animasyonları
-- Hover efektleri
-- Smooth geçişler
-- Loading spinners
+## Roadmap
 
-## 🚧 Geliştirme Planları
+* Drag & drop link ordering
+* Theme options (dark mode)
+* Profile editing
+* Link analytics
+* Custom domain support
+* QR code generation
 
-- [ ] Drag & drop ile link sıralaması
-- [ ] Tema seçenekleri (dark mode)
-- [ ] Profil düzenleme
-- [ ] Link istatistikleri
-- [ ] Özel domain bağlama
-- [ ] QR kod oluşturma
-
-## 📄 Lisans
+## License
 
 MIT
 
-## 👨‍💻 Geliştirici
+## Authors
 
-Violent App ile geliştirildi ❤️
+egekoca, yzeybek, yedemirkiran
 
+---
