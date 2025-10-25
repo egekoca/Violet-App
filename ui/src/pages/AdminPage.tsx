@@ -272,13 +272,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Error when creating a profile: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil oluşturma hatası:', error);
-      alert('❌ Error when creating a profile: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -310,39 +310,106 @@ export function AdminPage() {
 
     try {
       setProcessing(true);
-      const tx = addLinkTransaction({
-        profileId: profile.id,
-        ...linkForm,
-      });
-
-      signAndExecute(
-        { 
-          transaction: tx as any,
-        },
-        {
-          onSuccess: async (result) => {
-            console.log('✅ Link ekleme transaction başarılı:', result);
-            alert('✅ The link has been added! Waiting for blockchain confirmation...');
-            
-            // Blockchain'de işlenmesi için biraz daha uzun bekle
-            setTimeout(async () => {
-              console.log('🔄 Link eklendikten sonra veri yenileniyor...');
-              await loadData();
+      
+      // zkLogin kullanıcısı mı kontrol et
+      const isZkLogin = account?.address.startsWith('0x') && account?.address.length > 40;
+      
+      if (isZkLogin) {
+        // Enoki wallet ile doğrudan transaction yap
+        console.log('🚀 Enoki wallet ile link ekleniyor...');
+        
+        const tx = addLinkTransaction({
+          profileId: profile.id,
+          ...linkForm,
+        });
+        
+        // Enoki wallet otomatik olarak sponsored transaction yapar
+        signAndExecute(
+          { transaction: tx as any },
+          {
+            onSuccess: async (result) => {
+              console.log('✅ Enoki transaction başarılı:', result);
+              alert('✅ The link has been added with Enoki sponsored transaction! (No gas fee)');
+              
+              // Hemen UI'ı güncelle (optimistic update)
+              const newLink = {
+                id: Date.now(), // Temporary ID
+                title: linkForm.title,
+                url: linkForm.url,
+                icon: linkForm.icon,
+                banner: linkForm.banner,
+                is_active: true,
+                order: (profile.links?.length || 0) + 1
+              };
+              
+              // Profile'ı güncelle
+              setProfile(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  links: [...(prev.links || []), newLink]
+                };
+              });
+              
+              // Form'u temizle
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
               setSearchQuery('');
               setSelectedCategory('suggested');
-            }, 5000);
+              
+              // Arka planda blockchain'den güncel veriyi çek
+              setTimeout(async () => {
+                console.log('🔄 Arka planda blockchain verisi yenileniyor...');
+                try {
+                  await loadData();
+                  console.log('✅ Blockchain verisi güncellendi');
+                } catch (error) {
+                  console.error('❌ Blockchain veri yenileme hatası:', error);
+                }
+              }, 3000);
+            },
+            onError: (error) => {
+              console.error('❌ Enoki transaction hatası:', error);
+              alert('❌ Error: ' + error.message);
+            }
+          }
+        );
+      } else {
+        // Normal transaction
+        const tx = addLinkTransaction({
+          profileId: profile.id,
+          ...linkForm,
+        });
+
+        signAndExecute(
+          { 
+            transaction: tx as any,
           },
-          onError: (error) => {
-            console.error('❌ Transaction hatası:', error);
-            alert('❌ Error when adding a link: ' + error.message);
-          },
-        }
-      );
+          {
+            onSuccess: async (result) => {
+              console.log('✅ Link ekleme transaction başarılı:', result);
+              alert('✅ The link has been added! Waiting for blockchain confirmation...');
+              
+              // Blockchain'de işlenmesi için biraz daha uzun bekle
+              setTimeout(async () => {
+                console.log('🔄 Link eklendikten sonra veri yenileniyor...');
+                await loadData();
+                setLinkForm({ title: '', url: '', icon: '', banner: '' });
+                setShowAddLinkForm(false);
+                setSearchQuery('');
+                setSelectedCategory('suggested');
+              }, 5000);
+            },
+            onError: (error) => {
+              console.error('❌ Transaction hatası:', error);
+              alert('❌ Error: ' + error.message);
+            },
+          }
+        );
+      }
     } catch (error: any) {
       console.error('Link ekleme hatası:', error);
-      alert('❌ Error when adding a link: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -404,13 +471,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction hatası:', error);
-            alert('❌ Error when updating the profile: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil güncelleme hatası:', error);
-      alert('❌ Error when updating the profile: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -456,13 +523,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link update error:', error);
-            alert('❌ Error when updating the link: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link güncelleme hatası:', error);
-      alert('❌ Error when updating the link: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -493,13 +560,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link delete error:', error);
-            alert('❌ Error when deleting the link: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link silme hatası:', error);
-      alert('❌ Error when deleting the link: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -529,13 +596,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link toggle error:', error);
-            alert('❌ Error when toggling the link: ' + error.message);
+            alert('❌ Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link toggle hatası:', error);
-      alert('❌ Error when toggling the link: ' + error.message);
+      alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
     }

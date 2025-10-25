@@ -5,6 +5,18 @@
 
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { 
+  executeSponsoredTransaction,
+  createProfileSponsoredTransaction,
+  addLinkSponsoredTransaction,
+  updateProfileSponsoredTransaction,
+  updateProfileImageSponsoredTransaction,
+  updateLinkSponsoredTransaction,
+  deleteLinkSponsoredTransaction,
+  toggleLinkSponsoredTransaction,
+  canUseSponsoredTransaction,
+  incrementSponsoredTransactionCount
+} from './sponsoredTransactions';
 
 // Type alias for compatibility
 export type { Transaction };
@@ -573,4 +585,115 @@ export async function getUserNFTs(ownerAddress: string): Promise<NFT[]> {
     return [];
   }
 }
+
+/**
+ * Sponsored Transaction Wrapper
+ * zkLogin kullanıcıları için gas fee'siz işlemler
+ */
+export const sponsoredBlockchain = {
+  /**
+   * Sponsored profil oluşturma
+   */
+  async createProfile(input: CreateProfileInput, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = createProfileSponsoredTransaction(input);
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored link ekleme
+   */
+  async addLink(input: AddLinkInput, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = addLinkSponsoredTransaction(input);
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored profil güncelleme
+   */
+  async updateProfile(input: UpdateProfileInput, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = updateProfileSponsoredTransaction(input);
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored profil resmi güncelleme
+   */
+  async updateProfileImage(profileId: string, imageUrl: string, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = updateProfileImageSponsoredTransaction({ profileId, image_url: imageUrl });
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored link güncelleme
+   */
+  async updateLink(input: UpdateLinkInput, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = updateLinkSponsoredTransaction(input);
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored link silme
+   */
+  async deleteLink(profileId: string, linkId: number, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = deleteLinkSponsoredTransaction({ profileId, link_id: linkId });
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Sponsored link aktif/pasif yapma
+   */
+  async toggleLink(profileId: string, linkId: number, isActive: boolean, userAddress: string): Promise<any> {
+    if (!canUseSponsoredTransaction(userAddress)) {
+      throw new Error('Günlük sponsored transaction limitiniz doldu');
+    }
+
+    const transaction = toggleLinkSponsoredTransaction({ profileId, link_id: linkId, is_active: isActive });
+    const result = await executeSponsoredTransaction(transaction, userAddress);
+    incrementSponsoredTransactionCount(userAddress);
+    return result;
+  },
+
+  /**
+   * Kullanıcının sponsored transaction hakkı var mı?
+   */
+  canUseSponsoredTransaction(userAddress: string): boolean {
+    return canUseSponsoredTransaction(userAddress);
+  }
+};
 

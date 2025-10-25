@@ -17,11 +17,11 @@ function RegisterEnokiWallets() {
 				google: {
 					clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 				},
-				facebook: {
-					clientId: import.meta.env.VITE_FACEBOOK_CLIENT_ID,
-				},
+				//facebook: {
+				//	clientId: import.meta.env.VITE_FACEBOOK_CLIENT_ID,
+				//},
 			},
-			client,
+			client: client as any,
 			network,
 		});
 
