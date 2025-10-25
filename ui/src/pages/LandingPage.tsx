@@ -1,29 +1,15 @@
 /**
- * Landing Page - Proje Tanıtım Sayfası
- * İlk açılışta gösterilen ana sayfa
+ * Landing Page - Project Demonstration Page
  */
 
 import { useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
 import './LandingPage.css';
 
 export function LandingPage() {
   const navigate = useNavigate();
 
-  // NOT: Otomatik redirect kaldırıldı.
-  // Kullanıcı manuel olarak "Giriş Yap" butonuna tıklayarak login sayfasına gitmeli.
-
-  // useEffect(() => {
-  //   // Example: check for a cookie called "authToken"
-  //   const isLoggedIn = document.cookie
-  //     .split("; ")
-  //     .some((cookie) => cookie.startsWith("authToken="));
-
-  //   if (isLoggedIn) {
-  //     // Redirect logged-in user to dashboard or another page
-  //     navigate("/dashboard"); // change this to your desired route
-  //   }
-  // }, [navigate]);
+  // NOTE: Automatic redirection has been removed.
+  // The user must click the "Login" button manually and log in that way.
 
   return (
     <div className="landing-page">
@@ -31,7 +17,6 @@ export function LandingPage() {
       <header className="landing-header">
         <div className="header-content">
           <div className="logo">
-            <span className="logo-icon">🔗</span>
             <span className="logo-text">VIOLET</span>
           </div>
           
@@ -46,7 +31,7 @@ export function LandingPage() {
               className="signup-btn"
               onClick={() => navigate('/login')}
             >
-              Start For Free
+              Start for Free
             </button>
           </div>
         </div>
@@ -65,7 +50,7 @@ export function LandingPage() {
               <span className="gradient-text">for all your links</span>
             </h1>
             <p className="hero-subtitle">
-              Web3's first decentralized LinkTree. Your profile is secure on the Blockchain, no company can delete or modify it.
+              Web3's first decentralized LinkTree. Your profile is secure on the blockchain, no company can delete or modify it.
             </p>
             <div className="hero-buttons">
               <button 
@@ -92,16 +77,16 @@ export function LandingPage() {
               </div>
               <div className="phone-links">
                 <div className="mock-link">
-                  <span className="link-icon">📸</span>
+                  <img className="link-icon" src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png'></img>
                   <span className="link-text">Instagram</span>
                 </div>
                 <div className="mock-link">
-                  <span className="link-icon">▶️</span>
+                  <img className="link-icon" src='https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png'></img>
                   <span className="link-text">YouTube</span>
                 </div>
                 <div className="mock-link">
-                  <span className="link-icon">🐦</span>
-                  <span className="link-text">Twitter</span>
+                  <img className="link-icon" src='https://images.freeimages.com/image/large-previews/f35/x-twitter-logo-on-black-circle-5694247.png?h=350'></img>
+                  <span className="link-text">X / Twitter</span>
                 </div>
               </div>
             </div>
@@ -134,7 +119,7 @@ export function LandingPage() {
           <div className="feature-card">
             <div className="feature-icon">💰</div>
             <h3>Low Cost</h3>
-            <p>Low prices. Super cheap!</p>
+            <p>Low, affordable prices. Super cheap!</p>
           </div>
 
           <div className="feature-card">
