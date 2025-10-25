@@ -40,9 +40,9 @@ export function ProfileEditPage() {
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length > 0) {
-        // Kullanıcının zaten profili var, UserPage'e yönlendir
+        // Kullanıcının zaten profili var, admin paneline yönlendir
         setHasProfile(true);
-        navigate('/my-profile');
+        navigate('/admin');
       } else {
         setHasProfile(false);
       }
@@ -74,9 +74,9 @@ export function ProfileEditPage() {
         {
           onSuccess: async () => {
             alert('🎉 Profil oluşturuldu! Hoş geldin!');
-            // Profil sayfasına yönlendir
+            // Admin paneline yönlendir
             setTimeout(() => {
-              navigate('/my-profile');
+              navigate('/admin');
             }, 2000);
           },
           onError: (error) => {

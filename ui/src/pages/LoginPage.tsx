@@ -12,10 +12,11 @@ export function LoginPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount();
 
-  // Cüzdan bağlandığında profil sayfasına yönlendir
+  // Cüzdan bağlandığında admin paneline yönlendir
+  // Admin paneli profil kontrolü yapıp gerekli sayfayı gösterecek
   useEffect(() => {
     if (account) {
-      navigate('/profile');
+      navigate('/admin');
     }
   }, [account, navigate]);
 

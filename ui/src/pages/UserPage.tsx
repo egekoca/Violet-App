@@ -33,8 +33,9 @@ export function UserPage() {
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length === 0) {
-        // Profil yoksa ProfileEdit sayfasına yönlendir
-        navigate('/profile');
+        // Profil yoksa hata mesajı göster (otomatik yönlendirme yok)
+        setError('Henüz profilin yok. Hemen oluştur!');
+        setProfile(null);
       } else {
         // İlk profili göster (çoklu profil desteği ileride eklenebilir)
         setProfile(profiles[0]);
@@ -78,6 +79,40 @@ export function UserPage() {
       <div className="user-page error">
         <div className="container">
           <h2>⚠️ {error}</h2>
+          {error.includes('profilin yok') && (
+            <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => navigate('/profile')}
+                style={{
+                  padding: '14px 28px',
+                  background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
+                  border: 'none',
+                  borderRadius: '12px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                🎨 Profil Oluştur
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                style={{
+                  padding: '14px 28px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '2px solid rgba(255,255,255,0.2)',
+                  borderRadius: '12px',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                }}
+              >
+                Ana Sayfaya Dön
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -86,7 +121,25 @@ export function UserPage() {
   if (!profile) {
     return (
       <div className="user-page error">
-        <h2>Profil bulunamadı</h2>
+        <div className="container">
+          <h2>Profil bulunamadı</h2>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              marginTop: '24px',
+              padding: '14px 28px',
+              background: 'rgba(255,255,255,0.1)',
+              border: '2px solid rgba(255,255,255,0.2)',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+            }}
+          >
+            Ana Sayfaya Dön
+          </button>
+        </div>
       </div>
     );
   }

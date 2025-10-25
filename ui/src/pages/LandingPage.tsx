@@ -3,21 +3,14 @@
  * İlk açılışta gösterilen ana sayfa
  */
 
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCurrentAccount } from '@mysten/dapp-kit';
 import './LandingPage.css';
 
 export function LandingPage() {
   const navigate = useNavigate();
-  const account = useCurrentAccount();
 
-  // Cüzdan bağlandığında profil sayfasına yönlendir
-  useEffect(() => {
-    if (account) {
-      navigate('/profile');
-    }
-  }, [account, navigate]);
+  // NOT: Otomatik redirect kaldırıldı.
+  // Kullanıcı manuel olarak "Giriş Yap" butonuna tıklayarak login sayfasına gitmeli.
 
   return (
     <div className="landing-page">
