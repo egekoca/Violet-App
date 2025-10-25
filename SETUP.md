@@ -8,7 +8,7 @@
 - ✅ add_link() - Link ekleme
 - ✅ update_profile() - Profil güncelleme
 - ✅ Testnet'e deploy edildi
-- **Package ID:** `0x9969f9126a31085599b3f7f147b6361d82559a1de1b8709be00377fdea4f050c`
+
 
 ### 🔷 Frontend SDK (TypeScript)
 - ✅ Network yapılandırması (testnet/mainnet)

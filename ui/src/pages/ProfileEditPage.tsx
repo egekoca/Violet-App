@@ -17,7 +17,6 @@ export function ProfileEditPage() {
   
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [hasProfile, setHasProfile] = useState(false);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -41,10 +40,7 @@ export function ProfileEditPage() {
       
       if (profiles.length > 0) {
         // Kullanıcının zaten profili var, admin paneline yönlendir
-        setHasProfile(true);
         navigate('/admin');
-      } else {
-        setHasProfile(false);
       }
     } catch (error) {
       console.error('Profil kontrol hatası:', error);

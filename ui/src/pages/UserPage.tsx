@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { getUserProfile, getUserProfiles } from '../lib/blockchain';
+import { getUserProfiles } from '../lib/blockchain';
 import { UserProfile } from '../types';
 import { WalletConnect } from '../components/WalletConnect';
 import './UserPage.css';

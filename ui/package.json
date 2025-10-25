@@ -1,5 +1,6 @@
 {
   "name": "violent-app-ui",
+  "homepage": "./",
   "private": true,
   "version": "0.0.0",
   "type": "module",
