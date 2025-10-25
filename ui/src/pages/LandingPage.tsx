@@ -77,16 +77,16 @@ export function LandingPage() {
               </div>
               <div className="phone-links">
                 <div className="mock-link">
-                  <span className="link-icon">📸</span>
+                  <img className="link-icon" src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/2048px-Instagram_icon.png'></img>
                   <span className="link-text">Instagram</span>
                 </div>
                 <div className="mock-link">
-                  <span className="link-icon">▶️</span>
+                  <img className="link-icon" src='https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png'></img>
                   <span className="link-text">YouTube</span>
                 </div>
                 <div className="mock-link">
-                  <span className="link-icon">🐦</span>
-                  <span className="link-text">Twitter</span>
+                  <img className="link-icon" src='https://images.freeimages.com/image/large-previews/f35/x-twitter-logo-on-black-circle-5694247.png?h=350'></img>
+                  <span className="link-text">X / Twitter</span>
                 </div>
               </div>
             </div>
