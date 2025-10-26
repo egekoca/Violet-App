@@ -18,7 +18,7 @@
   pointer-events: none;
 }
 
-/* Walrus Logo - Sol Üst */
+/* Walrus Logo - Sol Left Top */
 .user-page::after {
   content: '';
   position: absolute;
@@ -36,7 +36,7 @@
   z-index: 1;
 }
 
-/* Sui Logo - Sağ Alt */
+/* Sui Logo - Right Bottom */
 .user-page .sui-logo-decoration {
   position: absolute;
   bottom: 10%;
@@ -1358,7 +1358,6 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  /* Logo dekorasyonları mobilde küçült */
   .user-page::after {
     width: 80px;
     height: 80px;

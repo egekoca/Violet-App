@@ -43,7 +43,7 @@ export function UserPage() {
     const newXp = currentXp + xpEarned;
     localStorage.setItem(xpKey, newXp.toString());
     
-    console.log('🎯 XP güncellendi:', {
+    console.log('XP Updated:', {
       profileId,
       xpEarned,
       currentXp,
@@ -65,14 +65,14 @@ export function UserPage() {
       setLoading(true);
       setError('');
 
-      // Eğer URL'de username varsa PUBLIC profil görüntüleme
+      // If the URL has a profile name as a parameter, then use PUBLIC viewing
       if (username) {
-        console.log('🌐 Public profile mode - Aranan username:', username);
+        console.log('Public profile mode - Searched username:', username);
         const publicProfile = await getProfileByUsername(username);
         
         if (publicProfile) {
           setProfile(publicProfile);
-          // XP'yi localStorage'dan yükle
+          // Get XP from localStorage
           const xp = getUserXp(publicProfile.id);
           setUserXp(xp);
         } else {
@@ -82,21 +82,21 @@ export function UserPage() {
         return;
       }
 
-      // Username yoksa PRIVATE profil görüntüleme (kendi profilim)
+      // If no username in URL, redirect to the own's profile page.
       if (!account) {
         setError('Please connect your wallet to view your profile');
         setProfile(null);
         return;
       }
 
-      // Kullanıcının tüm profillerini çek
+      // Fetch all the profiles of a user
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length === 0) {
         setError('No profile found. Create one now!');
         setProfile(null);
       } else {
-        // İlk profili göster
+        // Show the first profile amongst them
         setProfile(profiles[0]);
       }
     } catch (error) {
@@ -133,8 +133,8 @@ export function UserPage() {
           url
         });
         
-        // Analytics kaydı (localStorage'da)
-        const analyticsKey = `link_clicks_${profile.id}`;
+        // Analytics signinf (in localStorage'da)
+        const analyticsKey = `link_clicks_${profile}`;
         const existingData = JSON.parse(localStorage.getItem(analyticsKey) || '{}');
         
         const clickData = {
@@ -156,25 +156,22 @@ export function UserPage() {
         
         localStorage.setItem(analyticsKey, JSON.stringify(existingData));
         
-        // XP hesapla ve güncelle
+        // Compute XPs and update them
         const xpEarned = getXpForLinkType(linkType);
         updateUserXp(profile.id, xpEarned);
         
         // UI'da XP'yi güncelle
         setUserXp(prev => prev + xpEarned);
         
-        console.log('✅ Analytics kaydı başarılı:', {
+        console.log('Analytics register successful: ', {
           totalClicks: existingData.totalClicks,
           linkType,
           xpEarned,
           timestamp: new Date().toISOString()
         });
         
-        // TODO: İleride backend'e analytics gönderebiliriz
-        // await sendAnalyticsToBackend(clickData);
-        
       } catch (error) {
-        console.error('❌ Analytics tracking hatası:', error);
+        console.error('Analytics tracking error:', error);
       }
     }
   };
@@ -214,19 +211,19 @@ export function UserPage() {
 
   const handleSendTip = async () => {
     if (!account || !profile) {
-      alert('Lütfen önce cüzdanınızı bağlayın!');
+      alert('Please connect your wallet first!');
       return;
     }
 
     const amount = parseFloat(tipAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert('Lütfen geçerli bir miktar girin');
+      alert('Please enter a valid amount!');
       return;
     }
 
     const minAmount = selectedToken === 'SUI' ? 0.001 : 0.01;
     if (amount < minAmount) {
-      alert(`Minimum bahşiş miktarı: ${minAmount} ${selectedToken}`);
+      alert(`Minimum tip amount: ${minAmount} ${selectedToken}`);
       return;
     }
 
@@ -242,15 +239,9 @@ export function UserPage() {
         tx.transferObjects([coin], profile.owner);
       } else {
         // WAL transfer - Walrus testnet token
-        // Not: WAL coin type'ı için Walrus documentation'a bakılmalı
-        // Şimdilik temsili olarak SUI benzeri işlem yapıyoruz
         const amountInSmallestUnit = Math.floor(amount * 1_000_000_000);
         const [coin] = tx.splitCoins(tx.gas, [amountInSmallestUnit]);
         tx.transferObjects([coin], profile.owner);
-        
-        // TODO: Gerçek WAL token için doğru coin type kullanılmalı:
-        // const walCoinType = '0x...::wal::WAL';
-        // tx.splitCoins ile WAL coin'lerini böl ve transfer et
       }
 
       signAndExecute(
@@ -259,20 +250,20 @@ export function UserPage() {
         },
         {
           onSuccess: async () => {
-            alert(`🎉 ${amount} ${selectedToken} başarıyla gönderildi! Desteğiniz için teşekkürler!`);
+            alert(`🎉 ${amount} ${selectedToken} successfully sent! Thanks for your stop!`);
             setShowTipModal(false);
             setTipAmount('');
             setSelectedToken('SUI');
           },
           onError: (error: any) => {
-            console.error('Bahşiş gönderme hatası:', error);
-            alert('❌ Hata: ' + error.message);
+            console.error('Tip sending error:', error);
+            alert('❌ Tip Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Bahşiş hatası:', error);
-      alert('❌ Hata: ' + error.message);
+      console.error('Bahşiş error:', error);
+      alert('❌ Tip Error: ' + error.message);
     } finally {
       setSendingTip(false);
     }
@@ -286,7 +277,7 @@ export function UserPage() {
     );
   }
 
-  // Eğer username varsa (public profil), cüzdan gerekmez
+  // If there is username present in the URL (a public profile), no sign in is needed
   if (!account && !username) {
     return (
       <div className="user-page error">
@@ -306,7 +297,7 @@ export function UserPage() {
       <div className="user-page error">
         <div className="container">
           <h2>⚠️ {error}</h2>
-          {error.includes('profilin yok') && (
+          {error.includes('No profile') && (
             <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => navigate('/profile')}
@@ -373,7 +364,7 @@ export function UserPage() {
 
   return (
     <div className="user-page">
-      {/* Dekoratif Logo Elementleri */}
+      {/* Decorative Logo Components */}
       <div className="sui-logo-decoration"></div>
       <div className="walrus-logo-decoration-2"></div>
       <div className="sui-logo-decoration-2"></div>
@@ -384,7 +375,7 @@ export function UserPage() {
           <WalletConnect />
         </div>
 
-        {/* Admin Button - Sadece kendi profilinde göster */}
+        {/* Admin Button - Show it only in your page */}
         {!username && account && profile && profile.owner === account.address && (
           <button 
             className="admin-btn"
@@ -406,7 +397,7 @@ export function UserPage() {
               alt={profile.display_name}
               className="avatar-image"
               onError={(e) => {
-                // Resim yüklenemezse placeholder göster
+                // Show placeholder if no image has been fetched yet
                 e.currentTarget.style.display = 'none';
                 const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
                 if (placeholder) placeholder.style.display = 'flex';
@@ -423,7 +414,7 @@ export function UserPage() {
           <p className="bio">{profile.bio}</p>
           <p className="username-label">@{profile.username}</p>
           
-          {/* XP Puanı */}
+          {/* XP Point */}
           <div className="xp-badge">
             <div className="xp-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -454,7 +445,7 @@ export function UserPage() {
               onClick={() => setShowTipModal(true)}
               title="Bahşiş Gönder"
             >
-              {/* Paper Plane / Kağıt Uçak - Send Icon */}
+              {/* Paper Plane / Send Icon */}
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -526,7 +517,7 @@ export function UserPage() {
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style={{ marginRight: '12px' }}>
                     <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <h2>Bahşiş Gönder</h2>
+                  <h2>Send Tip</h2>
                 </div>
                 <button 
                   className="tip-modal-close"
@@ -541,7 +532,7 @@ export function UserPage() {
               <div className="tip-modal-body">
                 {!account ? (
                   <div className="tip-connect-wallet">
-                    <p>Bahşiş göndermek için lütfen cüzdanınızı bağlayın</p>
+                    <p>To send tip, please connect to your wallet</p>
                     <WalletConnect />
                   </div>
                 ) : (
@@ -565,9 +556,9 @@ export function UserPage() {
                     </div>
 
                     <div className="tip-form">
-                      {/* Token Seçici */}
+                      {/* Token Selector */}
                       <div className="token-selector">
-                        <label>Token Seçin</label>
+                        <label>Select a Token</label>
                         <div className="token-buttons">
                           <button
                             type="button"
@@ -692,7 +683,7 @@ export function UserPage() {
                 </div>
 
                 <p className="qr-info">
-                  Bu QR kodu taratarak linke direkt erişebilirsiniz
+                  You can access the link directly by scanning this QR code.
                 </p>
               </div>
             </div>
@@ -787,7 +778,7 @@ export function UserPage() {
 
         {/* Footer */}
         <footer className="footer">
-          <p>Powered by <a href="https://sui.io/  " target='_blank' rel='noopener noreferrer' className="blue-link">Sui Blockchain</a></p>
+          <p>Powered by <a href="https://sui.io/" target='_blank' rel='noopener noreferrer' className="blue-link">Sui Blockchain</a></p>
         </footer>
       </div>
     </div>

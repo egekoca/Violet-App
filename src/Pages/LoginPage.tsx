@@ -1,6 +1,5 @@
 /**
- * Login Page - Tam Ekran Giriş Sayfası
- * Linktree tarzı - Sol tarafta form, sağ tarafta görsel
+ * Login Page - Full Screen Login Page
  */
 
 import { useEffect } from 'react';
@@ -12,8 +11,8 @@ export function LoginPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount();
 
-  // Cüzdan bağlandığında admin paneline yönlendir
-  // Admin paneli profil kontrolü yapıp gerekli sayfayı gösterecek
+  // Redirect to the admin dashboard when connected to the wallet
+  // The dashboard will do the other necessary checks
   useEffect(() => {
     if (account) {
       navigate('/admin');
@@ -22,7 +21,7 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* Sol Taraf - Form */}
+      {/* Left Size- Form */}
       <div className="login-left">
         <div className="login-container">
           {/* Logo */}
@@ -31,7 +30,7 @@ export function LoginPage() {
             <span className="logo-text">VIOLET</span>
           </div>
 
-          {/* Başlık */}
+          {/* Header */}
           <div className="login-header">
             <h1>Welcome</h1>
             <p>Log in to your Blockchain account</p>
@@ -42,7 +41,7 @@ export function LoginPage() {
             <ConnectButton />
           </div>
 
-          {/* Bilgilendirme */}
+          {/* Info */}
           <div className="login-info">
             <div className="info-card">
               <div className="info-icon">🔐</div>
@@ -61,17 +60,8 @@ export function LoginPage() {
             </div>
           </div>
 
-          {/* Alt Bilgi */}
+          {/* Sub Info */}
           <div className="login-footer">
-            {/* <p>
-              Don't have an account yet?{' '}
-              <button 
-                className="signup-link"
-                onClick={() => navigate('/')}
-              >
-                Start For Free
-              </button>
-            </p> */}
             <div className="wallet-download">
               <p>Don't have a wallet yet? <a 
                 href="https://chromewebstore.google.com/detail/slush-%E2%80%94-a-sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil" target="_blank" rel="noopener noreferrer"> Download Sui Wallet → </a></p> 

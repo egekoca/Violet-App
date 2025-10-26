@@ -25,14 +25,14 @@ export function LeaderboardPage() {
     try {
       setLoading(true);
       
-      console.log('🏆 Leaderboard yükleniyor...', { currentPage, usersPerPage });
+      console.log('🏆 Leaderboard loading...', { currentPage, usersPerPage });
       
-      // Blockchain'den gerçek veri çek
+      // Fetch real data from the blockchain
       const result = await sponsoredBlockchain.getLeaderboard(currentPage, usersPerPage);
       
-      console.log('✅ Leaderboard verisi alındı:', result);
+      console.log('Leaderboard data has been loaded:', result);
       
-      // Her kullanıcı için localStorage'dan XP'yi al
+      // Get XP from localStorage for all users
       const usersWithXp = result.users.map(user => {
         const xpKey = `user_xp_${user.id}`;
         const xp = parseInt(localStorage.getItem(xpKey) || '0');
@@ -43,10 +43,10 @@ export function LeaderboardPage() {
         };
       });
       
-      // XP'ye göre sırala
+      // Sort by XP
       usersWithXp.sort((a, b) => b.total_xp - a.total_xp);
       
-      // Rank'leri güncelle
+      // Update Ranks
       usersWithXp.forEach((user, index) => {
           user.rank = index + 1;
       });
@@ -55,9 +55,9 @@ export function LeaderboardPage() {
       setTotalPages(result.totalPages);
       
     } catch (error) {
-      console.error('❌ Leaderboard yüklenirken hata:', error);
+      console.error('Leaderboard load error:', error);
       
-      // Hata durumunda boş liste göster
+      // Show empty list when error
       setUsers([]);
       setTotalPages(0);
     } finally {
@@ -189,7 +189,7 @@ export function LeaderboardPage() {
               className={`user-item ${isCurrentUser(user) ? 'current-user' : ''}`}
               onClick={() => navigate(`/${user.username}`)}
               style={{ cursor: 'pointer' }}
-              title={`${user.display_name} profilini görüntüle`}
+              title={`${user.display_name} view profile`}
             >
               <div className="user-rank">
                 <span className="rank-number">{user.rank}</span>

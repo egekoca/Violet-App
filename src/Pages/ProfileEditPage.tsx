@@ -1,6 +1,6 @@
 /**
- * Profile Edit Page - Profil Düzenleme/Oluşturma Sayfası
- * Kullanıcı ilk kez profil oluşturur veya mevcut profilini düzenler
+ * Profile Edit Page 
+ * Create the new user profile if it's the first time - Otherwise edit the existing profile
  */
 
 import { useEffect, useState } from 'react';
@@ -40,11 +40,11 @@ export function ProfileEditPage() {
       const profiles = await getUserProfiles(account.address);
       
       if (profiles.length > 0) {
-        // Kullanıcının zaten profili var, admin paneline yönlendir
+        // The user already has an account, redirect to the /admin
         navigate('/admin');
       }
     } catch (error) {
-      console.error('Profil kontrol hatası:', error);
+      console.error('Profile control error:', error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export function ProfileEditPage() {
 
     // Validation
     if (formData.username.length < 3) {
-      alert('Kullanıcı adı en az 3 karakter olmalı');
+      alert('The usearname must have at least 3 characters');
       return;
     }
 
@@ -70,22 +70,22 @@ export function ProfileEditPage() {
         },
         {
           onSuccess: async () => {
-            alert('🎉 Profil oluşturuldu! Hoş geldin!');
-            // Admin paneline yönlendir
+            alert('🎉 The profile has been created. Welcome!');
+            // Redirect to the admin dashboard
             setTimeout(() => {
               navigate('/admin');
             }, 2000);
           },
           onError: (error) => {
-            console.error('Transaction hatası:', error);
-            alert('❌ Hata: ' + error.message);
+            console.error('Transaction error:', error);
+            alert('❌ Transaction Error: ' + error.message);
             setProcessing(false);
           },
         }
       );
     } catch (error: any) {
-      console.error('Profil oluşturma hatası:', error);
-      alert('Hata: ' + error.message);
+      console.error('Profil creating error:', error);
+      alert('Profile Creating Eorro Hata: ' + error.message);
       setProcessing(false);
     }
   };
@@ -101,8 +101,8 @@ export function ProfileEditPage() {
   if (!account) {
     return (
       <div className="profile-edit-page error">
-        <h2>🔐 Lütfen cüzdanınızı bağlayın</h2>
-        <button onClick={() => navigate('/')}>Ana Sayfaya Dön</button>
+        <h2>🔐 Please Connect Your Wallet</h2>
+        <button onClick={() => navigate('/')}>Back to Homepage</button>
       </div>
     );
   }
@@ -112,7 +112,6 @@ export function ProfileEditPage() {
       {/* Header */}
       <div className="edit-header">
         <div className="logo">
-          <span className="logo-icon">🔗</span>
           <span className="logo-text">VIOLET</span>
         </div>
         <WalletConnect />
@@ -122,8 +121,8 @@ export function ProfileEditPage() {
       <div className="edit-container">
         <div className="edit-card">
           <div className="card-header">
-            <h1>🎨 Profilini Oluştur</h1>
-            <p>Blockchain'deki yerini al! Bilgilerini doldur ve başla.</p>
+            <h1>🎨 Create A Profile</h1>
+            <p>Take a place in the blockchain today! Sign in and start using it immediately.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="edit-form">
@@ -137,20 +136,20 @@ export function ProfileEditPage() {
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '') })}
-                placeholder="ahmet123"
+                placeholder="johndoe123"
                 required
                 minLength={3}
                 maxLength={20}
                 disabled={processing}
               />
-              <small>3-20 karakter, sadece harf ve rakam (örn: ahmet123)</small>
+              <small>Between 3-20 charachters, only letters and rumbers (ex: jphndoe123456789)</small>
             </div>
 
             {/* Display Name */}
             <div className="form-group">
               <label>
                 <span className="label-icon">✨</span>
-                Görünen İsim
+                Diplay Name
               </label>
               <input
                 type="text"
@@ -161,7 +160,7 @@ export function ProfileEditPage() {
                 maxLength={50}
                 disabled={processing}
               />
-              <small>Profilinde görünecek isim (örn: Ahmet Yılmaz)</small>
+              <small>The name who will appear in your profile (ex: Janet Doe)</small>
             </div>
 
             {/* Bio */}
@@ -173,20 +172,21 @@ export function ProfileEditPage() {
               <textarea
                 value={formData.bio}
                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                placeholder="Tüm linklerim burada! 🚀"
+                placeholder="All of my links are here, up and running!! 🚀"
                 required
                 maxLength={200}
                 rows={4}
                 disabled={processing}
               />
-              <small>Kısa bir açıklama (maks. 200 karakter)</small>
+              <small>A short description. (max 200 characters)</small>
             </div>
 
             {/* Info Box */}
             <div className="info-box">
               <div className="info-icon">💡</div>
               <div className="info-text">
-                <strong>Blockchain'de Kalıcı!</strong>
+                <strong>Permanent on Blockchain!</strong>
+                <p>These informations will be forever yours.</p>
                 <p>Bu bilgiler Sui blockchain'de saklanacak ve sonsuza dek sizin olacak.</p>
               </div>
             </div>
@@ -218,9 +218,9 @@ export function ProfileEditPage() {
             <div className="preview-avatar">
               {formData.username ? formData.username.charAt(0).toUpperCase() : '?'}
             </div>
-            <h2>{formData.display_name || 'İsminiz'}</h2>
-            <p className="preview-bio">{formData.bio || 'Biyografiniz burada görünecek...'}</p>
-            <span className="preview-username">@{formData.username || 'kullaniciadi'}</span>
+            <h2>{formData.display_name || 'Name'}</h2>
+            <p className="preview-bio">{formData.bio || 'Your biography will be seen here...'}</p>
+            <span className="preview-username">@{formData.username || 'kullaniciadi (Aynı Formatta)'}</span>
           </div>
         </div>
       </div>
