@@ -1,84 +1,115 @@
 # 🔗 VIOLET - Sui Blockchain LinkTree
 
-**Tamamen merkeziyetsiz LinkTree uygulaması!** 
+**A fully decentralized LinkTree application!**
 
-Tüm profilleriniz ve linkleriniz **Sui Blockchain** üzerinde saklanıyor. Web3 ile tanışın! 🚀
+All your profiles and links are stored on the **Sui Blockchain**. Welcome to Web3! 🚀
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
 ```
 Violent-App/
-├── backend/          # Mock data ve API
-│   ├── mockData.ts   # Mock veriler ve API fonksiyonları
-│   └── package.json
-├── frontend/         # TypeScript tipleri ve API client
-│   ├── types.ts      # TypeScript interface'leri
-│   ├── api.ts        # API client
-│   └── package.json
-└── ui/              # React + Vite uygulaması
-    ├── src/
-    │   ├── pages/        # Sayfa bileşenleri
-    │   │   ├── UserPage.tsx    # Kullanıcı profil sayfası
-    │   │   ├── UserPage.css
-    │   │   ├── AdminPage.tsx   # Admin yönetim paneli
-    │   │   └── AdminPage.css
-    │   ├── types.ts      # TypeScript tipleri
-    │   ├── api.ts        # API fonksiyonları
-    │   ├── App.tsx       # Ana uygulama
-    │   ├── App.css
-    │   ├── main.tsx      # Giriş noktası
-    │   └── index.css     # Global stiller
-    ├── index.html
-    ├── package.json
-    ├── tsconfig.json
-    ├── tsconfig.node.json
-    └── vite.config.ts
+├── src/                    # React + Vite application
+│   ├── Components/         # React components
+│   │   ├── EnokiAuth.tsx   # Enoki authentication
+│   │   ├── WalletConnect.tsx # Wallet connection
+│   │   └── WalletConnect.css
+│   ├── Pages/             # Page components
+│   │   ├── UserPage.tsx    # User profile page
+│   │   ├── UserPage.css
+│   │   ├── AdminPage.tsx   # Admin management panel
+│   │   ├── AdminPage.css
+│   │   ├── LandingPage.tsx # Landing page
+│   │   ├── LandingPage.css
+│   │   ├── LoginPage.tsx   # Login page
+│   │   ├── LoginPage.css
+│   │   ├── ProfileEditPage.tsx # Profile editing
+│   │   ├── ProfileEditPage.css
+│   │   ├── LeaderboardPage.tsx # Leaderboard
+│   │   └── LeaderboardPage.css
+│   ├── Utils/             # Utility functions
+│   │   ├── EnokiSP.ts      # Enoki service provider
+│   │   ├── MoveCalls.ts    # Move blockchain calls
+│   │   └── Types.ts        # TypeScript types
+│   ├── App.tsx            # Main application
+│   ├── App.css
+│   ├── main.tsx           # Entry point
+│   ├── main.css           # Global styles
+│   ├── constants.ts       # Application constants
+│   └── networkConfig.ts   # Network configuration
+├── move/                  # Sui Move smart contracts
+│   ├── violet/
+│   │   ├── sources/
+│   │   │   └── violet.move # Main Move contract
+│   │   ├── Move.toml      # Move configuration
+│   │   └── Move.lock      # Move lock file
+│   ├── deployed/
+│   │   └── contract-info.json # Contract deployment info
+│   └── server.js          # Move development server
+├── public/                # Static assets
+│   ├── sui-logo.jpg
+│   ├── violet2.png
+│   ├── violett.png
+│   ├── walrus-logo.png
+│   └── ws-resources.json
+├── dist/                  # Build output
+├── package.json
+├── tsconfig.json
+├── vite.config.mts
+└── README.md
 ```
 
-## 🚀 Özellikler
+## 🚀 Features
 
-### Kullanıcı Sayfası
-- ✨ Modern ve şık tasarım
-- 📱 Tam responsive (mobil uyumlu)
-- 🎨 Gradient arka plan
-- 👤 Profil bilgileri (avatar, isim, bio)
-- 🔗 Tıklanabilir link kartları
-- 🎭 Hover animasyonları
-- ⚙️ Admin paneline hızlı erişim
+### User Page
+- ✨ Modern and elegant design
+- 📱 Fully responsive (mobile-friendly)
+- 🎨 Gradient background
+- 👤 Profile information (avatar, name, bio)
+- 🔗 Clickable link cards
+- 🎭 Hover animations
+- ⚙️ Quick access to admin panel
 
-### Admin Paneli
-- ➕ Yeni link ekleme
-- ✏️ Link düzenleme
-- 🗑️ Link silme
-- 👁️ Link aktif/pasif durumu değiştirme
-- 📋 Tüm linkleri görüntüleme
-- 🎯 Kullanıcı dostu form arayüzü
+### Admin Panel
+- ➕ Add new links
+- ✏️ Edit existing links
+- 🗑️ Delete links
+- 👁️ Toggle link active/inactive status
+- 📋 View all links
+- 🎯 User-friendly form interface
 
-## 🛠️ Teknolojiler
+### Blockchain Integration
+- 🔗 Sui blockchain integration
+- 💼 Wallet connection (Enoki)
+- 🏗️ Move smart contracts
+- 🔐 Decentralized data storage
 
-- **UI Framework:** React 18
+## 🛠️ Technologies
+
+- **Frontend Framework:** React 18
 - **Build Tool:** Vite
 - **Language:** TypeScript
 - **Routing:** React Router v6
 - **Styling:** Pure CSS (CSS Variables + Animations)
-- **Backend:** Mock Data (Gerçek API'ye kolayca entegre edilebilir)
+- **Blockchain:** Sui Network
+- **Smart Contracts:** Move
+- **Authentication:** Enoki
+- **Wallet Integration:** WalletConnect
 
-## 📦 Kurulum
+## 📦 Installation
 
-### 1. Bağımlılıkları Yükleyin
+### 1. Install Dependencies
 
 ```bash
-cd ui
 npm install
 ```
 
-### 2. Geliştirme Sunucusunu Başlatın
+### 2. Start Development Server
 
 ```bash
 npm run dev
 ```
 
-Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışacaktır.
+The application will run at `http://localhost:5173` by default.
 
 ### 3. Production Build
 
@@ -86,33 +117,38 @@ Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışacaktır.
 npm run build
 ```
 
-Build dosyaları `ui/dist` klasöründe oluşturulacaktır.
+Build files will be created in the `dist` folder.
 
-## 🎯 Kullanım
+## 🎯 Usage
 
-### Kullanıcı Sayfası
-- Ana sayfa: `http://localhost:5173/benimhesabim`
-- Herhangi bir kullanıcı: `http://localhost:5173/:username`
+### User Page
+- Main page: `http://localhost:5173/myaccount`
+- Any user: `http://localhost:5173/:username`
 
-### Admin Paneli
-- Admin sayfası: `http://localhost:5173/admin/benimhesabim`
-- Sağ üst köşedeki ⚙️ ikonuna tıklayarak da erişebilirsiniz
+### Admin Panel
+- Admin page: `http://localhost:5173/admin/myaccount`
+- You can also access it by clicking the ⚙️ icon in the top right corner
 
-## 🎨 Özelleştirme
+### Blockchain Features
+- Connect your wallet to interact with the Sui blockchain
+- Manage your profile and links on-chain
+- View leaderboard and user statistics
 
-### Renkleri Değiştirme
-`ui/src/index.css` dosyasındaki CSS değişkenlerini düzenleyin:
+## 🎨 Customization
+
+### Changing Colors
+Edit CSS variables in `src/main.css`:
 
 ```css
 :root {
   --primary-color: #8b5cf6;
   --primary-hover: #7c3aed;
-  /* ... diğer renkler */
+  /* ... other colors */
 }
 ```
 
-### Gradient Arka Plan
-`ui/src/pages/UserPage.css` dosyasında:
+### Gradient Background
+In `src/Pages/UserPage.css`:
 
 ```css
 .user-page {
@@ -120,48 +156,47 @@ Build dosyaları `ui/dist` klasöründe oluşturulacaktır.
 }
 ```
 
-## 🔌 Gerçek API'ye Bağlama
+## 🔌 Blockchain Integration
 
-`ui/src/api.ts` dosyasındaki mock fonksiyonları gerçek API çağrıları ile değiştirin:
+The application uses Sui Move smart contracts for data storage:
 
-```typescript
-export const api = {
-  async getProfile(): Promise<UserProfile> {
-    const response = await fetch('/api/profile');
-    return response.json();
-  },
-  // ... diğer fonksiyonlar
-};
-```
+- **Contract:** `move/violet/sources/violet.move`
+- **Network:** Sui testnet/mainnet
+- **Authentication:** Enoki service provider
+- **Wallet:** WalletConnect integration
 
-## 📱 Responsive Tasarım
+## 📱 Responsive Design
 
-Uygulama tüm ekran boyutlarında mükemmel çalışır:
-- 📱 Mobil (< 768px)
+The application works perfectly on all screen sizes:
+- 📱 Mobile (< 768px)
 - 💻 Tablet (768px - 1024px)
 - 🖥️ Desktop (> 1024px)
 
-## 🎭 Animasyonlar
+## 🎭 Animations
 
-- Fade in animasyonları
-- Hover efektleri
-- Smooth geçişler
+- Fade in animations
+- Hover effects
+- Smooth transitions
 - Loading spinners
 
-## 🚧 Geliştirme Planları
+## 🚧 Development Roadmap
 
-- [ ] Drag & drop ile link sıralaması
-- [ ] Tema seçenekleri (dark mode)
-- [ ] Profil düzenleme
-- [ ] Link istatistikleri
-- [ ] Özel domain bağlama
-- [ ] QR kod oluşturma
+- [ ] Drag & drop link ordering
+- [ ] Theme options (dark mode)
+- [ ] Profile editing
+- [ ] Link statistics
+- [ ] Custom domain binding
+- [ ] QR code generation
+- [ ] Social media integration
+- [ ] Analytics dashboard
 
-## 📄 Lisans
+## 📄 License
 
 MIT
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Developers
 
-Violent App ile geliştirildi ❤️
+yzeybek, egekoca, yedemirkiran
+
+Developed with ❤️ by Violent App
 
