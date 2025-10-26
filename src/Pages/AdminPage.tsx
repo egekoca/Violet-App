@@ -208,30 +208,30 @@ export function AdminPage() {
 
     try {
       setLoading(true);
-      console.log('🔄 loadData başladı, account:', account.address);
+      console.log('loadData has started, account:', account.address);
       
       const profiles = await getUserProfiles(account.address);
-      console.log('📥 getUserProfiles sonucu:', profiles);
+      console.log('getUserProfiles result:', profiles);
       
       if (profiles.length > 0) {
-        console.log('✅ Profil bulundu:', profiles[0]);
-        console.log('🆔 Profile ID:', profiles[0].id);
-        console.log('🔢 Link IDs:', profiles[0].link_ids);
-        console.log('🔢 Link Count:', profiles[0].link_count);
-        console.log('🔗 Profile linkler:', profiles[0].links);
-        console.log('🔗 Links array mi?', Array.isArray(profiles[0].links));
-        console.log('🔗 Links length:', profiles[0].links?.length);
+        console.log('Found profile:', profiles[0]);
+        console.log('Profile ID:', profiles[0].id);
+        console.log('Link IDs:', profiles[0].link_ids);
+        console.log('Link Count:', profiles[0].link_count);
+        console.log('Profile links:', profiles[0].links);
+        console.log('Are links an array?', Array.isArray(profiles[0].links));
+        console.log('Links length:', profiles[0].links?.length);
         
-        // Her linkin detayını göster
+        // Log details about each link
         if (profiles[0].links && profiles[0].links.length > 0) {
           profiles[0].links.forEach((link, idx) => {
-            console.log(`  Link ${idx}:`, link);
+            console.log(`Link ${idx}:`, link);
           });
         }
         
         setProfile(profiles[0]);
         setShowCreateForm(false);
-        // Profil formunu mevcut verilerle doldur
+        // Fill the profile form with data
         setProfileForm({
           username: profiles[0].username,
           display_name: profiles[0].display_name,
@@ -239,12 +239,12 @@ export function AdminPage() {
           image_url: profiles[0].image_url || '',
         });
       } else {
-        console.log('❌ Profil bulunamadı');
+        console.log('No profile has been found');
         setProfile(null);
         setShowCreateForm(true);
       }
     } catch (error) {
-      console.error('❌ Veri yüklenirken hata:', error);
+      console.error('Profile load error:', error);
     } finally {
       setLoading(false);
     }
@@ -272,12 +272,12 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('Transaction error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Profil oluşturma hatası:', error);
+      console.error('Profile create error:', error);
       alert('❌ Error: ' + error.message);
     } finally {
       setProcessing(false);
@@ -291,7 +291,7 @@ export function AdminPage() {
       icon: '',
       banner: platform.icon,
     });
-    setSelectedCategory('text'); // Form görünümüne geç
+    setSelectedCategory('text'); // Switch to form view
   };
 
   const handleCustomLink = () => {
@@ -301,7 +301,7 @@ export function AdminPage() {
       icon: '',
       banner: '',
     });
-    setSelectedCategory('text'); // Form görünümüne geç
+    setSelectedCategory('text'); // Switch to form view
   };
 
   const handleAddLink = async (e: React.FormEvent) => {
@@ -311,27 +311,27 @@ export function AdminPage() {
     try {
       setProcessing(true);
       
-      // zkLogin kullanıcısı mı kontrol et
+      // Check if using zkLogin
       const isZkLogin = account?.address.startsWith('0x') && account?.address.length > 40;
       
       if (isZkLogin) {
-        // Enoki wallet ile doğrudan transaction yap
-        console.log('🚀 Enoki wallet ile link ekleniyor...');
+        // Make a transaction with Enoki
+        console.log('Adding a link with Enoki...');
         
       const tx = addLinkTransaction({
         profileId: profile.id,
         ...linkForm,
       });
 
-        // Enoki wallet otomatik olarak sponsored transaction yapar
+        // Enoki wallet handles sponsored transactions automatically
         signAndExecute(
           { transaction: tx as any },
           {
             onSuccess: async (result) => {
-              console.log('✅ Enoki transaction başarılı:', result);
+              console.log('Enoki transaction successfull:', result);
               alert('✅ The link has been added with Enoki sponsored transaction! (No gas fee)');
               
-              // Hemen UI'ı güncelle (optimistic update)
+              // Update the UI immediately (optimistic update)
               const newLink = {
                 id: Date.now(), // Temporary ID
                 title: linkForm.title,
@@ -342,7 +342,7 @@ export function AdminPage() {
                 order: (profile.links?.length || 0) + 1
               };
               
-              // Profile'ı güncelle
+              // Update the profile
               setProfile(prev => {
                 if (!prev) return prev;
                 return {
@@ -351,26 +351,26 @@ export function AdminPage() {
                 };
               });
               
-              // Form'u temizle
+              // Clear the form
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
               setSearchQuery('');
               setSelectedCategory('suggested');
               
-              // Arka planda blockchain'den güncel veriyi çek
+              // Load the latest data from the blockchain in the background
               setTimeout(async () => {
-                console.log('🔄 Arka planda blockchain verisi yenileniyor...');
+                console.log('Updating blockchain in the background...');
                 try {
                   await loadData();
-                  console.log('✅ Blockchain verisi güncellendi');
+                  console.log('Blockchain data has been synced.');
                 } catch (error) {
-                  console.error('❌ Blockchain veri yenileme hatası:', error);
+                  console.error('Blockchain sync error:', error);
                 }
               }, 3000);
             },
             onError: (error) => {
-              console.error('❌ Enoki transaction hatası:', error);
-              alert('❌ Error: ' + error.message);
+              console.error('Enoki transaction error:', error);
+              alert('❌ Enoki Error: ' + error.message);
             }
           }
         );
@@ -387,12 +387,12 @@ export function AdminPage() {
         },
         {
           onSuccess: async (result) => {
-            console.log('✅ Link ekleme transaction başarılı:', result);
+            console.log('Link add transaction successful:', result);
             alert('✅ The link has been added! Waiting for blockchain confirmation...');
             
-            // Blockchain'de işlenmesi için biraz daha uzun bekle
+            // Wait for it to happen in the blockchain
             setTimeout(async () => {
-              console.log('🔄 Link eklendikten sonra veri yenileniyor...');
+              console.log('Updating the data after adding the link');
               await loadData();
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
@@ -401,15 +401,15 @@ export function AdminPage() {
               }, 5000);
           },
           onError: (error) => {
-            console.error('❌ Transaction hatası:', error);
-            alert('❌ Error: ' + error.message);
+            console.error('❌ Transaction error:', error);
+            alert('❌ Transaction Error: ' + error.message);
           },
         }
       );
       }
     } catch (error: any) {
-      console.error('Link ekleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Link add error:', error);
+      alert('❌ Error While Adding A Link: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -422,7 +422,7 @@ export function AdminPage() {
     try {
       setProcessing(true);
       
-      // İlk olarak display_name ve bio'yu güncelle
+      // Firstly, update the display name and bio
       const tx = updateProfileTransaction({
         profileId: profile.id,
         display_name: profileForm.display_name,
@@ -435,7 +435,7 @@ export function AdminPage() {
         },
         {
           onSuccess: async () => {
-            // Eğer image_url değiştiyse, onu da güncelle
+            // If the image_url had been changed, update that too
             if (profileForm.image_url !== profile.image_url) {
               const imageTx = updateProfileImageTransaction({
                 profileId: profile.id,
@@ -470,14 +470,14 @@ export function AdminPage() {
             }
           },
           onError: (error) => {
-            console.error('Transaction hatası:', error);
-            alert('❌ Error: ' + error.message);
+            console.error('Transaction error:', error);
+            alert('❌ Transaction Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Profil güncelleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Profil Update error:', error);
+      alert('❌ Profile Update Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -523,13 +523,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link update error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Link Update Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Link güncelleme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Link update error:', error);
+      alert('❌ Link Update Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -560,13 +560,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link delete error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Link Delete Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Link silme hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Link Delete Error:', error);
+      alert('❌ Link Delete Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -596,13 +596,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link toggle error:', error);
-            alert('❌ Error: ' + error.message);
+            alert('❌ Limk Toggle Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
-      console.error('Link toggle hatası:', error);
-      alert('❌ Error: ' + error.message);
+      console.error('Link toggle error:', error);
+      alert('❌ Link Toggle Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -622,7 +622,7 @@ export function AdminPage() {
         <div className="container">
           <h1>🔐 Wallet Connection Is Required</h1>
           <p style={{ marginBottom: '24px' }}>
-            Please connect with your wallet to access to the admin panel
+            Please connect with your wallet to access to the admin dashboard.
           </p>
           <WalletConnect />
         </div>
@@ -903,7 +903,7 @@ export function AdminPage() {
               </div>
             ) : (
               <>
-                {/* LINKS VIEW - Link Yönetimi */}
+                {/* LINKS VIEW - Link Management */}
                 {/* Add Button */}
                 {!showAddLinkForm && (
                   <button 
