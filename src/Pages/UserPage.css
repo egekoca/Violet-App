@@ -22,8 +22,8 @@
 .user-page::after {
   content: '';
   position: absolute;
-  top: 10%;
-  left: 5%;
+  top: 8%;
+  left: 3%;
   width: 150px;
   height: 150px;
   background-image: url('/walrus-logo.png');
@@ -39,8 +39,8 @@
 /* Sui Logo - Right Bottom */
 .user-page .sui-logo-decoration {
   position: absolute;
-  bottom: 10%;
-  right: 5%;
+  bottom: 8%;
+  right: 3%;
   width: 180px;
   height: 180px;
   background-image: url('/sui-logo.jpg');
@@ -56,8 +56,8 @@
 /* Walrus Logo - Sağ Orta (Ek) */
 .user-page .walrus-logo-decoration-2 {
   position: absolute;
-  top: 50%;
-  right: 8%;
+  top: 45%;
+  right: 5%;
   transform: translateY(-50%);
   width: 120px;
   height: 120px;
@@ -74,8 +74,8 @@
 /* Sui Logo - Sol Alt (Ek) */
 .user-page .sui-logo-decoration-2 {
   position: absolute;
-  bottom: 15%;
-  left: 8%;
+  bottom: 20%;
+  left: 5%;
   width: 140px;
   height: 140px;
   background-image: url('/sui-logo.jpg');

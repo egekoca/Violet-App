@@ -11,6 +11,11 @@ export function LandingPage() {
 
   return (
     <div className="landing-page">
+      {/* Background Logos */}
+      <div className="sui-logo-decoration"></div>
+      <div className="violet-logo-decoration"></div>
+      <div className="violet-logo-decoration-2"></div>
+      
       {/* Header */}
       <header className="landing-header">
         <div className="header-content">

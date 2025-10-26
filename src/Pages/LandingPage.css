@@ -9,6 +9,107 @@
   background: #0f0f23;
   color: white;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Background Logos */
+.landing-page::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(0, 217, 255, 0.15) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Walrus Logo - Sol Üst */
+.landing-page::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 150px;
+  height: 150px;
+  background-image: url('/walrus-logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.1;
+  animation: floatSlow 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Sui Logo - Sağ Alt */
+.landing-page .sui-logo-decoration {
+  position: absolute;
+  bottom: 10%;
+  right: 5%;
+  width: 180px;
+  height: 180px;
+  background-image: url('/sui-logo.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.12;
+  animation: floatReverse 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Violet Logo - Sol Alt */
+.landing-page .violet-logo-decoration {
+  position: absolute;
+  bottom: 15%;
+  left: 8%;
+  width: 120px;
+  height: 120px;
+  background-image: url('/violet2.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.08;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Violet Logo - Sağ Üst */
+.landing-page .violet-logo-decoration-2 {
+  position: absolute;
+  top: 20%;
+  right: 8%;
+  width: 100px;
+  height: 100px;
+  background-image: url('/violet2.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.06;
+  animation: floatSlow 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-3deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(15px) rotate(-5deg); }
 }
 
 /* Header */
