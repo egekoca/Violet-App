@@ -8,7 +8,7 @@ import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { toBase64 } from '@mysten/sui/utils';
 
 // Contract info
-export const PACKAGE_ID = '0x28d408ce45cef229c69aafd8c27a1f72eb9687db562b178b04426b20735ea0a8';
+export const PACKAGE_ID = '0x5fd2ef367fe2bcc32b95e15b7303eda76925b4f329d5e03f4a3d0536656a1415';
 export const MODULE_NAME = 'violet';
 
 // Backend API URL
