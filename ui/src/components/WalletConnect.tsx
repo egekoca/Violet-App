@@ -1,6 +1,6 @@
 /**
- * Cüzdan Bağlantı Komponenti
- * Sui wallet ile bağlantı kurma ve adres gösterme
+ * Wallet Connect Component
+ * For connecting to a Sui wallet and displaying Wallet information
  */
 
 import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';

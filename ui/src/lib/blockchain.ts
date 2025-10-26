@@ -1,5 +1,5 @@
 /**
- * Blockchain İşlemleri
+ * Blockchain Transactions
  * Frontend SDK wrapper
  */
 
@@ -32,7 +32,7 @@ export const MODULE_NAME = 'linktree';
 // Sui Client
 export const suiClient = new SuiClient({ url: RPC_URL });
 
-// Type'lar
+// Types
 export interface Link {
   id: number;
   title: string;
@@ -52,7 +52,7 @@ export interface UserProfile {
   image_url: string;
   link_ids: number[];
   link_count: number;
-  links: Link[]; // Frontend'de dinamik olarak doldurulacak
+  links: Link[]; // Will be filled dynamically on the frontend
 }
 
 export interface CreateProfileInput {
@@ -108,7 +108,7 @@ export interface ReorderLinkInput {
 }
 
 /**
- * Profil oluşturma transaction'ı
+ * 'Create Profile' transaction
  */
 export function createProfileTransaction(input: CreateProfileInput): Transaction {
   const tx = new Transaction();
@@ -127,7 +127,7 @@ export function createProfileTransaction(input: CreateProfileInput): Transaction
 }
 
 /**
- * Link ekleme transaction'ı
+ * "Add Link" transaction
  */
 export function addLinkTransaction(input: AddLinkInput): Transaction {
   const tx = new Transaction();
@@ -147,7 +147,7 @@ export function addLinkTransaction(input: AddLinkInput): Transaction {
 }
 
 /**
- * Profil güncelleme transaction'ı
+ * 'Update Profile' transaction
  */
 export function updateProfileTransaction(input: UpdateProfileInput): Transaction {
   const tx = new Transaction();
@@ -165,7 +165,7 @@ export function updateProfileTransaction(input: UpdateProfileInput): Transaction
 }
 
 /**
- * Profil resmi güncelleme transaction'ı
+ * 'Update Profile Picture' transaction
  */
 export function updateProfileImageTransaction(input: UpdateProfileImageInput): Transaction {
   const tx = new Transaction();
@@ -182,7 +182,7 @@ export function updateProfileImageTransaction(input: UpdateProfileImageInput): T
 }
 
 /**
- * Link güncelleme transaction'ı
+ * 'Update Link' transaction
  */
 export function updateLinkTransaction(input: UpdateLinkInput): Transaction {
   const tx = new Transaction();
@@ -203,7 +203,7 @@ export function updateLinkTransaction(input: UpdateLinkInput): Transaction {
 }
 
 /**
- * Link silme transaction'ı
+ * 'Delete Link' transaction
  */
 export function deleteLinkTransaction(input: DeleteLinkInput): Transaction {
   const tx = new Transaction();
@@ -220,7 +220,7 @@ export function deleteLinkTransaction(input: DeleteLinkInput): Transaction {
 }
 
 /**
- * Link aktif/pasif yapma transaction'ı
+ * 'Toggle Link On/Off' transaction
  */
 export function toggleLinkTransaction(input: ToggleLinkInput): Transaction {
   const tx = new Transaction();
@@ -238,7 +238,7 @@ export function toggleLinkTransaction(input: ToggleLinkInput): Transaction {
 }
 
 /**
- * Link sıralama transaction'ı
+ * 'Reorder Link' transaction
  */
 export function reorderLinkTransaction(input: ReorderLinkInput): Transaction {
   const tx = new Transaction();
@@ -256,9 +256,7 @@ export function reorderLinkTransaction(input: ReorderLinkInput): Transaction {
 }
 
 /**
- * Profil bilgilerini getir
- * NOT: Linkler dynamic field olarak saklandığı için şimdilik link_ids'den yola çıkarak
- * linkleri frontend'de bir sonraki adımda çekeceğiz
+ * Get user profile data
  */
 export async function getUserProfile(profileId: string): Promise<UserProfile | null> {
   try {
@@ -279,15 +277,15 @@ export async function getUserProfile(profileId: string): Promise<UserProfile | n
       ? object.data.owner.AddressOwner
       : '';
 
-    // Link ID'leri al ve sayıya dönüştür
+    // Get Link IDs and conver them to int
     const link_ids = Array.isArray(fields.link_ids) 
       ? fields.link_ids.map((id: any) => {
           const parsed = parseInt(id);
           return isNaN(parsed) ? -1 : parsed;
-        }).filter((id: number) => id >= 0) // 0 ve üzeri (0 da geçerli ID!)
+        }).filter((id: number) => id >= 0) // 0 and upper (0 is also a valid ID!)
       : [];
 
-    // Dynamic fields'dan linkleri çekmek için yardımcı fonksiyon
+    // Helper function to get links from the Dynamic fields
     const links: Link[] = await getProfileLinks(profileId, link_ids);
 
     return {
@@ -308,26 +306,26 @@ export async function getUserProfile(profileId: string): Promise<UserProfile | n
 }
 
 /**
- * Profil linklerini dynamic fields'dan çek
+ * Get profile links from dynamic fields
  */
 async function getProfileLinks(profileId: string, linkIds: number[]): Promise<Link[]> {
   const links: Link[] = [];
   
   console.log('🔗 getProfileLinks çağrıldı:', { profileId, linkIds });
   
-  // Önce tüm dynamic fields'ı listele (debug için)
+  // First list the whole dynamic field for debugging reasons
   try {
     const allFields = await suiClient.getDynamicFields({
       parentId: profileId,
     });
-    console.log('📋 Tüm dynamic fields:', allFields.data);
+    console.log('All dynamic fields:', allFields.data);
   } catch (e) {
-    console.error('Dynamic fields listelenemedi:', e);
+    console.error('Dynamic fields couldn\'t be listed:', e);
   }
   
   for (const linkId of linkIds) {
     try {
-      // Method 1: String olarak dene
+      // Method 1: Try as a string
       let fieldObject;
       try {
         fieldObject = await suiClient.getDynamicFieldObject({
@@ -338,8 +336,8 @@ async function getProfileLinks(profileId: string, linkIds: number[]): Promise<Li
           }
         });
       } catch (e1) {
-        // Method 2: Number olarak dene
-        console.log(`⚠️ String failed for link ${linkId}, trying number...`);
+        // Method 2: Try as an int
+        console.log(`String failed for link ${linkId}, trying number...`);
         fieldObject = await suiClient.getDynamicFieldObject({
           parentId: profileId,
           name: {
@@ -349,25 +347,25 @@ async function getProfileLinks(profileId: string, linkIds: number[]): Promise<Li
         });
       }
 
-      console.log(`📦 Link ${linkId} field object:`, fieldObject);
+      console.log(`Link ${linkId} field object:`, fieldObject);
 
       if (fieldObject.data?.content?.dataType === 'moveObject') {
         const fields = fieldObject.data.content.fields as any;
         
-        console.log(`✅ Link ${linkId} parsed (raw fields):`, fields);
+        console.log(`Link ${linkId} parsed (raw fields):`, fields);
         
-        // Dynamic field yapısı: {name: {...}, value: {...}} veya direkt {fields: {...}}
-        // Value içinde mi yoksa direkt fields'ta mı kontrol et
+        // Dynamic field structure: {name: {...}, value: {...}} or using them directly as {fields: {...}}
+        // Check whether the value is in the structure or in the fields
         let linkData = fields.value || fields.fields || fields;
         
-        // Eğer linkData içinde fields varsa (nested), onu al
+        // If the linkData has fields nested, take it
         if (linkData.fields && typeof linkData.fields === 'object') {
           linkData = linkData.fields;
         }
         
-        console.log(`✅ Link ${linkId} final linkData:`, linkData);
+        console.log(`Link ${linkId} final linkData:`, linkData);
         
-        // Sayısal değerleri güvenli şekilde parse et
+        // Parse integers safely
         const parsedId = parseInt(linkData.id) >= 0 ? parseInt(linkData.id) : linkId;
         const parsedOrder = parseInt(linkData.order) >= 0 ? parseInt(linkData.order) : 0;
         
@@ -382,23 +380,23 @@ async function getProfileLinks(profileId: string, linkIds: number[]): Promise<Li
         });
       }
     } catch (error) {
-      console.error(`❌ Error fetching link ${linkId}:`, error);
-      // Link bulunamadı, devam et
+      console.error(`Error fetching link ${linkId}:`, error);
+      // Couldn't find a link, continue
     }
   }
   
-  console.log(`🎯 Toplam ${links.length} link yüklendi`);
+  console.log(`Link count: ${links.length}`);
   
-  // Sıralamaya göre sırala
+  // Sort according to the order
   return links.sort((a, b) => a.order - b.order);
 }
 
 /**
- * Kullanıcının tüm profillerini getir
+ * Get all the profiles belonging to the user
  */
 export async function getUserProfiles(ownerAddress: string): Promise<UserProfile[]> {
   try {
-    console.log('📡 getUserProfiles çağrıldı:', {
+    console.log('getUserProfiles called:', {
       ownerAddress,
       packageId: PACKAGE_ID,
       structType: `${PACKAGE_ID}::${MODULE_NAME}::UserProfile`
@@ -416,7 +414,7 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
       },
     });
 
-    console.log('📦 Bulunan objeler:', {
+    console.log('Found objects:', {
       count: objects.data.length,
       objects: objects.data
     });
@@ -424,7 +422,7 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
     const profiles: UserProfile[] = [];
 
     for (const obj of objects.data) {
-      console.log('🔍 Obje inceleniyor:', {
+      console.log('Inspecting the object:', {
         objectId: obj.data?.objectId,
         dataType: obj.data?.content?.dataType,
         fields: obj.data?.content
@@ -433,26 +431,26 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
       if (obj.data?.content?.dataType === 'moveObject') {
         const fields = obj.data.content.fields as any;
         
-        console.log('📋 Profil fields:', fields);
-        console.log('🔍 Raw link_ids from blockchain:', fields.link_ids);
-        console.log('🔍 link_ids type:', typeof fields.link_ids);
-        console.log('🔍 link_ids is array?:', Array.isArray(fields.link_ids));
+        console.log('Profile fields:', fields);
+        console.log('Raw link_ids from blockchain:', fields.link_ids);
+        console.log('link_ids type:', typeof fields.link_ids);
+        console.log('link_ids is array?:', Array.isArray(fields.link_ids));
         
-        // Link ID'leri al ve sayıya dönüştür
+        // Convert Link IDs to ints
         const link_ids = Array.isArray(fields.link_ids) 
           ? fields.link_ids.map((id: any) => {
-              console.log('  🔸 Processing id:', id, 'type:', typeof id);
+              console.log('Processing id:', id, 'type:', typeof id);
               const parsed = parseInt(id);
               return isNaN(parsed) ? -1 : parsed;
-            }).filter((id: number) => id >= 0) // 0 ve üzeri (0 da geçerli ID!)
+            }).filter((id: number) => id >= 0) // 0 and upper (0 is a valid id too)
           : [];
 
-        console.log('🔢 Parsed link_ids:', link_ids);
+        console.log('Parsed link_ids:', link_ids);
 
-        // Dynamic fields'dan linkleri çek
+        // Get dynamic fields from the links
         const links: Link[] = await getProfileLinks(obj.data.objectId, link_ids);
         
-        console.log('🔗 Links loaded:', links);
+        console.log('Links loaded:', links);
         
         profiles.push({
           id: obj.data.objectId,
@@ -468,59 +466,58 @@ export async function getUserProfiles(ownerAddress: string): Promise<UserProfile
       }
     }
 
-    console.log('✅ Toplam profil sayısı:', profiles.length);
-    console.log('📊 Profiller:', profiles);
+    console.log('Total profile count:', profiles.length);
+    console.log('Profiles:', profiles);
 
     return profiles;
   } catch (error) {
-    console.error('❌ Error fetching user profiles:', error);
+    console.error('Error fetching user profiles:', error);
     return [];
   }
 }
 
 /**
- * Username'e göre profil ara (EVENT-BASED ÇÖZÜM)
- * NOT: ProfileCreated event'lerini kullanarak profil arıyor
- * Production için Move contract'a Username Registry eklenmeli (Dynamic Fields ile)
+ * Search the profile with target username (the event-based solution)
+ * NOTE: ProfileCreated events are used for searching
  */
 export async function getProfileByUsername(username: string) {
   try {
-    console.log('🔍 Username arıyor:', username);
+    console.log('Searching by Username:', username);
     
-    // ProfileCreated event'lerini query et
+    // Query the ProfileCreated events
     const events = await suiClient.queryEvents({
       query: {
         MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ProfileCreated`,
       },
-      limit: 50, // Son 50 profili kontrol et
+      limit: 50, // Check the last 50 profiles
     });
 
-    console.log('📦 Bulunan ProfileCreated event sayısı:', events.data.length);
+    console.log('Found ProfileCreated event count:', events.data.length);
 
-    // Username eşleşmesi ara
+    // Match for username
     for (const event of events.data) {
       const eventData = event.parsedJson as any;
       
       if (eventData && eventData.username === username) {
-        console.log('✅ Event bulundu!', eventData);
+        console.log('Found event: ', eventData);
         
-        // Profile ID'yi event'ten al
+        // Get the Profile ID from the event
         const profileId = eventData.profile_id;
         
-        // Profil detaylarını çek
+        // Get profile detals
         const profile = await getUserProfile(profileId);
         
         if (profile) {
-          console.log('✅ Profil detayları getirildi:', profile);
+          console.log('Fetched the profile data', profile);
           return profile;
         }
       }
     }
 
-    console.log('❌ Profil bulunamadı:', username);
+    console.log('Couldn\'t find a profile with the username:', username);
     return null;
   } catch (error) {
-    console.error('❌ Error searching profile by username:', error);
+    console.error('Error searching profile by username:', error);
     return null;
   }
 }
@@ -538,13 +535,13 @@ export interface NFT {
 }
 
 /**
- * Kullanıcının sahip olduğu NFT'leri getir
+ * Get user NFTs
  */
 export async function getUserNFTs(ownerAddress: string): Promise<NFT[]> {
   try {
-    console.log('🖼️ NFT\'ler yükleniyor:', ownerAddress);
+    console.log('Loading the NFTs:', ownerAddress);
     
-    // Kullanıcının tüm objelerini getir
+    // Get all the objects belonging to the user
     const objects = await suiClient.getOwnedObjects({
       owner: ownerAddress,
       options: {
@@ -557,11 +554,11 @@ export async function getUserNFTs(ownerAddress: string): Promise<NFT[]> {
     const nfts: NFT[] = [];
 
     for (const obj of objects.data) {
-      // Display field'ı varsa NFT olabilir
+      // If it has a display field, it might be an NFT
       if (obj.data?.display?.data) {
         const display = obj.data.display.data;
         
-        // NFT olarak kabul edilecek kriterler
+        // NFT accepting criteria
         const hasName = display.name || display.title;
         const hasImage = display.image_url || display.image || display.img_url;
         
@@ -578,25 +575,25 @@ export async function getUserNFTs(ownerAddress: string): Promise<NFT[]> {
       }
     }
 
-    console.log(`✅ ${nfts.length} NFT bulundu`);
+    console.log(`${nfts.length} number of NFTs found`);
     return nfts;
   } catch (error) {
-    console.error('❌ Error fetching NFTs:', error);
+    console.error('Error fetching NFTs:', error);
     return [];
   }
 }
 
 /**
  * Sponsored Transaction Wrapper
- * zkLogin kullanıcıları için gas fee'siz işlemler
+ * Gas fee-free transactions for zkLogin users
  */
 export const sponsoredBlockchain = {
   /**
-   * Sponsored profil oluşturma
+   * Creating sponsored profile
    */
   async createProfile(input: CreateProfileInput, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = createProfileSponsoredTransaction(input);
@@ -606,11 +603,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored link ekleme
+   * Add a link with sponsors
    */
   async addLink(input: AddLinkInput, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+        throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = addLinkSponsoredTransaction(input);
@@ -620,11 +617,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored profil güncelleme
+   * Create a profile with sponsors
    */
   async updateProfile(input: UpdateProfileInput, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = updateProfileSponsoredTransaction(input);
@@ -634,11 +631,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored profil resmi güncelleme
+   * Update a profile image with sponsors
    */
   async updateProfileImage(profileId: string, imageUrl: string, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = updateProfileImageSponsoredTransaction({ profileId, image_url: imageUrl });
@@ -648,11 +645,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored link güncelleme
+   * Update link with sponsors
    */
   async updateLink(input: UpdateLinkInput, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = updateLinkSponsoredTransaction(input);
@@ -662,11 +659,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored link silme
+   * Delete link with sponsors
    */
   async deleteLink(profileId: string, linkId: number, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = deleteLinkSponsoredTransaction({ profileId, link_id: linkId });
@@ -676,11 +673,11 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Sponsored link aktif/pasif yapma
+   * Toggle link on/off with sponsors
    */
   async toggleLink(profileId: string, linkId: number, isActive: boolean, userAddress: string): Promise<any> {
     if (!canUseSponsoredTransaction(userAddress)) {
-      throw new Error('Günlük sponsored transaction limitiniz doldu');
+      throw new Error('Your daily sponsored transaction limit has been passed');
     }
 
     const transaction = toggleLinkSponsoredTransaction({ profileId, link_id: linkId, is_active: isActive });
@@ -690,7 +687,7 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Kullanıcının sponsored transaction hakkı var mı?
+   *  Can the user use sponsored transactions?
    */
   canUseSponsoredTransaction(userAddress: string): boolean {
     return canUseSponsoredTransaction(userAddress);
@@ -705,7 +702,7 @@ export const sponsoredBlockchain = {
   },
 
   /**
-   * Leaderboard - Tüm kullanıcıları XP'ye göre sırala
+   * Leaderboard - Sort all users by XP
    */
   async getLeaderboard(page: number = 1, limit: number = 10): Promise<{
     users: UserProfile[];
@@ -713,9 +710,9 @@ export const sponsoredBlockchain = {
     currentPage: number;
   }> {
     try {
-      console.log('🏆 Leaderboard yükleniyor...', { page, limit });
+      console.log('Loading the leaderboard...', { page, limit });
       
-      // ProfileCreated event'lerini kullanarak tüm profilleri bul
+      // Use ProfileCreated events to get all profiles
       const events = await suiClient.queryEvents({
         query: {
           MoveEventType: `${PACKAGE_ID}::${MODULE_NAME}::ProfileCreated`,
@@ -723,39 +720,39 @@ export const sponsoredBlockchain = {
         limit: 100, // Son 100 profili al
       });
 
-      console.log('📦 Bulunan profil event sayısı:', events.data.length);
+      console.log('Total number of profile creation events found:', events.data.length);
 
       const allUsers: UserProfile[] = [];
 
-      // Her event'ten profil detaylarını çek
+      // Get profile data from all events
       for (const event of events.data) {
         const eventData = event.parsedJson as any;
         
         if (eventData && eventData.profile_id) {
           const profileId = eventData.profile_id;
           
-          console.log('🔍 Profil ID bulundu:', profileId);
+          console.log('Profil ID has been found:', profileId);
           
           try {
-            // Profil detaylarını çek
+            // Get profile
             const profile = await getUserProfile(profileId);
             
             if (profile) {
-              console.log('✅ Profil yüklendi:', profile.username);
+              console.log('Profile has been loaded:', profile.username);
               allUsers.push(profile);
             } else {
-              console.warn('⚠️ Profil null döndü:', profileId);
+              console.warn('Profile null:', profileId);
             }
           } catch (error) {
-            console.warn('⚠️ Profil yüklenemedi:', profileId, error);
+            console.warn('Profil couldn\' be loaded:', profileId, error);
           }
         }
       }
 
-      // Kullanıcıları alfabetik sırala
+      // Sort users alphabetically
       allUsers.sort((a, b) => a.username.localeCompare(b.username));
 
-      // Rank ekle
+      // Add rank
       allUsers.forEach((user, index) => {
         (user as any).rank = index + 1;
       });
@@ -766,7 +763,7 @@ export const sponsoredBlockchain = {
       const endIndex = startIndex + limit;
       const paginatedUsers = allUsers.slice(startIndex, endIndex);
 
-      console.log('✅ Leaderboard hazır:', {
+      console.log('Leaderboard is ready:', {
         totalUsers: allUsers.length,
         currentPage: page,
         totalPages,
@@ -780,7 +777,7 @@ export const sponsoredBlockchain = {
       };
 
     } catch (error) {
-      console.error('❌ Leaderboard yüklenirken hata:', error);
+      console.error('Leaderboard load error:', error);
       return {
         users: [],
         totalPages: 0,

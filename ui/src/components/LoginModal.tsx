@@ -1,5 +1,6 @@
 /**
- * Login Modal - Cüzdan Bağlantı Modal'ı
+ * Login Component For Wallet Connection
+ * To add a "Connect Wallet" button and UI to the screen
  * Ekranın ortasında büyük Connect Wallet butonu
  */
 
@@ -22,19 +23,19 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </button>
         
         <div className="modal-header">
-          <h2>🔐 Giriş Yap</h2>
-          <p>Violet'e hoş geldin! Başlamak için cüzdanını bağla.</p>
+          <h2>Log In</h2>
+          <p>Welcome to Violet! Connect to your wallet to start.</p>
         </div>
 
         <div className="modal-body">
           <div className="wallet-info-box">
             <div className="info-icon">🎯</div>
-            <h3>Neden Cüzdan Gerekli?</h3>
+            <h3>Why Is A Wallet Required?</h3>
             <ul>
-              <li>✅ Profilin blockchain'de güvende</li>
-              <li>✅ Tamamen merkeziyetsiz</li>
-              <li>✅ Verilerine sadece sen sahipsin</li>
-              <li>✅ Hiçbir şirket profilini silemez</li>
+              <li>✅ Your profile is safe on the blockchain</li>
+              <li>✅ Completely decentralized</li>
+              <li>✅ Only you have access to your data</li>
+              <li>✅ No company can delete them</li>
             </ul>
           </div>
 
@@ -43,14 +44,14 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           </div>
 
           <div className="modal-footer">
-            <p>Cüzdanın yok mu?</p>
+            <p>Don't have a wallet?</p>
             <a 
               href="https://chrome.google.com/webstore/detail/sui-wallet" 
               target="_blank" 
               rel="noopener noreferrer"
               className="download-wallet-link"
             >
-              Sui Wallet İndir →
+              Download Sui Wallet →
             </a>
           </div>
         </div>
