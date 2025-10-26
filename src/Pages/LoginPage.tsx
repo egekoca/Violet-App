@@ -26,7 +26,7 @@ export function LoginPage() {
         <div className="login-container">
           {/* Logo */}
           <div className="login-logo" onClick={() => navigate('/')}>
-            <span className="logo-icon">🔗</span>
+            <img src="/violet2.png" alt="Violet Logo" className="logo-icon" />
             <span className="logo-text">VIOLET</span>
           </div>
 
@@ -63,8 +63,8 @@ export function LoginPage() {
           {/* Sub Info */}
           <div className="login-footer">
             <div className="wallet-download">
-              <p>Don't have a wallet yet? <a 
-                href="https://chromewebstore.google.com/detail/slush-%E2%80%94-a-sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil" target="_blank" rel="noopener noreferrer"> Download Sui Wallet → </a></p> 
+              <p>Don't have a wallet yet? <a
+                href="https://chromewebstore.google.com/detail/slush-%E2%80%94-a-sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil" target="_blank" rel="noopener noreferrer"> Download Sui Wallet → </a></p>
             </div>
           </div>
         </div>

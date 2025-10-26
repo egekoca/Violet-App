@@ -24,8 +24,8 @@
 .login-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 22px;
+  gap: 12px;
+  font-size: 32px;
   font-weight: 700;
   margin-bottom: 60px;
   cursor: pointer;
@@ -33,7 +33,9 @@
 }
 
 .login-logo .logo-icon {
-  font-size: 28px;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
 }
 
 .login-logo .logo-text {

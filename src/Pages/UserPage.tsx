@@ -6,6 +6,7 @@ import { UserProfile } from '../Utils/Types';
 import { WalletConnect } from '../Components/WalletConnect';
 import { Transaction } from '@mysten/sui/transactions';
 import { QRCodeSVG } from 'qrcode.react';
+import toast from 'react-hot-toast';
 import './UserPage.css';
 
 export function UserPage() {
@@ -42,7 +43,7 @@ export function UserPage() {
     const currentXp = parseInt(localStorage.getItem(xpKey) || '0');
     const newXp = currentXp + xpEarned;
     localStorage.setItem(xpKey, newXp.toString());
-    
+
     console.log('XP Updated:', {
       profileId,
       xpEarned,
@@ -69,7 +70,7 @@ export function UserPage() {
       if (username) {
         console.log('Public profile mode - Searched username:', username);
         const publicProfile = await getProfileByUsername(username);
-        
+
         if (publicProfile) {
           setProfile(publicProfile);
           // Get XP from localStorage
@@ -91,7 +92,7 @@ export function UserPage() {
 
       // Fetch all the profiles of a user
       const profiles = await getUserProfiles(account.address);
-      
+
       if (profiles.length === 0) {
         setError('No profile found. Create one now!');
         setProfile(null);
@@ -110,14 +111,14 @@ export function UserPage() {
   const handleLinkClick = async (url: string, link: any) => {
     // Link'i yeni sekmede aç
     window.open(url, '_blank', 'noopener,noreferrer');
-    
+
     // Analytics tracking (cüzdan onayı yok, sadece frontend)
     if (username && profile) {
       try {
         // Link türünü belirle (basit URL analizi)
         let linkType = 4; // Default: custom
-        
-        if (url.includes('instagram.com') || url.includes('x.com') || url.includes('twitter.com') || 
+
+        if (url.includes('instagram.com') || url.includes('x.com') || url.includes('twitter.com') ||
             url.includes('tiktok.com') || url.includes('facebook.com') || url.includes('linkedin.com')) {
           linkType = 1; // Social
         } else if (url.includes('youtube.com') || url.includes('spotify.com') || url.includes('twitch.tv')) {
@@ -125,18 +126,18 @@ export function UserPage() {
         } else if (url.includes('wa.me') || url.includes('t.me') || url.includes('discord.gg')) {
           linkType = 3; // Contact
         }
-        
+
         console.log('🎯 Link tıklandı, analytics kaydı yapılıyor...', {
           linkType,
           linkId: link.id,
           profileId: profile.id,
           url
         });
-        
+
         // Analytics signinf (in localStorage'da)
         const analyticsKey = `link_clicks_${profile}`;
         const existingData = JSON.parse(localStorage.getItem(analyticsKey) || '{}');
-        
+
         const clickData = {
           linkId: link.id,
           linkType,
@@ -145,31 +146,31 @@ export function UserPage() {
           userAgent: navigator.userAgent,
           referrer: document.referrer
         };
-        
+
         if (!existingData.clicks) {
           existingData.clicks = [];
         }
-        
+
         existingData.clicks.push(clickData);
         existingData.totalClicks = (existingData.totalClicks || 0) + 1;
         existingData.lastClick = Date.now();
-        
+
         localStorage.setItem(analyticsKey, JSON.stringify(existingData));
-        
+
         // Compute XPs and update them
         const xpEarned = getXpForLinkType(linkType);
         updateUserXp(profile.id, xpEarned);
-        
+
         // UI'da XP'yi güncelle
         setUserXp(prev => prev + xpEarned);
-        
+
         console.log('Analytics register successful: ', {
           totalClicks: existingData.totalClicks,
           linkType,
           xpEarned,
           timestamp: new Date().toISOString()
         });
-        
+
       } catch (error) {
         console.error('Analytics tracking error:', error);
       }
@@ -178,16 +179,16 @@ export function UserPage() {
 
   const handleShowNFTs = async () => {
     if (!profile) return;
-    
+
     setShowNFTModal(true);
     setLoadingNFTs(true);
-    
+
     try {
       const userNFTs = await getUserNFTs(profile.owner);
       setNfts(userNFTs);
     } catch (error) {
       console.error('Error loading NFTs:', error);
-      alert('Failed to load NFTs');
+      toast.error('Failed to load NFTs');
     } finally {
       setLoadingNFTs(false);
     }
@@ -211,19 +212,19 @@ export function UserPage() {
 
   const handleSendTip = async () => {
     if (!account || !profile) {
-      alert('Please connect your wallet first!');
+      toast.error('Please connect your wallet first!');
       return;
     }
 
     const amount = parseFloat(tipAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid amount!');
+      toast.error('Please enter a valid amount!');
       return;
     }
 
     const minAmount = selectedToken === 'SUI' ? 0.001 : 0.01;
     if (amount < minAmount) {
-      alert(`Minimum tip amount: ${minAmount} ${selectedToken}`);
+      toast.error(`Minimum tip amount: ${minAmount} ${selectedToken}`);
       return;
     }
 
@@ -250,20 +251,20 @@ export function UserPage() {
         },
         {
           onSuccess: async () => {
-            alert(`🎉 ${amount} ${selectedToken} successfully sent! Thanks for your stop!`);
+            toast.success(`${amount} ${selectedToken} successfully sent! Thanks for your stop!`);
             setShowTipModal(false);
             setTipAmount('');
             setSelectedToken('SUI');
           },
           onError: (error: any) => {
             console.error('Tip sending error:', error);
-            alert('❌ Tip Error: ' + error.message);
+            toast.error('Tip Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Bahşiş error:', error);
-      alert('❌ Tip Error: ' + error.message);
+      toast.error('Tip Error: ' + error.message);
     } finally {
       setSendingTip(false);
     }
@@ -368,7 +369,7 @@ export function UserPage() {
       <div className="sui-logo-decoration"></div>
       <div className="walrus-logo-decoration-2"></div>
       <div className="sui-logo-decoration-2"></div>
-      
+
       <div className="container">
         {/* Wallet Connection */}
         <div style={{ position: 'fixed', top: '20px', left: '20px', zIndex: 1000 }}>
@@ -377,7 +378,7 @@ export function UserPage() {
 
         {/* Admin Button - Show it only in your page */}
         {!username && account && profile && profile.owner === account.address && (
-          <button 
+          <button
             className="admin-btn"
             onClick={() => navigate('/admin')}
             title="Admin Panel"
@@ -392,8 +393,8 @@ export function UserPage() {
         {/* Profile Section */}
         <div className="profile-section">
           {profile.image_url ? (
-            <img 
-              src={profile.image_url} 
+            <img
+              src={profile.image_url}
               alt={profile.display_name}
               className="avatar-image"
               onError={(e) => {
@@ -404,7 +405,7 @@ export function UserPage() {
               }}
             />
           ) : null}
-          <div 
+          <div
             className="avatar-placeholder"
             style={{ display: profile.image_url ? 'none' : 'flex' }}
           >
@@ -413,7 +414,7 @@ export function UserPage() {
           <h1 className="display-name">{profile.display_name}</h1>
           <p className="bio">{profile.bio}</p>
           <p className="username-label">@{profile.username}</p>
-          
+
           {/* XP Point */}
           <div className="xp-badge">
             <div className="xp-icon">
@@ -423,10 +424,10 @@ export function UserPage() {
             </div>
             <span className="xp-text">{userXp} XP</span>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="profile-actions">
-            <button 
+            <button
               className="nft-gallery-btn"
               onClick={handleShowNFTs}
               title="View NFT Collection"
@@ -440,7 +441,7 @@ export function UserPage() {
               <span>NFT Collection</span>
             </button>
 
-            <button 
+            <button
               className="tip-btn"
               onClick={() => setShowTipModal(true)}
               title="Bahşiş Gönder"
@@ -460,14 +461,14 @@ export function UserPage() {
             <div className="nft-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="nft-modal-header">
                 <h2>NFT Collection</h2>
-                <button 
+                <button
                   className="nft-modal-close"
                   onClick={() => setShowNFTModal(false)}
                 >
                   ✕
                 </button>
               </div>
-              
+
               <div className="nft-modal-body">
                 {loadingNFTs ? (
                   <div className="nft-loading">
@@ -483,8 +484,8 @@ export function UserPage() {
                     {nfts.map((nft) => (
                       <div key={nft.id} className="nft-card">
                         <div className="nft-image-container">
-                          <img 
-                            src={nft.image_url} 
+                          <img
+                            src={nft.image_url}
                             alt={nft.name}
                             onError={(e) => {
                               e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23333" width="200" height="200"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="16" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
@@ -519,7 +520,7 @@ export function UserPage() {
                   </svg>
                   <h2>Send Tip</h2>
                 </div>
-                <button 
+                <button
                   className="tip-modal-close"
                   onClick={() => setShowTipModal(false)}
                 >
@@ -528,7 +529,7 @@ export function UserPage() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="tip-modal-body">
                 {!account ? (
                   <div className="tip-connect-wallet">
@@ -539,8 +540,8 @@ export function UserPage() {
                   <>
                     <div className="tip-profile-info">
                       {profile.image_url ? (
-                        <img 
-                          src={profile.image_url} 
+                        <img
+                          src={profile.image_url}
                           alt={profile.display_name}
                           className="tip-avatar"
                         />
@@ -610,7 +611,7 @@ export function UserPage() {
                         <button onClick={() => setTipAmount('5')} disabled={sendingTip}>5</button>
                       </div>
 
-                      <button 
+                      <button
                         className="tip-send-btn"
                         onClick={handleSendTip}
                         disabled={sendingTip || !tipAmount}
@@ -643,7 +644,7 @@ export function UserPage() {
             <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="qr-modal-header">
                 <h2>QR Kod</h2>
-                <button 
+                <button
                   className="qr-modal-close"
                   onClick={() => setShowQRModal(false)}
                 >
@@ -652,7 +653,7 @@ export function UserPage() {
                   </svg>
                 </button>
               </div>
-              
+
               <div className="qr-modal-body">
                 <div className="qr-link-info">
                   <h3>{selectedLinkForQR.title}</h3>
@@ -660,7 +661,7 @@ export function UserPage() {
                 </div>
 
                 <div className="qr-code-container">
-                  <QRCodeSVG 
+                  <QRCodeSVG
                     value={selectedLinkForQR.url}
                     size={280}
                     level="H"
@@ -671,7 +672,7 @@ export function UserPage() {
                 </div>
 
                 <div className="qr-actions">
-                  <button 
+                  <button
                     className="qr-download-btn"
                     onClick={handleDownloadQR}
                   >
@@ -705,8 +706,8 @@ export function UserPage() {
                   >
                     {link.banner ? (
                       <div className="user-link-banner">
-                        <img 
-                          src={link.banner} 
+                        <img
+                          src={link.banner}
                           alt={link.title}
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -750,7 +751,7 @@ export function UserPage() {
 
         {/* Back to Home Button */}
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <button 
+          <button
             onClick={() => navigate('/')}
             style={{
               padding: '12px 24px',

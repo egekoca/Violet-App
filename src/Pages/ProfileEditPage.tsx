@@ -1,5 +1,5 @@
 /**
- * Profile Edit Page 
+ * Profile Edit Page
  * Create the new user profile if it's the first time - Otherwise edit the existing profile
  */
 
@@ -8,13 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { getUserProfiles, createProfileTransaction } from '../Utils/MoveCalls';
 import { WalletConnect } from '../Components/WalletConnect';
+import toast from 'react-hot-toast';
 import './ProfileEditPage.css';
 
 export function ProfileEditPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
-  
+
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
@@ -38,7 +39,7 @@ export function ProfileEditPage() {
     try {
       setLoading(true);
       const profiles = await getUserProfiles(account.address);
-      
+
       if (profiles.length > 0) {
         // The user already has an account, redirect to the /admin
         navigate('/admin');
@@ -56,7 +57,7 @@ export function ProfileEditPage() {
 
     // Validation
     if (formData.username.length < 3) {
-      alert('The usearname must have at least 3 characters');
+      toast.error('The username must have at least 3 characters');
       return;
     }
 
@@ -65,12 +66,12 @@ export function ProfileEditPage() {
       const tx = createProfileTransaction(formData);
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async () => {
-            alert('🎉 The profile has been created. Welcome!');
+            toast.success('The profile has been created. Welcome!');
             // Redirect to the admin dashboard
             setTimeout(() => {
               navigate('/admin');
@@ -78,14 +79,14 @@ export function ProfileEditPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Transaction Error: ' + error.message);
+            toast.error('Transaction Error: ' + error.message);
             setProcessing(false);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil creating error:', error);
-      alert('Profile Creating Eorro Hata: ' + error.message);
+      toast.error('Profile Creating Error: ' + error.message);
       setProcessing(false);
     }
   };
@@ -192,8 +193,8 @@ export function ProfileEditPage() {
             </div>
 
             {/* Submit Button */}
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="submit-btn"
               disabled={processing}
             >

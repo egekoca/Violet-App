@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
-import { 
-  getUserProfiles, 
-  createProfileTransaction, 
-  addLinkTransaction, 
-  updateProfileTransaction, 
+import {
+  getUserProfiles,
+  createProfileTransaction,
+  addLinkTransaction,
+  updateProfileTransaction,
   updateProfileImageTransaction,
   updateLinkTransaction,
   deleteLinkTransaction,
@@ -13,13 +13,14 @@ import {
 } from '../Utils/MoveCalls';
 import { UserProfile } from '../Utils/Types';
 import { WalletConnect } from '../Components/WalletConnect';
+import toast from 'react-hot-toast';
 import './AdminPage.css';
 
 export function AdminPage() {
   const navigate = useNavigate();
   const account = useCurrentAccount();
   const { mutate: signAndExecute } = useSignAndExecuteTransaction();
-  
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -209,10 +210,10 @@ export function AdminPage() {
     try {
       setLoading(true);
       console.log('loadData has started, account:', account.address);
-      
+
       const profiles = await getUserProfiles(account.address);
       console.log('getUserProfiles result:', profiles);
-      
+
       if (profiles.length > 0) {
         console.log('Found profile:', profiles[0]);
         console.log('Profile ID:', profiles[0].id);
@@ -221,14 +222,14 @@ export function AdminPage() {
         console.log('Profile links:', profiles[0].links);
         console.log('Are links an array?', Array.isArray(profiles[0].links));
         console.log('Links length:', profiles[0].links?.length);
-        
+
         // Log details about each link
         if (profiles[0].links && profiles[0].links.length > 0) {
           profiles[0].links.forEach((link, idx) => {
             console.log(`Link ${idx}:`, link);
           });
         }
-        
+
         setProfile(profiles[0]);
         setShowCreateForm(false);
         // Fill the profile form with data
@@ -259,12 +260,12 @@ export function AdminPage() {
       const tx = createProfileTransaction(profileForm);
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async () => {
-            alert('✅ Your profile has been created! You can begin adding your links!');
+            toast.success('Your profile has been created! You can begin adding your links!');
             // 3 saniye bekle ve reload
             setTimeout(() => {
               loadData();
@@ -272,13 +273,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('Transaction error: ' + error.message);
+            toast.error('Transaction error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profile create error:', error);
-      alert('❌ Error: ' + error.message);
+      toast.error('Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -310,14 +311,14 @@ export function AdminPage() {
 
     try {
       setProcessing(true);
-      
+
       // Check if using zkLogin
       const isZkLogin = account?.address.startsWith('0x') && account?.address.length > 40;
-      
+
       if (isZkLogin) {
         // Make a transaction with Enoki
         console.log('Adding a link with Enoki...');
-        
+
       const tx = addLinkTransaction({
         profileId: profile.id,
         ...linkForm,
@@ -329,8 +330,8 @@ export function AdminPage() {
           {
             onSuccess: async (result) => {
               console.log('Enoki transaction successfull:', result);
-              alert('✅ The link has been added with Enoki sponsored transaction! (No gas fee)');
-              
+              toast.success('The link has been added with Enoki sponsored transaction! (No gas fee)');
+
               // Update the UI immediately (optimistic update)
               const newLink = {
                 id: Date.now(), // Temporary ID
@@ -341,7 +342,7 @@ export function AdminPage() {
                 is_active: true,
                 order: (profile.links?.length || 0) + 1
               };
-              
+
               // Update the profile
               setProfile(prev => {
                 if (!prev) return prev;
@@ -350,13 +351,13 @@ export function AdminPage() {
                   links: [...(prev.links || []), newLink]
                 };
               });
-              
+
               // Clear the form
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
               setShowAddLinkForm(false);
               setSearchQuery('');
               setSelectedCategory('suggested');
-              
+
               // Load the latest data from the blockchain in the background
               setTimeout(async () => {
                 console.log('Updating blockchain in the background...');
@@ -370,7 +371,7 @@ export function AdminPage() {
             },
             onError: (error) => {
               console.error('Enoki transaction error:', error);
-              alert('❌ Enoki Error: ' + error.message);
+              toast.error('Enoki Error: ' + error.message);
             }
           }
         );
@@ -382,14 +383,14 @@ export function AdminPage() {
         });
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async (result) => {
             console.log('Link add transaction successful:', result);
-            alert('✅ The link has been added! Waiting for blockchain confirmation...');
-            
+            toast.success('The link has been added! Waiting for blockchain confirmation...');
+
             // Wait for it to happen in the blockchain
             setTimeout(async () => {
               console.log('Updating the data after adding the link');
@@ -402,14 +403,14 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('❌ Transaction error:', error);
-            alert('❌ Transaction Error: ' + error.message);
+            toast.error('Transaction Error: ' + error.message);
           },
         }
       );
       }
     } catch (error: any) {
       console.error('Link add error:', error);
-      alert('❌ Error While Adding A Link: ' + error.message);
+      toast.error('Error While Adding A Link: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -421,7 +422,7 @@ export function AdminPage() {
 
     try {
       setProcessing(true);
-      
+
       // Firstly, update the display name and bio
       const tx = updateProfileTransaction({
         profileId: profile.id,
@@ -430,7 +431,7 @@ export function AdminPage() {
       });
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
@@ -441,14 +442,14 @@ export function AdminPage() {
                 profileId: profile.id,
                 image_url: profileForm.image_url,
               });
-              
+
               signAndExecute(
-                { 
+                {
                   transaction: imageTx as any,
                 },
                 {
                   onSuccess: async () => {
-                    alert('✅ Profile updated (including image)! Confirming on Blockchain...');
+                    toast.success('Profile updated (including image)! Confirming on Blockchain...');
                     setTimeout(() => {
                       loadData();
                       setShowEditProfileForm(false);
@@ -456,13 +457,13 @@ export function AdminPage() {
                   },
                   onError: (error) => {
                     console.error('Image update error:', error);
-                    alert('⚠️ Profile updated but image failed: ' + error.message);
+                    toast.error('Profile updated but image failed: ' + error.message);
                     setTimeout(() => loadData(), 2000);
                   },
                 }
               );
             } else {
-              alert('✅ The profile has been updated! Getting it approved in the Blockchain...');
+              toast.success('The profile has been updated! Getting it approved in the Blockchain...');
               setTimeout(() => {
                 loadData();
                 setShowEditProfileForm(false);
@@ -471,13 +472,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Transaction error:', error);
-            alert('❌ Transaction Error: ' + error.message);
+            toast.error('Transaction Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Profil Update error:', error);
-      alert('❌ Profile Update Error: ' + error.message);
+      toast.error('Profile Update Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -508,12 +509,12 @@ export function AdminPage() {
       });
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async () => {
-            alert('✅ Link updated! Confirming on Blockchain...');
+            toast.success('Link updated! Confirming on Blockchain...');
             setTimeout(() => {
               loadData();
               setLinkForm({ title: '', url: '', icon: '', banner: '' });
@@ -523,13 +524,13 @@ export function AdminPage() {
           },
           onError: (error) => {
             console.error('Link update error:', error);
-            alert('❌ Link Update Error: ' + error.message);
+            toast.error('Link Update Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link update error:', error);
-      alert('❌ Link Update Error: ' + error.message);
+      toast.error('Link Update Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -537,7 +538,7 @@ export function AdminPage() {
 
   const handleDeleteLink = async (linkId: number) => {
     if (!account || !profile) return;
-    
+
     if (!confirm('Are you sure you want to delete this link?')) return;
 
     try {
@@ -548,25 +549,25 @@ export function AdminPage() {
       });
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async () => {
-            alert('✅ Link deleted! Confirming on Blockchain...');
+            toast.success('Link deleted! Confirming on Blockchain...');
             setTimeout(() => {
               loadData();
             }, 3000);
           },
           onError: (error) => {
             console.error('Link delete error:', error);
-            alert('❌ Link Delete Error: ' + error.message);
+            toast.error('Link Delete Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link Delete Error:', error);
-      alert('❌ Link Delete Error: ' + error.message);
+      toast.error('Link Delete Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -584,25 +585,25 @@ export function AdminPage() {
       });
 
       signAndExecute(
-        { 
+        {
           transaction: tx as any,
         },
         {
           onSuccess: async () => {
-            alert(`✅ Link ${!currentState ? 'activated' : 'deactivated'}!`);
+            toast.success(`Link ${!currentState ? 'activated' : 'deactivated'}!`);
             setTimeout(() => {
               loadData();
             }, 2000);
           },
           onError: (error) => {
             console.error('Link toggle error:', error);
-            alert('❌ Limk Toggle Error: ' + error.message);
+            toast.error('Link Toggle Error: ' + error.message);
           },
         }
       );
     } catch (error: any) {
       console.error('Link toggle error:', error);
-      alert('❌ Link Toggle Error: ' + error.message);
+      toast.error('Link Toggle Error: ' + error.message);
     } finally {
       setProcessing(false);
     }
@@ -644,8 +645,8 @@ export function AdminPage() {
         {profile && (
           <div className="sidebar-user">
             {profile.image_url ? (
-              <img 
-                src={profile.image_url} 
+              <img
+                src={profile.image_url}
                 alt={profile.username}
                 className="user-avatar user-avatar-image"
                 onError={(e) => {
@@ -655,7 +656,7 @@ export function AdminPage() {
                 }}
               />
             ) : null}
-            <div 
+            <div
               className="user-avatar"
               style={{ display: profile.image_url ? 'none' : 'flex' }}
             >
@@ -669,7 +670,7 @@ export function AdminPage() {
 
         <nav className="sidebar-nav">
           <h4 className="nav-section-title">My Violet</h4>
-          <button 
+          <button
             className={`nav-item ${!showEditProfileForm ? 'active' : ''}`}
             onClick={() => setShowEditProfileForm(false)}
           >
@@ -680,7 +681,7 @@ export function AdminPage() {
             </span>
             <span>Links</span>
           </button>
-          <button 
+          <button
             className={`nav-item ${showEditProfileForm ? 'active' : ''}`}
             onClick={() => setShowEditProfileForm(true)}
           >
@@ -692,8 +693,8 @@ export function AdminPage() {
             </span>
             <span>Settings</span>
           </button>
-          <button 
-            className="nav-item" 
+          <button
+            className="nav-item"
             onClick={() => {
               if (profile?.username) {
                 window.open(`/${profile.username}`, '_blank');
@@ -734,7 +735,7 @@ export function AdminPage() {
               <p style={{ marginBottom: '30px', color: 'var(--text-secondary)' }}>
                 Create your profile on the Blockchain
               </p>
-              
+
               <form onSubmit={handleCreateProfile}>
                 <div className="form-group">
                   <label>Username</label>
@@ -787,8 +788,8 @@ export function AdminPage() {
                   </small>
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="submit-btn-large"
                   disabled={processing}
                 >
@@ -806,8 +807,8 @@ export function AdminPage() {
             <div className="content-header">
               <div className="header-profile">
                 {profile.image_url ? (
-                  <img 
-                    src={profile.image_url} 
+                  <img
+                    src={profile.image_url}
                     alt={profile.username}
                     className="header-avatar header-avatar-image"
                     onError={(e) => {
@@ -817,7 +818,7 @@ export function AdminPage() {
                     }}
                   />
                 ) : null}
-                <div 
+                <div
                   className="header-avatar"
                   style={{ display: profile.image_url ? 'none' : 'flex' }}
                 >
@@ -826,7 +827,7 @@ export function AdminPage() {
                 <div>
                   <h2 className="header-username">@{profile.username}</h2>
                   <p className="header-bio">{profile.bio || 'Bio ekle'}</p>
-                  
+
                 </div>
               </div>
             </div>
@@ -835,10 +836,10 @@ export function AdminPage() {
             {showEditProfileForm ? (
               <div className="settings-content">
                 <h2 className="section-title">⚙️ Profile Settings</h2>
-                
+
                 <div className="link-form-card">
                   <h3>Edit Your Profile</h3>
-                  
+
                   <form onSubmit={handleUpdateProfile}>
                     <div className="form-group">
                       <label>Username</label>
@@ -891,8 +892,8 @@ export function AdminPage() {
                       </small>
                     </div>
 
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="submit-btn"
                       disabled={processing}
                     >
@@ -906,7 +907,7 @@ export function AdminPage() {
                 {/* LINKS VIEW - Link Management */}
                 {/* Add Button */}
                 {!showAddLinkForm && (
-                  <button 
+                  <button
                     className="add-main-btn"
                     onClick={() => setShowAddLinkForm(true)}
                   >
@@ -926,7 +927,7 @@ export function AdminPage() {
                   {/* Modal Header */}
                   <div className="modal-header-new">
                     <h2>Add</h2>
-                    <button 
+                    <button
                       className="modal-close-btn"
                       onClick={() => {
                         setShowAddLinkForm(false);
@@ -988,7 +989,7 @@ export function AdminPage() {
                         /* Custom Link Form */
                         <form onSubmit={handleAddLink} className="custom-link-form">
                           <h3>Custom Link</h3>
-                          
+
             <div className="form-group">
                             <label>Title</label>
               <input
@@ -1034,15 +1035,15 @@ export function AdminPage() {
             </div>
 
             <div className="form-actions">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                               className="submit-btn-modal"
                       disabled={processing}
                     >
                               {processing ? '⏳ Adding...' : '✅ Add Link'}
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                               className="cancel-btn-modal"
                               onClick={() => setSelectedCategory('suggested')}
                             >
@@ -1065,8 +1066,8 @@ export function AdminPage() {
                                 onClick={() => handleSelectPlatform(platform)}
                               >
                                 <div className="platform-icon-wrapper">
-                                  <img 
-                                    src={platform.icon} 
+                                  <img
+                                    src={platform.icon}
                                     alt={platform.name}
                                     className="platform-icon"
                                     style={{ backgroundColor: platform.color }}
@@ -1097,7 +1098,7 @@ export function AdminPage() {
             {showEditLinkForm && (
               <div className="link-form-card">
                 <h3>Edit Link</h3>
-                
+
                 <form onSubmit={handleUpdateLink}>
             <div className="form-group">
               <label>Label</label>
@@ -1144,15 +1145,15 @@ export function AdminPage() {
             </div>
 
             <div className="form-actions">
-                    <button 
-                      type="submit" 
+                    <button
+                      type="submit"
                       className="submit-btn"
                       disabled={processing}
                     >
                       {processing ? '⏳ Updating...' : 'Update Link'}
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="cancel-btn"
                 onClick={() => {
                         setShowEditLinkForm(false);
@@ -1177,15 +1178,15 @@ export function AdminPage() {
                     </div>
                   ) : (
                     profile.links.map((link, index) => (
-                      <div 
-                        key={index} 
+                      <div
+                        key={index}
                         className={`link-card-modern ${!link.is_active ? 'inactive' : ''}`}
                       >
                         {/* Banner Thumbnail */}
                         {link.banner ? (
                           <div className="link-banner-thumb">
-                            <img 
-                              src={link.banner} 
+                            <img
+                              src={link.banner}
                               alt={link.title}
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none';
@@ -1208,7 +1209,7 @@ export function AdminPage() {
                             </div>
                             <p className="link-url">{link.url || 'No URL'}</p>
                           </div>
-                          
+
                           {/* Actions */}
                           <div className="link-card-actions">
                             <button
@@ -1267,7 +1268,7 @@ export function AdminPage() {
           <div className="preview-url-section">
             <label className="preview-url-label">Your Violet URL</label>
             <div className="preview-url-box">
-              <a 
+              <a
                 href={`https://violet-app.trwal.app/${profile?.username || profileForm.username || 'username'}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1280,7 +1281,7 @@ export function AdminPage() {
                 onClick={() => {
                   const url = `https://violet-app.trwal.app/${profile?.username || profileForm.username || 'username'}`;
                   navigator.clipboard.writeText(url);
-                  alert('✅ Link copied to clipboard!');
+                  toast.success('Link copied to clipboard!');
                 }}
                 title="Copy link"
               >
@@ -1292,14 +1293,14 @@ export function AdminPage() {
             </div>
           </div>
         )}
-        
+
         <div className="preview-phone">
           <div className="phone-frame">
             <div className="phone-screen">
               {profile || showCreateForm ? (
                 <>
                   {(showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url) ? (
-                    <img 
+                    <img
                       src={showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url}
                       alt="Profile"
                       className="preview-avatar preview-avatar-image"
@@ -1310,36 +1311,36 @@ export function AdminPage() {
                       }}
                     />
                   ) : null}
-                  <div 
+                  <div
                     className="preview-avatar"
                     style={{ display: (showEditProfileForm ? profileForm.image_url : profile?.image_url || profileForm.image_url) ? 'none' : 'flex' }}
                   >
-                    {(showEditProfileForm && profileForm.username 
-                      ? profileForm.username 
+                    {(showEditProfileForm && profileForm.username
+                      ? profileForm.username
                       : profile?.username || profileForm.username || 'V'
                     ).charAt(0).toUpperCase()}
                   </div>
                   <h3 className="preview-name">
-                    {showEditProfileForm 
-                      ? profileForm.display_name || 'Display Name' 
+                    {showEditProfileForm
+                      ? profileForm.display_name || 'Display Name'
                       : profile?.display_name || profileForm.display_name || 'Display Name'}
                   </h3>
                   <p className="preview-username">
-                    @{showEditProfileForm 
+                    @{showEditProfileForm
                       ? profileForm.username || profile?.username || 'kullaniciadi'
                       : profile?.username || profileForm.username || 'kullaniciadi'}
                   </p>
                   <p className="preview-bio">
-                    {showEditProfileForm 
+                    {showEditProfileForm
                       ? profileForm.bio || 'A short biography is displayed here...'
                       : profile?.bio || profileForm.bio || 'A short biography...'}
                   </p>
-                  
+
                   <div className="preview-links">
                     {profile && profile.links.filter(link => link.is_active).length > 0 ? (
                       profile.links.filter(link => link.is_active).slice(0, 3).map((link, index) => (
-                        <a 
-                          key={index} 
+                        <a
+                          key={index}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
