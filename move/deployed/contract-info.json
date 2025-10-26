@@ -1,0 +1,22 @@
+{
+  "network": "testnet",
+  "packageId": "0x28d408ce45cef229c69aafd8c27a1f72eb9687db562b178b04426b20735ea0a8",
+  "moduleName": "violet",
+  "deployedAt": "2025-10-25",
+  "functions": {
+    "create_profile": "create_profile",
+    "add_link": "add_link",
+    "update_profile": "update_profile",
+    "update_profile_image": "update_profile_image",
+    "update_link": "update_link",
+    "delete_link": "delete_link",
+    "toggle_link": "toggle_link",
+    "reorder_link": "reorder_link"
+  },
+  "structs": {
+    "UserProfile": "UserProfile",
+    "Link": "Link",
+    "LinkKey": "LinkKey"
+  }
+}
+
