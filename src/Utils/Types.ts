@@ -1,6 +1,6 @@
 /**
- * Blockchain uyumlu type'lar
- * Frontend SDK ile uyumlu
+ * Blockchain compatible types
+ * Also compatible with the frontend SDK
  */
 
 export interface Link {
@@ -24,6 +24,6 @@ export interface UserProfile {
   image_url: string;
   link_ids: number[];
   link_count: number;
-  links: Link[];        // Frontend'de dynamic fields'dan yüklenir
+  links: Link[];
 }
 

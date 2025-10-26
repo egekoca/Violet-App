@@ -1,13 +1,13 @@
 /**
- * Sponsored Transactions - Gas Fee'siz İşlemler
- * Backend API ile sponsored transaction sistemi
+ * Sponsored Transactions - Gas Fee-free Transactions
+ * A sponsored transaction system with the Backend API
  */
 
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { toBase64 } from '@mysten/sui/utils';
 
-// Contract bilgileri
+// Contract info
 export const PACKAGE_ID = '0x28d408ce45cef229c69aafd8c27a1f72eb9687db562b178b04426b20735ea0a8';
 export const MODULE_NAME = 'violet';
 
@@ -18,31 +18,31 @@ const BACKEND_URL = 'http://localhost:3001';
 const suiClient = new SuiClient({ url: getFullnodeUrl('testnet') });
 
 /**
- * Backend API ile sponsored transaction
- * zkLogin kullanıcıları gas fee ödemeden işlem yapar
+ * Sponsored transaction with the Backend API ile 
+ * zkLogin users can make transactions without having to pay any gas fee
  */
 export async function executeSponsoredTransaction(
   transaction: Transaction,
   userAddress: string
 ): Promise<any> {
   try {
-    console.log('🚀 Sponsored transaction başlatılıyor...', {
+    console.log('Sponsored transaction is starting...', {
       userAddress,
       packageId: PACKAGE_ID
     });
 
-    // Transaction'ı build et (onlyTransactionKind: true)
+    // Build the Transaction (onlyTransactionKind: true)
     const transactionBlockKindBytes = await transaction.build({
       client: suiClient,
       onlyTransactionKind: true,
     });
 
-    console.log('🔧 Transaction built:', {
+    console.log('Transaction built:', {
       txBytesLength: transactionBlockKindBytes.length
     });
 
-    // JWT token'ı localStorage'dan al (Enoki wallet tarafından saklanır)
-    console.log('🔍 localStorage keys:', Object.keys(localStorage));
+    // Take JWT from localStorage JWT (stored by the Enoki wallet)
+    console.log('localStorage keys:', Object.keys(localStorage));
     
     // Farklı JWT key'lerini dene
     const jwt = localStorage.getItem('enoki-jwt') || 
@@ -51,7 +51,7 @@ export async function executeSponsoredTransaction(
                 localStorage.getItem('token') ||
                 localStorage.getItem('enoki-token');
     
-    console.log('🔑 JWT token search:', {
+    console.log('JWT token search:', {
       'enoki-jwt': localStorage.getItem('enoki-jwt'),
       'zklogin-jwt': localStorage.getItem('zklogin-jwt'),
       'jwt': localStorage.getItem('jwt'),
@@ -64,9 +64,9 @@ export async function executeSponsoredTransaction(
       throw new Error('JWT token not found. Please login with zkLogin first.');
     }
 
-    console.log('🔑 JWT token found:', jwt.slice(0, 20) + '...');
+    console.log('JWT token found:', jwt.slice(0, 20) + '...');
     
-    // Backend'e sponsor isteği gönder (JWT token ile)
+    // Ask for a sponsor from the backend (with JWT)
     const sponsorResponse = await fetch(`${BACKEND_URL}/api/sponsor-transaction`, {
       method: 'POST',
       headers: {
@@ -75,7 +75,7 @@ export async function executeSponsoredTransaction(
       body: JSON.stringify({
         transactionBlockKindBytes: toBase64(transactionBlockKindBytes),
         userAddress,
-        jwt, // JWT token'ı backend'e gönder
+        jwt, // Send the JWT to the backend
       }),
     });
 
@@ -85,9 +85,9 @@ export async function executeSponsoredTransaction(
     }
 
     const sponsorResult = await sponsorResponse.json();
-    console.log('✅ Sponsored transaction oluşturuldu:', sponsorResult);
+    console.log('Sponsored transaction has been created successfully:', sponsorResult);
 
-    // Backend'e execute isteği gönder
+    // Send an execute request to the backend
     const executeResponse = await fetch(`${BACKEND_URL}/api/execute-transaction`, {
       method: 'POST',
       headers: {
@@ -96,7 +96,7 @@ export async function executeSponsoredTransaction(
       body: JSON.stringify({
         digest: sponsorResult.result.digest,
         bytes: sponsorResult.result.bytes,
-        jwt, // JWT token'ı backend'e gönder
+        jwt, // Send JWT to backend
       }),
     });
 
@@ -106,17 +106,17 @@ export async function executeSponsoredTransaction(
     }
 
     const executeResult = await executeResponse.json();
-    console.log('✅ Transaction executed successfully:', executeResult);
+    console.log('Transaction executed successfully:', executeResult);
     
     return executeResult.result;
   } catch (error) {
-    console.error('❌ Sponsored transaction hatası:', error);
+    console.error('Sponsored transaction error:', error);
     throw error;
   }
 }
 
 /**
- * Profil oluşturma - Sponsored
+ * Creating a profile - Sponsored
  */
 export function createProfileSponsoredTransaction(input: {
   username: string;
@@ -140,7 +140,7 @@ export function createProfileSponsoredTransaction(input: {
 }
 
 /**
- * Link ekleme - Sponsored
+ * Link add - Sponsored
  */
 export function addLinkSponsoredTransaction(input: {
   profileId: string;
@@ -166,7 +166,7 @@ export function addLinkSponsoredTransaction(input: {
 }
 
 /**
- * Profil güncelleme - Sponsored
+ * Profil update - Sponsored
  */
 export function updateProfileSponsoredTransaction(input: {
   profileId: string;
@@ -188,7 +188,7 @@ export function updateProfileSponsoredTransaction(input: {
 }
 
 /**
- * Profil resmi güncelleme - Sponsored
+ * Profile photo update - Sponsored
  */
 export function updateProfileImageSponsoredTransaction(input: {
   profileId: string;
@@ -208,7 +208,7 @@ export function updateProfileImageSponsoredTransaction(input: {
 }
 
 /**
- * Link güncelleme - Sponsored
+ * Link update - Sponsored
  */
 export function updateLinkSponsoredTransaction(input: {
   profileId: string;
@@ -236,7 +236,7 @@ export function updateLinkSponsoredTransaction(input: {
 }
 
 /**
- * Link silme - Sponsored
+ * Link deleting - Sponsored
  */
 export function deleteLinkSponsoredTransaction(input: {
   profileId: string;
@@ -256,7 +256,7 @@ export function deleteLinkSponsoredTransaction(input: {
 }
 
 /**
- * Link aktif/pasif yapma - Sponsored
+ * Link toggle on/off - Sponsored
  */
 export function toggleLinkSponsoredTransaction(input: {
   profileId: string;
@@ -278,10 +278,10 @@ export function toggleLinkSponsoredTransaction(input: {
 }
 
 /**
- * Rate limiting kontrolü
- * Kullanıcı başına günlük limit
+ * Rate limiting control
+ * Daily limit per user
  */
-const DAILY_LIMIT = 10; // Günlük 10 sponsored transaction
+const DAILY_LIMIT = 10; // Daily 10 sponsored transactions
 const userTransactionCounts = new Map<string, { count: number; date: string }>();
 
 export function canUseSponsoredTransaction(userAddress: string): boolean {
@@ -289,7 +289,7 @@ export function canUseSponsoredTransaction(userAddress: string): boolean {
   const userData = userTransactionCounts.get(userAddress);
   
   if (!userData || userData.date !== today) {
-    // Yeni gün, sıfırla
+    // New day, reset the limit
     userTransactionCounts.set(userAddress, { count: 0, date: today });
     return true;
   }
