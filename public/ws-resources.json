@@ -1,6 +1,11 @@
 {
   "routes": {
+    "/": "/index.html",
+    "/login": "/index.html",
+    "/profile": "/index.html",
+    "/admin": "/index.html",
+    "/leaderboard": "/index.html",
     "/*": "/index.html"
-  }
+  },
+  "site_name": "Violet App"
 }
-
