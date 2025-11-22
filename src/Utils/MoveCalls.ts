@@ -25,8 +25,8 @@ export type { Transaction };
 export const NETWORK = 'testnet';
 export const RPC_URL = 'https://fullnode.testnet.sui.io:443';
 
-// Contract bilgileri (contract-info.json'dan)
-export const PACKAGE_ID = '0x5fd2ef367fe2bcc32b95e15b7303eda76925b4f329d5e03f4a3d0536656a1415';
+// Contract bilgileri (.env'den)
+export const PACKAGE_ID = import.meta.env.VITE_PACKAGE_ID;
 export const MODULE_NAME = 'violet';
 
 // Sui Client
